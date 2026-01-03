@@ -3,110 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PharmaCare Inventory</title>
+    <title>PharmaCare Pro v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
+        body { font-family: 'Poppins', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-slate-100 text-slate-800">
 
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-[#0F172A] text-white flex flex-col hidden md:flex">
-            <div class="p-6 flex items-center gap-3">
-                <div class="bg-green-500 p-2 rounded-lg">
-                    <i class="fas fa-first-aid text-white"></i>
+        <aside class="w-64 bg-[#1e1b4b] text-white flex flex-col hidden md:flex shadow-2xl z-20">
+            <div class="p-6 flex items-center gap-3 bg-[#312e81]">
+                <div class="bg-indigo-500 p-2 rounded-lg shadow-lg shadow-indigo-500/50">
+                    <i class="fas fa-prescription-bottle-alt text-white text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg">PharmaCare</h1>
-                    <p class="text-xs text-gray-400">Inventory v1.0</p>
+                    <h1 class="font-bold text-lg tracking-wide">PharmaCare</h1>
+                    <p class="text-xs text-indigo-200">System v2.0</p>
                 </div>
             </div>
 
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a href="#" onclick="showSection('inventory')" class="flex items-center gap-3 px-4 py-3 bg-green-600 rounded-lg text-white transition">
-                    <i class="fas fa-box"></i> Inventory
-                </a>
-                <a href="#" onclick="showSection('expired')" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition">
-                    <i class="fas fa-exclamation-triangle"></i> Expired / Low
-                </a>
+            <nav class="flex-1 px-4 space-y-2 mt-6 overflow-y-auto">
+                <p class="px-4 text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">Main</p>
+                <button onclick="showSection('sales-terminal')" class="nav-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-indigo-600 focus:bg-indigo-600 active-nav">
+                    <i class="fas fa-cash-register w-5"></i> Sales Terminal
+                </button>
+                <button onclick="showSection('inventory')" class="nav-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-indigo-600 focus:bg-indigo-600">
+                    <i class="fas fa-boxes w-5"></i> Inventory
+                </button>
+                
+                <p class="px-4 text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2 mt-6">Records</p>
+                <button onclick="showSection('sales-history')" class="nav-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-indigo-600 focus:bg-indigo-600">
+                    <i class="fas fa-history w-5"></i> Sold History
+                </button>
+                <button onclick="showSection('purchases')" class="nav-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-indigo-600 focus:bg-indigo-600">
+                    <i class="fas fa-truck-loading w-5"></i> Buying Records
+                </button>
+                <button onclick="showSection('expired')" class="nav-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-indigo-600 focus:bg-indigo-600">
+                    <i class="fas fa-exclamation-circle w-5"></i> Expired / Low
+                </button>
             </nav>
 
-            <div class="p-4 border-t border-gray-700">
+            <div class="p-4 bg-[#111827] cursor-pointer hover:bg-black transition relative group" onclick="openProfileModal()">
+                <div class="absolute top-2 right-2 text-gray-500 text-xs group-hover:text-white"><i class="fas fa-pen"></i> Edit</div>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">JD</div>
+                    <img id="sidebarProfilePic" src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" class="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover">
                     <div>
-                        <p class="text-sm font-bold">Admin</p>
-                        <p class="text-xs text-gray-400">Pharmacist</p>
+                        <p id="sidebarName" class="text-sm font-bold">Pharmacist</p>
+                        <p class="text-xs text-gray-400">Click to Edit Profile</p>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
-            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm z-10">
-                <div class="flex items-center bg-gray-100 rounded-lg px-3 py-2 w-96">
-                    <i class="fas fa-search text-gray-400"></i>
-                    <input type="text" id="searchInput" placeholder="Search by brand name or generic..." class="bg-transparent border-none outline-none ml-2 w-full text-sm">
-                </div>
-                <button onclick="openModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition shadow-lg">
-                    <i class="fas fa-plus"></i> Add Medicine
-                </button>
-            </header>
-
-            <div class="flex-1 overflow-auto p-6 relative">
-                <div class="flex justify-between items-end mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Inventory Management</h2>
-                        <p class="text-gray-500 text-sm mt-1" id="totalCount">Loading items...</p>
+            <section id="sales-terminal" class="content-section flex flex-col h-full">
+                <header class="h-20 bg-white border-b flex items-center justify-between px-8 shadow-sm">
+                    <h2 class="text-2xl font-bold text-slate-800"><i class="fas fa-cash-register text-indigo-600 mr-2"></i> Sales Counter</h2>
+                    <div class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold shadow-sm">
+                        Today's Sales: <span id="todaySalesTotal">Rs. 0</span>
                     </div>
-                    
-                    <select id="filterCategory" class="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg p-2.5 outline-none focus:border-green-500">
-                        <option value="All">All Categories</option>
-                        <option value="Tablet">Tablet</option>
-                        <option value="Capsule">Capsule</option>
-                        <option value="Syrup">Syrup</option>
-                        <option value="Injection">Injection</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
+                </header>
 
-                <div id="inventoryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                <div class="p-8 flex-1 overflow-auto">
+                    <div class="max-w-3xl mx-auto">
+                        <div class="relative mb-8">
+                            <input type="text" id="salesSearch" placeholder="Scan or Search Medicine to Sell..." class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none shadow-lg text-lg transition">
+                            <i class="fas fa-search absolute left-5 top-5 text-indigo-400 text-xl"></i>
+                        </div>
+
+                        <div id="salesResults" class="grid gap-4">
+                            </div>
                     </div>
-            </div>
+                </div>
+            </section>
+
+            <section id="inventory" class="content-section hidden flex flex-col h-full">
+                <header class="h-20 bg-white border-b flex items-center justify-between px-8 shadow-sm">
+                    <div class="flex items-center gap-4 w-1/2">
+                        <h2 class="text-2xl font-bold text-slate-800">Inventory</h2>
+                        <input type="text" id="inventorySearch" placeholder="Search stock..." class="bg-slate-100 border-none outline-none px-4 py-2 rounded-lg text-sm w-64 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg shadow-indigo-500/30 transition transform hover:-translate-y-0.5">
+                        <i class="fas fa-plus mr-2"></i> Add Medicine
+                    </button>
+                </header>
+                <div class="p-8 overflow-auto pb-24">
+                    <div id="inventoryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        </div>
+                </div>
+            </section>
+
+            <section id="sales-history" class="content-section hidden flex flex-col h-full">
+                <header class="h-20 bg-white border-b flex items-center justify-between px-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Sales History</h2>
+                    <button onclick="clearHistory('sales')" class="text-red-500 text-sm hover:underline">Clear History</button>
+                </header>
+                <div class="p-8 overflow-auto">
+                    <table class="w-full text-left bg-white rounded-xl shadow-sm overflow-hidden">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                            <tr>
+                                <th class="p-4">Time</th>
+                                <th class="p-4">Medicine</th>
+                                <th class="p-4">Sold Qty</th>
+                                <th class="p-4">Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesHistoryTable" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="purchases" class="content-section hidden flex flex-col h-full">
+                <header class="h-20 bg-white border-b flex items-center justify-between px-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Dealer Purchases</h2>
+                    <button onclick="openPurchaseModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg shadow-emerald-500/30">
+                        <i class="fas fa-file-invoice mr-2"></i> Add Record
+                    </button>
+                </header>
+                <div class="p-8 overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="purchaseGrid">
+                    </div>
+            </section>
+
+            <section id="expired" class="content-section hidden flex flex-col h-full">
+                <header class="h-20 bg-white border-b flex items-center px-8">
+                    <h2 class="text-2xl font-bold text-red-600">Expired & Low Stock Alerts</h2>
+                </header>
+                <div class="p-8 overflow-auto">
+                    <div id="expiredGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            </section>
         </main>
     </div>
 
-    <div id="medicineModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-100">
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-800" id="modalTitle">Add New Medicine</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+    <div id="medicineModal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-fade-in">
+            <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white" id="modalTitle">Add Medicine</h3>
+                <button onclick="closeModal('medicineModal')" class="text-white hover:text-indigo-200"><i class="fas fa-times text-xl"></i></button>
             </div>
             
             <form id="medicineForm" onsubmit="saveMedicine(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                 <input type="hidden" id="medicineId">
                 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Brand Name</label>
-                        <input type="text" id="name" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 outline-none">
+                        <label class="label-text">Medicine Name</label>
+                        <input type="text" id="name" required class="input-field" placeholder="e.g. Panadol">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Formula (Generic)</label>
-                        <input type="text" id="formula" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 outline-none">
+                        <label class="label-text">Brand / Company</label>
+                        <input type="text" id="brand" required class="input-field" placeholder="e.g. GSK">
+                    </div>
+                    <div>
+                        <label class="label-text">Formula</label>
+                        <input type="text" id="formula" required class="input-field" placeholder="e.g. Paracetamol">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Category</label>
-                        <select id="category" class="w-full border border-gray-300 rounded-lg p-2">
+                        <label class="label-text">Price Per Pack (Rs)</label>
+                        <input type="number" id="price" required class="input-field" oninput="updateUnitPriceDisplay()">
+                    </div>
+                    <div>
+                        <label class="label-text">Items inside 1 Pack</label>
+                        <input type="number" id="packSize" required class="input-field" value="1" placeholder="e.g. 10 tablets" oninput="updateUnitPriceDisplay()">
+                        <p class="text-[10px] text-indigo-600 mt-1 font-bold" id="unitPriceDisplay">Unit Price: Rs 0</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="label-text">Total Current Stock (in Units/Tablets)</label>
+                    <input type="number" id="stock" required class="input-field" placeholder="If you have 5 packs of 10, enter 50">
+                    <p class="text-xs text-gray-400 mt-1">Note: Enter the total count of individual tablets/capsules, not boxes.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="label-text">Category</label>
+                        <select id="category" class="input-field">
                             <option>Tablet</option>
                             <option>Capsule</option>
                             <option>Syrup</option>
@@ -116,249 +200,442 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Location (Rack)</label>
-                        <input type="text" id="location" placeholder="e.g. A-12" class="w-full border border-gray-300 rounded-lg p-2">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Price (PKR)</label>
-                        <input type="number" id="price" required class="w-full border border-gray-300 rounded-lg p-2">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Stock Quantity</label>
-                        <input type="number" id="stock" required class="w-full border border-gray-300 rounded-lg p-2">
+                        <label class="label-text">Expiry Date</label>
+                        <input type="date" id="expiry" required class="input-field">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Expiry Date</label>
-                    <input type="date" id="expiry" required class="w-full border border-gray-300 rounded-lg p-2">
+                    <label class="label-text">Image</label>
+                    <input type="file" id="imageInput" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Medicine Image</label>
-                    <div class="flex items-center gap-2">
-                        <input type="file" id="imageInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
-                    </div>
-                    <p class="text-xs text-gray-400 mt-1">Leave empty to use default icon.</p>
-                </div>
-
-                <div class="pt-4 flex gap-3">
-                    <button type="button" onclick="closeModal()" class="w-full py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition">Cancel</button>
-                    <button type="submit" class="w-full py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition">Save Medicine</button>
-                </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">Save Medicine</button>
             </form>
         </div>
     </div>
 
-    <script>
-        // --- 1. DATA MANAGEMENT ---
-        let inventory = JSON.parse(localStorage.getItem('pharmacyData')) || [
-            { id: 1, name: 'Panadol Extra', formula: 'Paracetamol', category: 'Tablet', location: 'B-05', price: 50, stock: 45, expiry: '2024-10-15', image: null },
-            { id: 2, name: 'Amoxicillin', formula: 'Amoxicillin', category: 'Capsule', location: 'A-12', price: 250, stock: 150, expiry: '2025-12-01', image: null },
-            { id: 3, name: 'Brufen', formula: 'Ibuprofen', category: 'Syrup', location: 'B-08', price: 120, stock: 10, expiry: '2026-05-20', image: null }
-        ];
-
-        // --- 2. RENDER FUNCTIONS ---
-        const grid = document.getElementById('inventoryGrid');
-        const countLabel = document.getElementById('totalCount');
-        
-        function renderInventory(data = inventory) {
-            grid.innerHTML = '';
-            countLabel.innerText = `Showing ${data.length} items`;
-
-            data.forEach(item => {
-                // Calculate Status
-                const expiryDate = new Date(item.expiry);
-                const today = new Date();
-                const isExpired = expiryDate < today;
-                const isLowStock = item.stock < 20;
+    <div id="saleModal" class="fixed inset-0 bg-black/70 hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+            <div class="bg-green-600 p-4 text-center">
+                <h3 class="text-white font-bold text-xl">Sell Medicine</h3>
+            </div>
+            <div class="p-6 text-center">
+                <h4 id="saleItemName" class="text-lg font-bold text-gray-800">Name</h4>
+                <p id="saleItemInfo" class="text-sm text-gray-500 mb-4">Price details</p>
                 
-                let badge = '';
-                if(isExpired) badge = `<span class="px-2 py-1 text-xs font-bold bg-red-100 text-red-600 rounded">Expired</span>`;
-                else if(isLowStock) badge = `<span class="px-2 py-1 text-xs font-bold bg-orange-100 text-orange-600 rounded">Low Stock</span>`;
-                else badge = `<span class="px-2 py-1 text-xs font-bold bg-green-100 text-green-600 rounded">In Stock</span>`;
+                <label class="block text-left text-xs font-bold text-gray-500 mb-1">Quantity to Sell (Tablets/Units)</label>
+                <div class="flex items-center gap-2 mb-4">
+                    <input type="number" id="saleQty" class="input-field text-center text-xl font-bold" value="1" min="1" oninput="calculateSaleTotal()">
+                </div>
 
-                // Image logic
-                const imgDisplay = item.image 
-                    ? `<img src="${item.image}" class="w-12 h-12 rounded object-cover">` 
-                    : `<div class="w-12 h-12 rounded bg-blue-50 flex items-center justify-center text-blue-500"><i class="fas fa-pills text-xl"></i></div>`;
+                <div class="bg-green-50 p-3 rounded-lg border border-green-200 mb-6">
+                    <p class="text-xs text-green-600 uppercase font-bold">Total Price</p>
+                    <p class="text-3xl font-bold text-green-700" id="saleTotalDisplay">Rs. 0</p>
+                </div>
 
-                const card = `
-                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition group relative">
-                    <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                        <button onclick="editMedicine(${item.id})" class="text-blue-500 hover:bg-blue-50 p-1 rounded"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteMedicine(${item.id})" class="text-red-500 hover:bg-red-50 p-1 rounded"><i class="fas fa-trash"></i></button>
+                <div class="flex gap-3">
+                    <button onclick="closeModal('saleModal')" class="flex-1 py-2 bg-gray-200 rounded-lg font-bold">Cancel</button>
+                    <button onclick="confirmSale()" class="flex-1 py-2 bg-green-600 text-white rounded-lg font-bold shadow-lg">Confirm Sale</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="purchaseModal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-emerald-700 px-6 py-4 text-white font-bold flex justify-between">
+                <h3>Record Dealer Purchase</h3>
+                <button onclick="closeModal('purchaseModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <form onsubmit="savePurchase(event)" class="p-6 space-y-4">
+                <input type="text" id="dealerName" required placeholder="Dealer Name" class="input-field">
+                <input type="text" id="companyName" required placeholder="Company Name" class="input-field">
+                <textarea id="itemsBought" required placeholder="Medicines bought (e.g., 50 Panadol, 20 Brufen)" class="input-field h-24"></textarea>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="purchaseAmount" required placeholder="Total Paid (Rs)" class="input-field">
+                    <input type="date" id="purchaseDate" required class="input-field">
+                </div>
+                <div>
+                    <label class="label-text">Bill Photo</label>
+                    <input type="file" id="billImage" accept="image/*" class="w-full text-sm">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700">Save Record</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="profileModal" class="fixed inset-0 bg-black/60 hidden z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-80 p-6 text-center">
+            <h3 class="font-bold text-xl mb-4">Edit Profile</h3>
+            <div class="space-y-3">
+                <input type="text" id="editUserName" placeholder="Your Name" class="input-field">
+                <input type="text" id="editUserTitle" placeholder="Title (e.g. Pharmacist)" class="input-field">
+                <input type="text" id="editUserPic" placeholder="Image URL (optional)" class="input-field text-xs">
+                <button onclick="saveProfile()" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">Update</button>
+                <button onclick="closeModal('profileModal')" class="w-full text-gray-500 text-sm mt-2">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .input-field { width: 100%; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; outline: none; transition: all 0.2s; }
+        .input-field:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        .label-text { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 0.25rem; }
+    </style>
+
+    <script>
+        // --- DATA INITIALIZATION ---
+        // We use LocalStorage so data stays on your device
+        let inventory = JSON.parse(localStorage.getItem('pharmacyInv_v2')) || [];
+        let salesHistory = JSON.parse(localStorage.getItem('pharmacySales_v2')) || [];
+        let purchaseHistory = JSON.parse(localStorage.getItem('pharmacyPurchases_v2')) || [];
+        let userProfile = JSON.parse(localStorage.getItem('pharmacyProfile')) || { name: 'Tahseen', title: 'Owner', pic: '' };
+
+        // --- NAVIGATION ---
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Render specific data based on tab
+            if(id === 'inventory') renderInventory();
+            if(id === 'sales-history') renderSalesHistory();
+            if(id === 'purchases') renderPurchases();
+            if(id === 'expired') renderExpired();
+        }
+
+        // --- USER PROFILE LOGIC ---
+        function loadProfile() {
+            document.getElementById('sidebarName').innerText = userProfile.name;
+            document.querySelector('.text-xs.text-gray-400').innerText = userProfile.title;
+            if(userProfile.pic) document.getElementById('sidebarProfilePic').src = userProfile.pic;
+        }
+        function openProfileModal() {
+            document.getElementById('editUserName').value = userProfile.name;
+            document.getElementById('editUserTitle').value = userProfile.title;
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+        function saveProfile() {
+            userProfile.name = document.getElementById('editUserName').value;
+            userProfile.title = document.getElementById('editUserTitle').value;
+            const picUrl = document.getElementById('editUserPic').value;
+            if(picUrl) userProfile.pic = picUrl;
+            
+            localStorage.setItem('pharmacyProfile', JSON.stringify(userProfile));
+            loadProfile();
+            closeModal('profileModal');
+        }
+
+        // --- INVENTORY LOGIC ---
+        function renderInventory(data = inventory) {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            
+            data.forEach(item => {
+                const img = item.image || 'https://via.placeholder.com/150?text=Rx';
+                const unitPrice = (item.price / item.packSize).toFixed(2);
+                
+                grid.innerHTML += `
+                <div class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-xl transition border border-slate-100 group relative">
+                    <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition flex gap-2">
+                        <button onclick="editMedicine(${item.id})" class="bg-blue-100 text-blue-600 p-2 rounded-full hover:bg-blue-200"><i class="fas fa-pen"></i></button>
+                        <button onclick="deleteMedicine(${item.id})" class="bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200"><i class="fas fa-trash"></i></button>
                     </div>
-
-                    <div class="flex items-start gap-4 mb-4">
-                        ${imgDisplay}
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="${img}" class="w-16 h-16 rounded-xl object-cover bg-slate-100">
                         <div>
-                            <h3 class="font-bold text-gray-800 text-lg">${item.name}</h3>
-                            <p class="text-gray-500 text-sm">${item.formula}</p>
-                            <div class="mt-2 flex gap-2">
-                                ${badge}
-                            </div>
+                            <h4 class="font-bold text-lg text-slate-800">${item.name}</h4>
+                            <p class="text-xs font-bold text-indigo-500 uppercase">${item.brand || 'No Brand'}</p>
+                            <p class="text-xs text-slate-500">${item.formula}</p>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-y-3 text-sm bg-gray-50 p-3 rounded-lg">
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase">Category</p>
-                            <p class="font-medium text-gray-700">${item.category}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase">Location</p>
-                            <p class="font-medium text-gray-700">${item.location}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase">Price</p>
-                            <p class="font-bold text-green-600">Rs. ${item.price}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase">Expiry</p>
-                            <p class="font-medium text-red-500">${item.expiry}</p>
-                        </div>
+                    <div class="bg-slate-50 p-3 rounded-lg text-sm grid grid-cols-2 gap-y-2">
+                        <div><span class="text-xs text-slate-400 block">Pack Price</span> <span class="font-semibold">Rs. ${item.price}</span></div>
+                        <div><span class="text-xs text-slate-400 block">Per Unit</span> <span class="font-semibold text-green-600">Rs. ${unitPrice}</span></div>
+                        <div><span class="text-xs text-slate-400 block">Pack Size</span> <span class="font-semibold">${item.packSize} items</span></div>
+                        <div><span class="text-xs text-slate-400 block">Location</span> <span class="font-semibold">${item.category}</span></div>
                     </div>
-
-                    <div class="mt-4 flex items-center justify-between">
-                        <p class="text-xs font-bold text-gray-400">Stock Level</p>
-                        <div class="flex items-center gap-3">
-                            <button onclick="updateStock(${item.id}, -1)" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold">-</button>
-                            <span class="w-8 text-center font-bold text-gray-800">${item.stock}</span>
-                            <button onclick="updateStock(${item.id}, 1)" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold">+</button>
-                        </div>
+                    <div class="mt-4 flex justify-between items-center border-t pt-3">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Stock Level</span>
+                        <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold">${item.stock} units</span>
                     </div>
                 </div>`;
-                grid.innerHTML += card;
             });
         }
 
-        // --- 3. ADD / EDIT LOGIC ---
-        const modal = document.getElementById('medicineModal');
-        let isEditing = false;
+        // --- SALES TERMINAL LOGIC (The Core Feature) ---
+        document.getElementById('salesSearch').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const results = document.getElementById('salesResults');
+            results.innerHTML = '';
 
+            if(term.length < 1) return;
+
+            const matches = inventory.filter(i => i.name.toLowerCase().includes(term) || i.brand.toLowerCase().includes(term));
+            
+            matches.forEach(item => {
+                const unitPrice = (item.price / item.packSize).toFixed(2);
+                results.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-50 flex items-center justify-between hover:bg-indigo-50 transition cursor-pointer" onclick="openSaleModal(${item.id})">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xl">${item.name[0]}</div>
+                        <div>
+                            <h4 class="font-bold text-lg">${item.name}</h4>
+                            <p class="text-xs text-gray-500">${item.brand} | Stock: ${item.stock} | 1 Pack = ${item.packSize} units</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400">Unit Price</p>
+                        <p class="text-xl font-bold text-green-600">Rs. ${unitPrice}</p>
+                    </div>
+                </div>`;
+            });
+        });
+
+        let currentSaleItem = null;
+
+        function openSaleModal(id) {
+            currentSaleItem = inventory.find(i => i.id === id);
+            if(!currentSaleItem) return;
+
+            document.getElementById('saleItemName').innerText = currentSaleItem.name;
+            const unitPrice = (currentSaleItem.price / currentSaleItem.packSize).toFixed(2);
+            document.getElementById('saleItemInfo').innerText = `Rs. ${unitPrice} per tablet/unit`;
+            document.getElementById('saleQty').value = 1;
+            document.getElementById('saleModal').classList.remove('hidden');
+            calculateSaleTotal();
+        }
+
+        function calculateSaleTotal() {
+            if(!currentSaleItem) return;
+            const qty = parseInt(document.getElementById('saleQty').value) || 0;
+            const unitPrice = currentSaleItem.price / currentSaleItem.packSize;
+            const total = Math.ceil(unitPrice * qty); // Round up to nearest Rupee
+            document.getElementById('saleTotalDisplay').innerText = `Rs. ${total}`;
+        }
+
+        function confirmSale() {
+            const qty = parseInt(document.getElementById('saleQty').value);
+            if(qty > currentSaleItem.stock) {
+                alert('Not enough stock!');
+                return;
+            }
+
+            // 1. Deduct Stock
+            currentSaleItem.stock -= qty;
+            
+            // 2. Add to History
+            const unitPrice = currentSaleItem.price / currentSaleItem.packSize;
+            const total = Math.ceil(unitPrice * qty);
+            
+            salesHistory.unshift({
+                id: Date.now(),
+                name: currentSaleItem.name,
+                qty: qty,
+                total: total,
+                date: new Date().toLocaleString()
+            });
+
+            // 3. Save & Close
+            localStorage.setItem('pharmacyInv_v2', JSON.stringify(inventory));
+            localStorage.setItem('pharmacySales_v2', JSON.stringify(salesHistory));
+            
+            closeModal('saleModal');
+            document.getElementById('salesSearch').value = '';
+            document.getElementById('salesResults').innerHTML = '';
+            updateDailyStats();
+            alert('Sale Recorded Successfully!');
+        }
+
+        function renderSalesHistory() {
+            const tbody = document.getElementById('salesHistoryTable');
+            tbody.innerHTML = '';
+            salesHistory.forEach(s => {
+                tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-4 text-sm text-slate-500">${s.date}</td>
+                    <td class="p-4 font-bold text-slate-800">${s.name}</td>
+                    <td class="p-4 text-sm font-bold text-indigo-600">${s.qty} units</td>
+                    <td class="p-4 font-bold text-green-600">Rs. ${s.total}</td>
+                </tr>`;
+            });
+        }
+
+        function updateDailyStats() {
+            // Calculate sales for today only
+            const today = new Date().toLocaleDateString();
+            const todayTotal = salesHistory
+                .filter(s => new Date(s.date).toLocaleDateString() === today)
+                .reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('todaySalesTotal').innerText = `Rs. ${todayTotal}`;
+        }
+
+        // --- PURCHASE / DEALER RECORDS ---
+        function openPurchaseModal() { document.getElementById('purchaseModal').classList.remove('hidden'); }
+        
+        function savePurchase(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('billImage');
+            const reader = new FileReader();
+            
+            reader.onload = function(evt) {
+                const record = {
+                    id: Date.now(),
+                    dealer: document.getElementById('dealerName').value,
+                    company: document.getElementById('companyName').value,
+                    items: document.getElementById('itemsBought').value,
+                    amount: document.getElementById('purchaseAmount').value,
+                    date: document.getElementById('purchaseDate').value,
+                    image: evt.target.result
+                };
+                purchaseHistory.unshift(record);
+                localStorage.setItem('pharmacyPurchases_v2', JSON.stringify(purchaseHistory));
+                closeModal('purchaseModal');
+                renderPurchases();
+            };
+
+            if(fileInput.files[0]) {
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                // Save without image
+                reader.onload({target: {result: null}});
+            }
+        }
+
+        function renderPurchases() {
+            const grid = document.getElementById('purchaseGrid');
+            grid.innerHTML = '';
+            purchaseHistory.forEach(p => {
+                const imgDisplay = p.image ? `<img src="${p.image}" class="w-full h-32 object-cover rounded-lg mb-3 border">` : '';
+                grid.innerHTML += `
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-100">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-emerald-800">${p.dealer}</h4>
+                        <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">${p.date}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 uppercase font-bold mb-3">${p.company}</p>
+                    ${imgDisplay}
+                    <div class="bg-gray-50 p-3 rounded text-sm text-gray-600 mb-3 whitespace-pre-wrap">${p.items}</div>
+                    <p class="font-bold text-right text-emerald-600 text-lg">Paid: Rs. ${p.amount}</p>
+                </div>`;
+            });
+        }
+
+        // --- ADD / EDIT MEDICINE HELPERS ---
+        function updateUnitPriceDisplay() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const size = parseFloat(document.getElementById('packSize').value) || 1;
+            const unit = (price / size).toFixed(2);
+            document.getElementById('unitPriceDisplay').innerText = `Unit Price: Rs ${unit}`;
+        }
+
+        // --- EXPIRED LOGIC ---
+        function renderExpired() {
+            const grid = document.getElementById('expiredGrid');
+            grid.innerHTML = '';
+            const today = new Date();
+            
+            const expiredItems = inventory.filter(i => {
+                const expDate = new Date(i.expiry);
+                return expDate < today || i.stock < 10; // Low stock or expired
+            });
+
+            if(expiredItems.length === 0) {
+                grid.innerHTML = '<p class="text-gray-400">Everything looks good!</p>';
+                return;
+            }
+
+            expiredItems.forEach(item => {
+                const expDate = new Date(item.expiry);
+                const isExpired = expDate < today;
+                const status = isExpired 
+                    ? `<span class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold">EXPIRED</span>` 
+                    : `<span class="bg-orange-100 text-orange-600 px-2 py-1 rounded text-xs font-bold">LOW STOCK</span>`;
+
+                grid.innerHTML += `
+                <div class="bg-white p-5 rounded-xl border border-red-100 shadow-sm">
+                    <div class="flex justify-between">
+                        <h4 class="font-bold">${item.name}</h4>
+                        ${status}
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Expiry: ${item.expiry}</p>
+                    <p class="text-sm text-gray-500">Current Stock: ${item.stock}</p>
+                </div>`;
+            });
+        }
+
+        // --- SHARED MODAL FUNCTIONS ---
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openModal() {
             document.getElementById('medicineForm').reset();
             document.getElementById('medicineId').value = '';
             document.getElementById('modalTitle').innerText = 'Add New Medicine';
-            isEditing = false;
-            modal.classList.remove('hidden');
+            document.getElementById('medicineModal').classList.remove('hidden');
+        }
+        function saveMedicine(e) {
+            e.preventDefault();
+            // Same logic as before but with Brand and Pack Size
+            const fileInput = document.getElementById('imageInput');
+            const reader = new FileReader();
+            
+            reader.onload = function(evt) {
+                const id = document.getElementById('medicineId').value;
+                const newItem = {
+                    id: id ? parseInt(id) : Date.now(),
+                    name: document.getElementById('name').value,
+                    brand: document.getElementById('brand').value,
+                    formula: document.getElementById('formula').value,
+                    price: parseFloat(document.getElementById('price').value),
+                    packSize: parseInt(document.getElementById('packSize').value),
+                    stock: parseInt(document.getElementById('stock').value), // Store total UNITS
+                    category: document.getElementById('category').value,
+                    expiry: document.getElementById('expiry').value,
+                    image: evt.target.result || null
+                };
+
+                if (id) {
+                    const idx = inventory.findIndex(i => i.id == id);
+                    inventory[idx] = { ...inventory[idx], ...newItem }; // Merge to keep image if null
+                } else {
+                    inventory.push(newItem);
+                }
+                localStorage.setItem('pharmacyInv_v2', JSON.stringify(inventory));
+                closeModal('medicineModal');
+                renderInventory();
+            };
+
+            if(fileInput.files[0]) reader.readAsDataURL(fileInput.files[0]);
+            else reader.onload({target: {result: null}});
         }
 
-        function closeModal() {
-            modal.classList.add('hidden');
+        function deleteMedicine(id) {
+            if(confirm('Delete this medicine?')) {
+                inventory = inventory.filter(i => i.id !== id);
+                localStorage.setItem('pharmacyInv_v2', JSON.stringify(inventory));
+                renderInventory();
+            }
         }
 
         function editMedicine(id) {
             const item = inventory.find(i => i.id === id);
-            if(!item) return;
-
             document.getElementById('medicineId').value = item.id;
             document.getElementById('name').value = item.name;
+            document.getElementById('brand').value = item.brand || '';
             document.getElementById('formula').value = item.formula;
-            document.getElementById('category').value = item.category;
-            document.getElementById('location').value = item.location;
             document.getElementById('price').value = item.price;
+            document.getElementById('packSize').value = item.packSize || 1;
             document.getElementById('stock').value = item.stock;
             document.getElementById('expiry').value = item.expiry;
+            document.getElementById('category').value = item.category;
             
             document.getElementById('modalTitle').innerText = 'Edit Medicine';
-            isEditing = true;
-            modal.classList.remove('hidden');
+            document.getElementById('medicineModal').classList.remove('hidden');
         }
 
-        function saveMedicine(e) {
-            e.preventDefault();
-            
-            const fileInput = document.getElementById('imageInput');
-            const id = document.getElementById('medicineId').value;
-            const name = document.getElementById('name').value;
-            // ... collect other values ...
-
-            // Handle Image (Convert to Base64)
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    processSave(e.target.result);
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                // Keep old image if editing, or null if new
-                const oldItem = inventory.find(i => i.id == id);
-                processSave(oldItem ? oldItem.image : null);
-            }
-        }
-
-        function processSave(imageBase64) {
-            const id = document.getElementById('medicineId').value;
-            const newItem = {
-                id: id ? parseInt(id) : Date.now(), // Generate ID if new
-                name: document.getElementById('name').value,
-                formula: document.getElementById('formula').value,
-                category: document.getElementById('category').value,
-                location: document.getElementById('location').value,
-                price: document.getElementById('price').value,
-                stock: parseInt(document.getElementById('stock').value),
-                expiry: document.getElementById('expiry').value,
-                image: imageBase64
-            };
-
-            if (isEditing) {
-                const index = inventory.findIndex(i => i.id == id);
-                inventory[index] = newItem;
-            } else {
-                inventory.push(newItem);
-            }
-
-            localStorage.setItem('pharmacyData', JSON.stringify(inventory));
-            closeModal();
-            renderInventory();
-            updateStats();
-        }
-
-        function deleteMedicine(id) {
-            if(confirm('Are you sure you want to delete this medicine?')) {
-                inventory = inventory.filter(i => i.id !== id);
-                localStorage.setItem('pharmacyData', JSON.stringify(inventory));
-                renderInventory();
-            }
-        }
-
-        function updateStock(id, change) {
-            const item = inventory.find(i => i.id === id);
-            if(item) {
-                item.stock += change;
-                if(item.stock < 0) item.stock = 0;
-                localStorage.setItem('pharmacyData', JSON.stringify(inventory));
-                renderInventory();
-            }
-        }
-
-        // --- 4. SEARCH & FILTER ---
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = inventory.filter(item => 
-                item.name.toLowerCase().includes(term) || 
-                item.formula.toLowerCase().includes(term)
-            );
-            renderInventory(filtered);
-        });
-
-        document.getElementById('filterCategory').addEventListener('change', (e) => {
-            const cat = e.target.value;
-            if(cat === 'All') renderInventory(inventory);
-            else {
-                const filtered = inventory.filter(item => item.category === cat);
-                renderInventory(filtered);
-            }
-        });
-
-        // Initialize
-        renderInventory();
+        // Init
+        loadProfile();
+        showSection('sales-terminal');
+        updateDailyStats();
     </script>
 </body>
-
 </html>
