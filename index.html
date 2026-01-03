@@ -3,187 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alazamat Medical Store - v7.0</title>
+    <title>Alazamat Medical Store - v8.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: white; }
+        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 4px; }
+        /* AESTHETIC BACKGROUND */
+        .bg-aesthetic {
+            background-image: url('https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .glass-overlay {
+            background: rgba(15, 23, 42, 0.85); /* Dark Blue Tint */
+            backdrop-filter: blur(8px);
+            position: fixed; inset: 0; z-index: -1;
+        }
 
         /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-enter { animation: fadeIn 1s ease-out forwards; }
-        
-        /* Sidebar Transition */
-        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+        .fade-in-up { animation: fadeInUp 1s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PRINT SETTINGS (FIXED) --- */
+        /* Print Styles */
         @media print {
-            @page { margin: 0; size: auto; }
-            body * { visibility: hidden; height: 0; overflow: hidden; }
-            #receiptArea, #receiptArea * { visibility: visible; height: auto; overflow: visible; }
+            body * { visibility: hidden; }
+            #receiptArea, #receiptArea * { visibility: visible; }
             #receiptArea { 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 72mm; /* Standard Thermal Width */
-                padding: 10px;
-                background: white; 
-                color: black !important;
-                font-family: 'Courier New', monospace;
+                position: absolute; left: 0; top: 0; width: 72mm; 
+                background: white; color: black; font-family: monospace; padding: 10px;
             }
-            /* Hide Buttons in Print Mode */
-            .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="bg-aesthetic text-white min-h-screen">
+    
+    <div class="glass-overlay"></div>
 
-    <aside id="sidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex-col hidden md:flex z-50">
-        <div class="p-6 flex items-center gap-3 border-b border-slate-800">
-            <i class="fas fa-clinic-medical text-emerald-400 text-2xl"></i>
-            <div>
-                <h1 class="font-bold text-lg tracking-wide text-white">Alazamat</h1>
-                <p class="text-xs text-slate-400">Medical Store</p>
-            </div>
-        </div>
-        
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="showSection('hero')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-3 transition">
-                <i class="fas fa-home text-sky-400"></i> Home
-            </button>
-            <button onclick="showSection('inventory')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-3 transition">
-                <i class="fas fa-pills text-emerald-400"></i> Medicines
-            </button>
-            <button onclick="showSection('history')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-3 transition">
-                <i class="fas fa-history text-yellow-400"></i> Sales History
-            </button>
-            <button onclick="showSection('purchases')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-3 transition">
-                <i class="fas fa-truck text-purple-400"></i> Buying Records
-            </button>
-            <button onclick="showSection('reports')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-3 transition">
-                <i class="fas fa-chart-line text-red-400"></i> Profit Report
-            </button>
-        </nav>
-
-        <div class="p-4 border-t border-slate-800">
-            <p class="text-xs font-bold text-slate-500 uppercase mb-2">System</p>
-            <button onclick="downloadBackup()" class="text-xs text-sky-400 hover:underline mb-1 block">Save Backup (PC)</button>
-            <label class="text-xs text-sky-400 hover:underline cursor-pointer">
-                Restore Backup
-                <input type="file" class="hidden" onchange="restoreBackup(this)">
-            </label>
-        </div>
-    </aside>
-
-    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden fixed top-4 right-4 z-50 bg-slate-800 p-2 rounded text-white">
-        <i class="fas fa-bars"></i>
+    <button onclick="toggleSidebar()" class="fixed top-6 left-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white p-3 rounded-full shadow-lg transition transform hover:scale-110">
+        <i class="fas fa-bars text-xl"></i>
     </button>
-    <div id="mobileMenu" class="fixed inset-0 bg-slate-900 z-40 hidden flex flex-col p-8 md:hidden">
-        <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="self-end text-white text-2xl mb-8"><i class="fas fa-times"></i></button>
-        <button onclick="showSection('hero'); toggleMobile()" class="text-xl text-white mb-4">Home</button>
-        <button onclick="showSection('inventory'); toggleMobile()" class="text-xl text-white mb-4">Medicines</button>
-        <button onclick="showSection('history'); toggleMobile()" class="text-xl text-white mb-4">History</button>
-        <button onclick="showSection('purchases'); toggleMobile()" class="text-xl text-white mb-4">Purchases</button>
-        <button onclick="showSection('reports'); toggleMobile()" class="text-xl text-white mb-4">Reports</button>
-    </div>
 
-    <main class="flex-1 overflow-hidden relative bg-slate-950">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900/95 backdrop-blur-xl transform -translate-x-full transition duration-300 z-50 border-r border-slate-700 shadow-2xl flex flex-col">
+        <div class="p-8 flex justify-between items-center border-b border-slate-700">
+            <h2 class="font-bold text-xl text-emerald-400">Alazamat</h2>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="flex-1 p-6 space-y-4">
+            <button onclick="scrollToTop()" class="sidebar-btn"><i class="fas fa-home text-sky-400"></i> Home</button>
+            <button onclick="openOverlay('historyOverlay'); renderHistory()" class="sidebar-btn"><i class="fas fa-history text-yellow-400"></i> Sales History</button>
+            <button onclick="openOverlay('purchaseOverlay'); renderPurchases()" class="sidebar-btn"><i class="fas fa-truck text-purple-400"></i> Buying Records</button>
+            <button onclick="openOverlay('reportOverlay'); renderReports()" class="sidebar-btn"><i class="fas fa-chart-line text-red-400"></i> Profit Report</button>
+            
+            <div class="mt-8 pt-8 border-t border-slate-700">
+                <button onclick="downloadBackup()" class="sidebar-btn text-sm"><i class="fas fa-download"></i> Backup Data</button>
+                <label class="sidebar-btn text-sm cursor-pointer">
+                    <i class="fas fa-upload"></i> Restore Data
+                    <input type="file" class="hidden" onchange="restoreBackup(this)">
+                </label>
+            </div>
+        </nav>
+    </aside>
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden"></div>
+
+    <main class="relative z-10">
         
-        <section id="hero" class="content-section h-full overflow-y-auto flex flex-col items-center justify-center relative">
-            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black z-0"></div>
-            
-            <div class="z-10 text-center animate-enter p-6">
-                <div class="relative group mx-auto w-32 h-32 mb-6">
-                    <img id="storeLogoDisplay" src="https://via.placeholder.com/150?text=LOGO" class="w-32 h-32 rounded-full border-4 border-emerald-500 object-cover shadow-2xl shadow-emerald-500/20">
-                    <label class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
-                        <span class="text-xs text-white font-bold">Change Logo</span>
-                        <input type="file" class="hidden" accept="image/*" onchange="uploadLogo(this)">
-                    </label>
-                </div>
-
-                <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-sky-400 mb-2">Alazamat</h1>
-                <h2 class="text-2xl md:text-3xl font-light text-slate-300 tracking-[0.3em] uppercase mb-8">Medical Store</h2>
-                
-                <button onclick="showSection('inventory')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-8 py-4 rounded-full text-lg shadow-lg shadow-emerald-500/30 transition transform hover:scale-105">
-                    Open Inventory
-                </button>
+        <section id="hero" class="min-h-screen flex flex-col items-center justify-center text-center p-6">
+            <div class="relative group mb-8">
+                <img id="mainLogo" src="https://via.placeholder.com/150?text=LOGO" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.3)] object-cover">
+                <label class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
+                    <span class="text-xs font-bold">Upload Logo</span>
+                    <input type="file" class="hidden" accept="image/*" onchange="uploadLogo(this)">
+                </label>
             </div>
-        </section>
 
-        <section id="inventory" class="content-section h-full flex flex-col hidden bg-slate-900">
-            <header class="p-6 border-b border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-900 z-10">
-                <h2 class="text-2xl font-bold text-white"><i class="fas fa-pills text-emerald-400 mr-2"></i> Medicines</h2>
-                <div class="flex w-full md:w-auto gap-2">
-                    <input type="text" id="searchInput" placeholder="Search name, brand..." class="flex-1 bg-slate-800 border border-slate-700 text-white px-4 py-2 rounded-lg outline-none focus:border-emerald-500">
-                    <button onclick="openModal('medModal')" class="bg-emerald-500 text-black px-4 py-2 rounded-lg font-bold hover:bg-emerald-400">+ Add</button>
-                </div>
-            </header>
+            <h1 class="text-6xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 fade-in-up" style="animation-delay: 0.1s;">Alazamat</h1>
+            <h2 class="text-2xl md:text-3xl font-light tracking-[0.5em] text-slate-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">MEDICAL STORE</h2>
             
-            <div id="inventoryGrid" class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 content-start">
-                </div>
+            <button onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" class="animate-bounce text-emerald-400 flex flex-col items-center gap-2">
+                <span class="text-sm font-bold uppercase">View Medicines</span>
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </button>
         </section>
 
-        <section id="history" class="content-section h-full flex flex-col hidden bg-slate-900">
-            <header class="p-6 border-b border-slate-800 bg-slate-900">
-                <h2 class="text-2xl font-bold text-white"><i class="fas fa-history text-yellow-400 mr-2"></i> Sales History</h2>
-            </header>
-            <div class="flex-1 overflow-y-auto p-6">
-                <table class="w-full text-left text-slate-300">
-                    <thead class="bg-slate-800 text-xs uppercase text-slate-500">
-                        <tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Receipt</th></tr>
-                    </thead>
-                    <tbody id="historyTable" class="divide-y divide-slate-800"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="purchases" class="content-section h-full flex flex-col hidden bg-slate-900">
-            <header class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-                <h2 class="text-2xl font-bold text-white"><i class="fas fa-truck text-purple-400 mr-2"></i> Dealer Records</h2>
-                <button onclick="openModal('purchaseModal')" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-400">Add Record</button>
-            </header>
-            <div id="purchaseGrid" class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start"></div>
-        </section>
-
-        <section id="reports" class="content-section h-full flex flex-col hidden bg-slate-900">
-            <header class="p-6 border-b border-slate-800 bg-slate-900">
-                <h2 class="text-2xl font-bold text-white"><i class="fas fa-chart-line text-red-400 mr-2"></i> Profit Report</h2>
-            </header>
-            <div class="p-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                        <p class="text-sm text-slate-400 uppercase">Total Sales Revenue</p>
-                        <p class="text-3xl font-bold text-sky-400" id="repRev">0</p>
+        <section id="inventory" class="min-h-screen bg-slate-900/80 backdrop-blur-md border-t border-slate-700 p-4 md:p-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white mb-2">Inventory</h2>
+                        <p class="text-slate-400 text-sm">Manage stock, prices, and formulas</p>
                     </div>
-                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                        <p class="text-sm text-slate-400 uppercase">Total Buying Cost</p>
-                        <p class="text-3xl font-bold text-red-400" id="repCost">0</p>
-                    </div>
-                    <div class="bg-emerald-900/20 p-6 rounded-2xl border border-emerald-500/30">
-                        <p class="text-sm text-emerald-400 uppercase font-bold">Net Profit</p>
-                        <p class="text-4xl font-bold text-white mt-2" id="repProfit">0</p>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="search" placeholder="Search medicine..." class="flex-1 bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl outline-none focus:border-emerald-500">
+                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-black px-6 py-3 rounded-xl font-bold transition shadow-lg">+ Add</button>
                     </div>
                 </div>
+
+                <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    </div>
             </div>
         </section>
 
     </main>
 
-
     <div id="medModal" class="fixed inset-0 bg-black/80 hidden z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-slate-800 w-full max-w-2xl rounded-2xl border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center">
-                <h3 class="text-xl font-bold text-white">Medicine Details</h3>
-                <button onclick="closeModal('medModal')" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+                <h3 class="text-xl font-bold">Medicine Details</h3>
+                <button onclick="closeModal('medModal')" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <form onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto custom-scrollbar">
+            <form onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 
                 <div class="grid grid-cols-2 gap-4">
@@ -196,26 +128,23 @@
                     <p class="text-xs text-sky-400 uppercase font-bold mb-3">Stock & Packs</p>
                     <div class="grid grid-cols-3 gap-3">
                         <div><label class="lbl">Total Packs</label><input type="number" id="medTotalPacks" required class="input bg-slate-800" oninput="calcUnits()"></div>
-                        <div><label class="lbl">Items per Pack</label><input type="number" id="medPackSize" value="1" required class="input bg-slate-800" oninput="calcUnits()"></div>
-                        <div><label class="lbl">Total Units (Calc)</label><input type="number" id="medStock" readonly class="input bg-black/50 text-slate-400 cursor-not-allowed"></div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
-                    <p class="text-xs text-emerald-400 uppercase font-bold mb-3">Pricing (Per Pack)</p>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="lbl">Buying Cost</label><input type="number" id="medCost" required class="input bg-slate-800"></div>
-                        <div><label class="lbl">Selling Price</label><input type="number" id="medPrice" required class="input bg-slate-800"></div>
+                        <div><label class="lbl">Items/Pack</label><input type="number" id="medPackSize" value="1" required class="input bg-slate-800" oninput="calcUnits()"></div>
+                        <div><label class="lbl">Total Units</label><input type="number" id="medStock" readonly class="input bg-black/50 text-slate-400"></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="lbl">Category</label><select id="medCat" class="input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select></div>
+                    <div><label class="lbl">Buying Cost (Pack)</label><input type="number" id="medCost" required class="input"></div>
+                    <div><label class="lbl">Selling Price (Pack)</label><input type="number" id="medPrice" required class="input"></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="lbl">Category</label><select id="medCat" class="input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Other</option></select></div>
                     <div><label class="lbl">Expiry</label><input type="date" id="medExp" class="input"></div>
                 </div>
                 <div><label class="lbl">Image</label><input type="file" id="medImg" accept="image/*" class="w-full text-sm text-slate-400"></div>
 
-                <button class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-3 rounded-xl">Save Medicine</button>
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-xl mt-4">Save Medicine</button>
             </form>
         </div>
     </div>
@@ -230,9 +159,373 @@
                 <input type="number" id="saleQty" value="1" class="w-20 bg-transparent text-3xl font-bold text-center text-white border-b-2 border-emerald-500 outline-none" oninput="calcTotal()">
                 <button onclick="adjQty(1)" class="w-10 h-10 rounded-full bg-slate-700 text-white">+</button>
             </div>
-            <p class="text-xs text-slate-500 mb-4">Quantity in Units (Tablets)</p>
-
+            <p class="text-xs text-slate-500 mb-4">Units (Tablets/Capsules)</p>
+            
             <div class="mb-4 text-left">
                 <label class="lbl">Discount (Rs)</label>
                 <input type="number" id="saleDisc" placeholder="0" class="input" oninput="calcTotal()">
             </div>
+
+            <div class="bg-slate-900 p-4 rounded-xl mb-6">
+                <p class="text-xs text-slate-500 uppercase">Total Amount</p>
+                <p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal('saleModal')" class="flex-1 bg-slate-700 text-white py-3 rounded-xl">Cancel</button>
+                <button onclick="confirmSale()" class="flex-1 bg-emerald-500 text-black font-bold py-3 rounded-xl">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyOverlay" class="fixed inset-0 bg-slate-900 z-[80] hidden flex flex-col animate-enter">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900">
+            <h2 class="text-2xl font-bold text-yellow-400">Sales History</h2>
+            <button onclick="closeOverlay('historyOverlay')" class="text-white text-2xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex-1 overflow-auto p-6">
+            <table class="w-full text-left text-slate-300">
+                <thead class="bg-slate-800 text-xs uppercase text-slate-500"><tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Receipt</th></tr></thead>
+                <tbody id="historyTable" class="divide-y divide-slate-800"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="purchaseOverlay" class="fixed inset-0 bg-slate-900 z-[80] hidden flex flex-col animate-enter">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900">
+            <h2 class="text-2xl font-bold text-purple-400">Buying Records</h2>
+            <div class="flex gap-4">
+                <button onclick="openModal('addPurchaseModal')" class="bg-purple-500 text-white px-4 py-2 rounded-lg font-bold">Add Record</button>
+                <button onclick="closeOverlay('purchaseOverlay')" class="text-white text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="purchaseGrid" class="flex-1 overflow-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start"></div>
+    </div>
+
+    <div id="reportOverlay" class="fixed inset-0 bg-slate-900 z-[80] hidden flex flex-col animate-enter">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-red-400">Profit Reports</h2>
+            <button onclick="closeOverlay('reportOverlay')" class="text-white text-2xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-12 flex flex-col items-center">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 text-center">
+                    <p class="text-slate-400 uppercase">Total Revenue</p>
+                    <p class="text-4xl font-bold text-sky-400 mt-2" id="repRev">0</p>
+                </div>
+                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 text-center">
+                    <p class="text-slate-400 uppercase">Total Cost</p>
+                    <p class="text-4xl font-bold text-red-400 mt-2" id="repCost">0</p>
+                </div>
+                <div class="bg-emerald-900/30 p-8 rounded-3xl border border-emerald-500/50 text-center">
+                    <p class="text-emerald-400 uppercase font-bold">Net Profit</p>
+                    <p class="text-5xl font-bold text-white mt-2" id="repProfit">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addPurchaseModal" class="fixed inset-0 bg-black/90 hidden z-[90] flex items-center justify-center p-4">
+        <div class="bg-slate-800 w-full max-w-md rounded-2xl p-6 border border-slate-700">
+            <div class="flex justify-between mb-4"><h3 class="font-bold text-white">Add Purchase</h3><button onclick="closeModal('addPurchaseModal')">x</button></div>
+            <form onsubmit="savePurchase(event)" class="space-y-4">
+                <input type="text" id="pDealer" placeholder="Dealer Name" class="input">
+                <input type="text" id="pCompany" placeholder="Company Name" class="input">
+                <textarea id="pItems" placeholder="Items List" class="input h-24"></textarea>
+                <input type="number" id="pAmount" placeholder="Amount Paid" class="input">
+                <input type="date" id="pDate" class="input">
+                <button class="w-full bg-purple-500 text-white py-3 rounded-xl font-bold">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="receiptArea" class="hidden">
+        <div style="text-align: center;">
+            <img id="recLogo" src="" style="width: 50px; height: 50px; margin: 0 auto; display: block;">
+            <h2 style="font-size: 14px; font-weight: bold; margin: 5px 0 0 0;">ALAZAMAT</h2>
+            <p style="font-size: 10px; margin: 0;">Medical Store</p>
+            <p style="font-size: 8px;">Lahore, Pakistan</p>
+        </div>
+        <div style="font-size: 9px; margin: 5px 0; border-bottom: 1px dashed black; padding-bottom: 5px;">
+            Date: <span id="recDate"></span><br>Inv #: <span id="recId"></span>
+        </div>
+        <table style="width: 100%; font-size: 9px;">
+            <tr><th align="left">Item</th><th align="center">Qty</th><th align="right">Total</th></tr>
+            <tr>
+                <td id="recItem" style="padding-top:5px">Name</td>
+                <td id="recQty" align="center" style="padding-top:5px">1</td>
+                <td id="recFinal" align="right" style="padding-top:5px">0</td>
+            </tr>
+        </table>
+        <div style="text-align: right; font-size: 10px; margin-top: 5px; border-top: 1px dashed black; padding-top: 5px;">
+            Sub: <span id="recSub"></span><br>
+            Disc: <span id="recDiscDisp"></span><br>
+            <strong>NET: <span id="recNet"></span></strong>
+        </div>
+        <p style="font-size: 8px; text-align: center; margin-top: 10px;">Thank You!</p>
+    </div>
+
+    <style>
+        .input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 12px; rounded-xl; color: white; outline: none; }
+        .input:focus { border-color: #10b981; }
+        .lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .sidebar-btn { width: 100%; text-align: left; padding: 12px; border-radius: 12px; color: #cbd5e1; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+        .sidebar-btn:hover { background: #1e293b; color: white; padding-left: 16px; }
+    </style>
+
+    <script>
+        // --- DATA & INIT ---
+        let inv = JSON.parse(localStorage.getItem('az_inv_v8')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_v8')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_v8')) || [];
+        let logo = localStorage.getItem('az_logo_v8') || 'https://via.placeholder.com/150?text=LOGO';
+
+        document.getElementById('mainLogo').src = logo;
+        renderGrid();
+
+        // --- NAVIGATION ---
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            if(sb.classList.contains('-translate-x-full')) {
+                sb.classList.remove('-translate-x-full');
+                ov.classList.remove('hidden');
+            } else {
+                sb.classList.add('-translate-x-full');
+                ov.classList.add('hidden');
+            }
+        }
+        function scrollToTop() { window.scrollTo({top:0, behavior:'smooth'}); toggleSidebar(); }
+        
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function openOverlay(id) { document.getElementById(id).classList.remove('hidden'); toggleSidebar(); }
+        function closeOverlay(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // --- INVENTORY ---
+        function calcUnits() {
+            const p = parseFloat(document.getElementById('medTotalPacks').value) || 0;
+            const s = parseFloat(document.getElementById('medPackSize').value) || 1;
+            document.getElementById('medStock').value = Math.ceil(p * s);
+        }
+
+        function saveMedicine(e) {
+            e.preventDefault();
+            const file = document.getElementById('medImg').files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                processSave(evt.target.result);
+            };
+            if(file) reader.readAsDataURL(file); else processSave(editTempImg); // Use existing image if editing
+        }
+
+        function processSave(imgData) {
+            const item = {
+                id: document.getElementById('medId').value || Date.now(),
+                name: document.getElementById('medName').value,
+                brand: document.getElementById('medBrand').value,
+                formula: document.getElementById('medFormula').value,
+                packSize: parseInt(document.getElementById('medPackSize').value),
+                stock: parseInt(document.getElementById('medStock').value),
+                cost: parseFloat(document.getElementById('medCost').value),
+                price: parseFloat(document.getElementById('medPrice').value),
+                cat: document.getElementById('medCat').value,
+                exp: document.getElementById('medExp').value,
+                img: imgData
+            };
+
+            const idx = inv.findIndex(i => i.id == item.id);
+            if(idx > -1) inv[idx] = item;
+            else inv.push(item);
+
+            updateData();
+            closeModal('medModal');
+            renderGrid();
+        }
+
+        let editTempImg = null;
+        function editMed(id) {
+            const i = inv.find(x => x.id == id);
+            document.getElementById('medId').value = i.id;
+            document.getElementById('medName').value = i.name;
+            document.getElementById('medBrand').value = i.brand || '';
+            document.getElementById('medFormula').value = i.formula || '';
+            document.getElementById('medPackSize').value = i.packSize;
+            document.getElementById('medStock').value = i.stock;
+            document.getElementById('medTotalPacks').value = (i.stock / i.packSize).toFixed(1);
+            document.getElementById('medCost').value = i.cost;
+            document.getElementById('medPrice').value = i.price;
+            document.getElementById('medCat').value = i.cat;
+            document.getElementById('medExp').value = i.exp;
+            editTempImg = i.img;
+            openModal('medModal');
+        }
+
+        function renderGrid() {
+            const g = document.getElementById('grid'); g.innerHTML = '';
+            const term = document.getElementById('search').value.toLowerCase();
+            
+            inv.filter(i => i.name.toLowerCase().includes(term)).forEach(i => {
+                const img = i.img || 'https://via.placeholder.com/100?text=Rx';
+                const packs = (i.stock / i.packSize).toFixed(1);
+                
+                g.innerHTML += `
+                <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700 relative group hover:border-emerald-500 transition shadow-xl backdrop-blur-sm">
+                    <button onclick="editMed(${i.id})" class="absolute top-3 right-3 bg-slate-700 text-sky-400 p-2 rounded-full z-10 hover:bg-white transition"><i class="fas fa-pen"></i></button>
+                    
+                    <div class="flex gap-4 mb-4 cursor-pointer" onclick="openSaleModal(${i.id})">
+                        <img src="${img}" class="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-600">
+                        <div>
+                            <h4 class="font-bold text-white text-lg leading-tight">${i.name}</h4>
+                            <p class="text-xs text-slate-400 uppercase tracking-wide">${i.brand}</p>
+                            <p class="text-xs text-slate-500 italic mt-1">${i.formula || ''}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900/50 p-3 rounded-xl grid grid-cols-2 gap-y-2 text-xs" onclick="openSaleModal(${i.id})">
+                        <div><span class="text-slate-500 block">Packs</span><span class="text-emerald-400 font-bold">${packs}</span></div>
+                        <div><span class="text-slate-500 block">Units</span><span class="text-white font-bold">${i.stock}</span></div>
+                        <div><span class="text-slate-500 block">Pack Price</span><span class="text-white">Rs. ${i.price}</span></div>
+                        <div><span class="text-slate-500 block">Unit Price</span><span class="text-white">Rs. ${(i.price/i.packSize).toFixed(2)}</span></div>
+                    </div>
+                </div>`;
+            });
+        }
+        document.getElementById('search').addEventListener('input', renderGrid);
+
+        // --- SALES ---
+        let saleItem = null;
+        function openSaleModal(id) {
+            saleItem = inv.find(i => i.id == id);
+            document.getElementById('saleName').innerText = saleItem.name;
+            const unit = (saleItem.price / saleItem.packSize).toFixed(2);
+            document.getElementById('saleInfo').innerText = `Unit Price: Rs. ${unit} | Stock: ${saleItem.stock} Units`;
+            document.getElementById('saleQty').value = 1;
+            document.getElementById('saleDisc').value = '';
+            calcTotal();
+            openModal('saleModal');
+        }
+        function adjQty(n) {
+            let q = parseInt(document.getElementById('saleQty').value) + n;
+            if(q < 1) q = 1;
+            document.getElementById('saleQty').value = q;
+            calcTotal();
+        }
+        function calcTotal() {
+            const q = parseInt(document.getElementById('saleQty').value);
+            const d = parseFloat(document.getElementById('saleDisc').value) || 0;
+            const u = saleItem.price / saleItem.packSize;
+            const t = Math.ceil((u * q) - d);
+            document.getElementById('saleTotal').innerText = `Rs. ${t > 0 ? t : 0}`;
+        }
+        function confirmSale() {
+            const q = parseInt(document.getElementById('saleQty').value);
+            if(q > saleItem.stock) return alert('Low Stock');
+            
+            const d = parseFloat(document.getElementById('saleDisc').value) || 0;
+            const unitSell = saleItem.price / saleItem.packSize;
+            const unitCost = saleItem.cost / saleItem.packSize;
+            const sub = Math.ceil(unitSell * q);
+            const tot = sub - d;
+            
+            saleItem.stock -= q;
+            const s = {
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                name: saleItem.name,
+                qty: q,
+                sub: sub,
+                disc: d,
+                total: tot,
+                profit: tot - (unitCost * q)
+            };
+            sales.unshift(s);
+            updateData();
+            closeModal('saleModal');
+            renderGrid();
+            printReceipt(s);
+        }
+
+        // --- PRINT ---
+        function printReceipt(s) {
+            document.getElementById('recLogo').src = logo;
+            document.getElementById('recDate').innerText = s.date;
+            document.getElementById('recId').innerText = s.id.toString().slice(-6);
+            document.getElementById('recItem').innerText = s.name;
+            document.getElementById('recQty').innerText = s.qty;
+            document.getElementById('recFinal').innerText = s.sub;
+            document.getElementById('recSub').innerText = s.sub;
+            document.getElementById('recDiscDisp').innerText = s.disc;
+            document.getElementById('recNet').innerText = s.total;
+            setTimeout(() => window.print(), 300);
+        }
+
+        // --- RECORDS ---
+        function renderHistory() {
+            const t = document.getElementById('historyTable'); t.innerHTML = '';
+            sales.forEach(s => {
+                t.innerHTML += `<tr class="border-b border-slate-700 hover:bg-slate-800"><td class="p-4 text-xs text-slate-400">${s.date}</td><td class="p-4 font-bold text-white">${s.name}</td><td class="p-4 text-slate-300">${s.qty}</td><td class="p-4 text-emerald-400 font-bold text-right">Rs. ${s.total}</td><td class="p-4 text-center"><button onclick='printReceipt(${JSON.stringify(s)})' class="text-slate-400 hover:text-white"><i class="fas fa-print"></i></button></td></tr>`;
+            });
+        }
+        function renderPurchases() {
+            const g = document.getElementById('purchaseGrid'); g.innerHTML = '';
+            purch.forEach(p => {
+                g.innerHTML += `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="font-bold text-white">${p.dealer}</h4><p class="text-xs text-slate-400 uppercase">${p.comp}</p><p class="text-sm my-2 text-slate-300">${p.items}</p><p class="text-right text-purple-400 font-bold">Rs. ${p.amt}</p></div>`;
+            });
+        }
+        function savePurchase(e) {
+            e.preventDefault();
+            purch.unshift({
+                dealer: document.getElementById('pDealer').value,
+                comp: document.getElementById('pCompany').value,
+                items: document.getElementById('pItems').value,
+                amt: document.getElementById('pAmount').value,
+                date: document.getElementById('pDate').value
+            });
+            updateData(); closeModal('addPurchaseModal'); renderPurchases();
+        }
+        function renderReports() {
+            const rev = sales.reduce((a,b)=>a+b.total,0);
+            const prof = sales.reduce((a,b)=>a+b.profit,0);
+            document.getElementById('repRev').innerText = rev;
+            document.getElementById('repCost').innerText = (rev - prof).toFixed(0);
+            document.getElementById('repProfit').innerText = prof.toFixed(0);
+        }
+
+        // --- BACKUP & LOGO ---
+        function uploadLogo(i) {
+            const f = i.files[0];
+            const r = new FileReader();
+            r.onload = (e) => {
+                logo = e.target.result;
+                localStorage.setItem('az_logo_v8', logo);
+                document.getElementById('mainLogo').src = logo;
+            };
+            if(f) r.readAsDataURL(f);
+        }
+        function updateData() {
+            localStorage.setItem('az_inv_v8', JSON.stringify(inv));
+            localStorage.setItem('az_sales_v8', JSON.stringify(sales));
+            localStorage.setItem('az_purch_v8', JSON.stringify(purch));
+        }
+        function downloadBackup() {
+            const d = JSON.stringify({inv, sales, purch, logo});
+            const b = new Blob([d],{type:'application/json'});
+            const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='Alazamat_Backup.json'; a.click();
+        }
+        function restoreBackup(i) {
+            const r = new FileReader();
+            r.onload = (e) => {
+                const d = JSON.parse(e.target.result);
+                localStorage.setItem('az_inv_v8', JSON.stringify(d.inv));
+                localStorage.setItem('az_sales_v8', JSON.stringify(d.sales));
+                localStorage.setItem('az_purch_v8', JSON.stringify(d.purch));
+                if(d.logo) localStorage.setItem('az_logo_v8', d.logo);
+                location.reload();
+            };
+            r.readAsText(i.files[0]);
+        }
+    </script>
+</body>
+</html>
