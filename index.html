@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v20.0</title>
+    <title>Alazamat Medical Store - v21.0 (No-Reload Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -19,44 +19,41 @@
         }
         .theme-light { background-color: #f0fdfa; color: #0f172a; }
 
-        /* COMPONENT STYLES */
+        /* GLASS CARD */
         .card { 
             backdrop-filter: blur(16px); border-radius: 1.5rem; transition: transform 0.3s;
         }
         .theme-dark .card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.1); }
         .theme-light .card { background: rgba(255, 255, 255, 0.9); border: 1px solid #ccfbf1; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); }
 
+        /* INPUTS */
         .input { width: 100%; padding: 12px; rounded-xl; outline: none; transition: 0.3s; }
         .theme-dark .input { background: #1e293b; border: 1px solid #334155; color: white; }
         .theme-dark .input:focus { border-color: #2dd4bf; }
         .theme-light .input { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; }
 
-        /* SIDEBAR (HIDDEN BY DEFAULT) */
+        /* SIDEBAR */
         .sidebar { 
             position: fixed; top: 0; left: 0; height: 100vh; width: 18rem; 
             z-index: 60; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; flex-direction: column;
-            transform: translateX(-100%); /* Completely Hidden */
+            transform: translateX(-100%); /* Hidden */
             box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
-        .sidebar.open { transform: translateX(0); } /* Shown when class added */
-        
+        .sidebar.open { transform: translateX(0); }
         .theme-dark .sidebar { background: #020617; border-right: 1px solid #1e293b; }
         .theme-light .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; }
 
-        /* HOVER ZONE (Left Edge Trigger) */
-        .hover-zone {
-            position: fixed; top: 0; left: 0; width: 20px; height: 100vh; z-index: 55;
-        }
+        /* LEFT HOVER ZONE */
+        .hover-zone { position: fixed; top: 0; left: 0; width: 20px; height: 100vh; z-index: 55; }
 
-        /* SCROLL-AWAY TOP BAR */
+        /* TRAIN ANIMATION */
         .train-wrapper {
             position: fixed; top: 0; left: 0; right: 0; height: 40px; z-index: 50;
             background: #0f172a; border-bottom: 1px solid #334155;
             transition: transform 0.5s ease;
         }
         .train-wrapper.hidden-bar { transform: translateY(-100%); }
-        
         .train-text {
             white-space: nowrap; font-weight: bold; color: #2dd4bf; font-size: 0.95rem; line-height: 40px;
             animation: trainMove 20s linear infinite; padding-left: 100vw;
@@ -67,6 +64,7 @@
         .btn-shine {
             position: relative; overflow: hidden; color: white; font-weight: 700;
             background: linear-gradient(135deg, #0d9488 0%, #059669 100%); transition: 0.3s;
+            cursor: pointer;
         }
         .btn-shine::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -75,7 +73,7 @@
         }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* SIGNATURE FOOTER */
+        /* SIGNATURE */
         .signature-footer {
             margin-top: 5rem; padding: 3rem 1rem; text-align: center;
             background: linear-gradient(to top, #020617, transparent);
@@ -86,18 +84,14 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .mobile-stack { flex-direction: column; }
-            .hover-zone { display: none; } /* Disable hover zone on mobile */
-        }
+        @media (max-width: 768px) { .mobile-stack { flex-direction: column; } .hover-zone { display: none; } }
     </style>
 </head>
 <body id="appBody" class="theme-dark">
 
     <div id="topBar" class="train-wrapper">
         <div class="train-text">
-            👋 Welcome Boss! Aslam o Alikum. Good to see you, Muhammad Yaseen Alam. Contact: +923107377846 💊
+            👋 Aslam o Alikum Boss! Welcome to Alazamat Medical Store System. User: Muhammad Yaseen Alam (+923107377846) 💊
         </div>
     </div>
 
@@ -112,7 +106,7 @@
             <img src="1.jpg" class="w-10 h-10 rounded-full object-cover border border-teal-500" onerror="this.src='https://via.placeholder.com/50/0f766e/ffffff?text=A'">
             <div>
                 <h1 class="font-bold text-xl tracking-tight text-teal-500">Alazamat</h1>
-                <p class="text-xs opacity-60">System v20.0</p>
+                <p class="text-xs opacity-60">System v21.0</p>
             </div>
             <button type="button" onclick="closeSidebar()" class="ml-auto p-2 hover:text-white"><i class="fas fa-times text-xl"></i></button>
         </div>
@@ -145,7 +139,8 @@
         
         <section id="hero" class="p-8 md:p-16 flex flex-col items-center justify-center text-center min-h-[70vh]">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="1.jpg" class="w-56 h-56 rounded-full border-4 border-teal-500 shadow-[0_0_60px_rgba(20,184,166,0.4)] object-cover animate-pulse" onerror="this.src='https://via.placeholder.com/150/0f766e/ffffff?text=LOGO'">
+                <img id="storeLogo" src="1.jpg" class="w-56 h-56 rounded-full border-4 border-teal-500 shadow-[0_0_60px_rgba(20,184,166,0.4)] object-cover animate-pulse cursor-pointer" onclick="document.getElementById('logoInput').click()" onerror="this.src='https://img.freepik.com/free-vector/medical-logo-gradient-style_23-2147822363.jpg?w=200'">
+                <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="uploadLogo(this)">
             </div>
             
             <h1 class="text-4xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300 mb-2">Alazamat</h1>
@@ -206,7 +201,6 @@
                     <p class="text-5xl font-bold text-teal-400 mt-2" id="repProfit">0</p>
                 </div>
             </div>
-            
             <button type="button" onclick="document.getElementById('itemReports').classList.toggle('hidden'); renderItemReports()" class="w-full card p-4 text-center font-bold hover:bg-white/5 transition">View Profit per Medicine Details</button>
             <div id="itemReports" class="hidden mt-4 card p-6 overflow-x-auto max-h-96">
                 <table class="w-full text-left text-sm min-w-[500px]"><tbody id="itemTable" class="divide-y divide-gray-700/20"></tbody></table>
@@ -226,32 +220,33 @@
                 <h3 class="text-xl font-bold">Medicine Details</h3>
                 <button type="button" onclick="closeModal('medModal')" class="text-red-500 text-2xl"><i class="fas fa-times"></i></button>
             </div>
-            <form id="medForm" onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
+            <div class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="medName" placeholder="Name" required class="input">
+                    <input type="text" id="medName" placeholder="Name" class="input">
                     <input type="text" id="medBrand" placeholder="Brand" class="input">
                 </div>
                 <input type="text" id="medFormula" placeholder="Formula" class="input">
                 <div class="p-4 bg-black/5 rounded-xl border border-gray-700/20">
                     <p class="text-xs font-bold text-teal-500 uppercase mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="medTotalPacks" placeholder="Packs" required class="input text-sm" oninput="calcUnits()">
-                        <input type="number" id="medPackSize" placeholder="Itm/Pk" value="1" required class="input text-sm" oninput="calcUnits()">
+                        <input type="number" id="medTotalPacks" placeholder="Packs" class="input text-sm" oninput="calcUnits()">
+                        <input type="number" id="medPackSize" placeholder="Itm/Pk" value="1" class="input text-sm" oninput="calcUnits()">
                         <input type="number" id="medStock" placeholder="Total" readonly class="input text-sm opacity-60">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="medCost" placeholder="Buy Cost (Pack)" required class="input">
-                    <input type="number" id="medPrice" placeholder="Sell Price (Pack)" required class="input">
+                    <input type="number" id="medCost" placeholder="Buy Cost (Pack)" class="input">
+                    <input type="number" id="medPrice" placeholder="Sell Price (Pack)" class="input">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <select id="medCat" class="input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Other</option></select>
                     <input type="date" id="medExp" class="input">
                 </div>
                 <input type="file" id="medImg" accept="image/*" class="input text-sm">
-                <button type="submit" class="btn-shine w-full py-3 rounded-xl shadow-lg mt-2">Save Medicine</button>
-            </form>
+                
+                <button type="button" onclick="saveMedicine()" class="btn-shine w-full py-3 rounded-xl shadow-lg mt-2">Save Medicine</button>
+            </div>
         </div>
     </div>
 
@@ -283,31 +278,29 @@
     <div id="purchaseModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
         <div class="card w-full max-w-md p-6">
             <div class="flex justify-between mb-4"><h3 class="font-bold text-lg">Add Purchase</h3><button type="button" onclick="closeModal('purchaseModal')"><i class="fas fa-times"></i></button></div>
-            <form onsubmit="savePurchase(event)" class="space-y-4">
+            <div class="space-y-4">
                 <input type="text" id="pDealer" placeholder="Dealer Name" class="input">
                 <input type="text" id="pCompany" placeholder="Company" class="input">
                 <textarea id="pItems" placeholder="Items List" class="input h-24"></textarea>
                 <input type="number" id="pAmount" placeholder="Amount Paid" class="input">
                 <input type="date" id="pDate" class="input">
-                <button type="submit" class="btn-shine bg-purple-500 w-full py-3 rounded-xl">Save Record</button>
-            </form>
+                <button type="button" onclick="savePurchase()" class="btn-shine bg-purple-500 w-full py-3 rounded-xl">Save Record</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- DATA ---
+        // --- DATA SAFE LOAD ---
         let inv = [], sales = [], purch = [], config = {};
-        
-        // SAFE LOAD
         try {
-            inv = JSON.parse(localStorage.getItem('az_inv_20')) || [];
-            sales = JSON.parse(localStorage.getItem('az_sales_20')) || [];
-            purch = JSON.parse(localStorage.getItem('az_purch_20')) || [];
-            config = JSON.parse(localStorage.getItem('az_config_20')) || {
+            inv = JSON.parse(localStorage.getItem('az_inv_21')) || [];
+            sales = JSON.parse(localStorage.getItem('az_sales_21')) || [];
+            purch = JSON.parse(localStorage.getItem('az_purch_21')) || [];
+            config = JSON.parse(localStorage.getItem('az_config_21')) || {
                 logo: '1.jpg', theme: 'dark',
                 user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=0f766e&color=fff' }
             };
-        } catch(e) { console.log('Data reset due to error'); }
+        } catch(e) { console.error('Data reset'); }
 
         // --- INIT ---
         if(inv.length === 0) {
@@ -321,33 +314,17 @@
         applyConfig();
         renderAll();
 
-        // --- SCROLL BAR HIDE ---
+        // --- UI ---
         window.addEventListener('scroll', () => {
             const bar = document.getElementById('topBar');
-            if (window.scrollY > 50) bar.classList.add('hidden-bar');
-            else bar.classList.remove('hidden-bar');
+            if (window.scrollY > 50) bar.classList.add('hidden-bar'); else bar.classList.remove('hidden-bar');
         });
-
-        // --- UI LOGIC ---
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('sidebarOverlay').classList.remove('hidden');
-        }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        }
-        function toggleSidebar() { 
-            const sb = document.getElementById('sidebar');
-            if(sb.classList.contains('open')) closeSidebar(); else openSidebar();
-        }
-        function scrollToSection(id) { 
-            document.getElementById(id).scrollIntoView({behavior: 'smooth'}); 
-            closeSidebar();
-        }
+        function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.remove('hidden'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.add('hidden'); }
+        function toggleSidebar() { const sb=document.getElementById('sidebar'); if(sb.classList.contains('open')) closeSidebar(); else openSidebar(); }
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); closeSidebar(); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        
         function applyConfig() {
             document.getElementById('appBody').className = `theme-${config.theme}`;
             document.getElementById('storeLogo').src = config.logo;
@@ -356,7 +333,7 @@
             document.getElementById('userContact').value = config.user.contact;
         }
         function toggleTheme() { config.theme = config.theme === 'dark' ? 'light' : 'dark'; saveData(); applyConfig(); }
-        
+
         // --- INVENTORY ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
@@ -391,9 +368,15 @@
 
         // --- CRUD ---
         function openAddModal() {
-            document.getElementById('medForm').reset();
-            document.getElementById('medId').value = '';
+            document.getElementById('medId').value = ''; 
+            document.getElementById('medName').value = '';
+            document.getElementById('medBrand').value = '';
+            document.getElementById('medFormula').value = '';
+            document.getElementById('medTotalPacks').value = '';
+            document.getElementById('medPackSize').value = 1;
             document.getElementById('medStock').value = '';
+            document.getElementById('medCost').value = '';
+            document.getElementById('medPrice').value = '';
             editTempImg = null;
             openModal('medModal');
         }
@@ -403,24 +386,15 @@
             document.getElementById('medStock').value = Math.ceil(p * s);
         }
         function resizeImage(file, callback) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const scale = 300 / img.width;
-                    canvas.width = 300;
-                    canvas.height = img.height * scale;
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    callback(canvas.toDataURL('image/jpeg', 0.6));
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+            const r = new FileReader(); r.onload = (e) => {
+                const img = new Image(); img.onload = () => {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    const scale = 300 / img.width; canvas.width = 300; canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height); callback(canvas.toDataURL('image/jpeg', 0.6));
+                }; img.src = e.target.result;
+            }; r.readAsDataURL(file);
         }
-        function saveMedicine(e) {
-            e.preventDefault();
+        function saveMedicine() {
             const file = document.getElementById('medImg').files[0];
             const process = (imgData) => {
                 const item = {
@@ -428,10 +402,10 @@
                     name: document.getElementById('medName').value,
                     brand: document.getElementById('medBrand').value,
                     formula: document.getElementById('medFormula').value,
-                    packSize: parseInt(document.getElementById('medPackSize').value),
-                    stock: parseInt(document.getElementById('medStock').value),
-                    cost: parseFloat(document.getElementById('medCost').value),
-                    price: parseFloat(document.getElementById('medPrice').value),
+                    packSize: parseInt(document.getElementById('medPackSize').value) || 1,
+                    stock: parseInt(document.getElementById('medStock').value) || 0,
+                    cost: parseFloat(document.getElementById('medCost').value) || 0,
+                    price: parseFloat(document.getElementById('medPrice').value) || 0,
                     cat: document.getElementById('medCat').value,
                     exp: document.getElementById('medExp').value,
                     img: imgData
@@ -461,12 +435,13 @@
         }
         function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); saveData(); renderAll(); } }
 
-        // --- SALES & PRINT ---
+        // --- SALES ---
         let saleItem = null;
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
             document.getElementById('saleName').innerText = saleItem.name;
-            document.getElementById('saleInfo').innerText = `Price: ${saleItem.price/saleItem.packSize}/unit`;
+            const unit = (saleItem.price / saleItem.packSize).toFixed(2);
+            document.getElementById('saleInfo').innerText = `Price: ${unit}/unit`;
             document.getElementById('saleQty').value = 1;
             document.getElementById('saleDisc').value = '';
             document.getElementById('printSlip').checked = false;
@@ -515,10 +490,10 @@
 
         // --- CORE ---
         function saveData() {
-            localStorage.setItem('az_inv_20', JSON.stringify(inv));
-            localStorage.setItem('az_sales_20', JSON.stringify(sales));
-            localStorage.setItem('az_purch_20', JSON.stringify(purch));
-            localStorage.setItem('az_config_20', JSON.stringify(config));
+            localStorage.setItem('az_inv_21', JSON.stringify(inv));
+            localStorage.setItem('az_sales_21', JSON.stringify(sales));
+            localStorage.setItem('az_purch_21', JSON.stringify(purch));
+            localStorage.setItem('az_config_21', JSON.stringify(config));
         }
         function uploadLogo(i) { const f=i.files[0]; if(f) resizeImage(f, (res)=>{config.logo=res; saveData(); applyConfig();}); }
         function updateProfilePic(i) { const f=i.files[0]; if(f) resizeImage(f, (res)=>{config.user.pic=res; saveData(); applyConfig();}); }
@@ -526,19 +501,18 @@
         
         function renderAll() {
             renderGrid();
-            document.getElementById('historyTable').innerHTML = sales.map(s => `<tr><td class="p-4 opacity-70 whitespace-nowrap">${s.date}</td><td class="p-4 font-bold">${s.name}</td><td class="p-4">${s.qty}</td><td class="p-4 text-red-400">${s.disc}</td><td class="p-4 text-green-400">${s.profit.toFixed(0)}</td><td class="p-4 font-bold text-teal-400">${s.total}</td><td class="p-4 text-center"><button type="button" onclick='printReceipt(${JSON.stringify(s)})'><i class="fas fa-print opacity-50 hover:opacity-100"></i></button></td></tr>`).join('');
+            document.getElementById('historyTable').innerHTML = sales.map(s => `<tr><td class="p-4 opacity-70 whitespace-nowrap">${s.date}</td><td class="p-4 font-bold">${s.name}</td><td class="p-4">${s.qty}</td><td class="p-4 text-red-400">${s.disc}</td><td class="p-4 text-green-400 font-bold">${s.profit ? s.profit.toFixed(0) : 0}</td><td class="p-4 font-bold text-teal-400">${s.total}</td><td class="p-4 text-center"><button type="button" onclick='printReceipt(${JSON.stringify(s)})'><i class="fas fa-print opacity-50 hover:opacity-100"></i></button></td></tr>`).join('');
             document.getElementById('purchaseGrid').innerHTML = purch.map(p => `<div class="card p-4"><h4 class="font-bold text-lg">${p.dealer}</h4><p class="text-xs opacity-60 uppercase">${p.comp}</p><p class="text-sm my-2 bg-black/10 p-2 rounded">${p.items}</p><p class="text-right font-bold text-purple-400 text-xl">${p.amt}</p></div>`).join('');
-            const r = sales.reduce((a,b)=>a+b.total,0); const p = sales.reduce((a,b)=>a+b.profit,0);
+            const r = sales.reduce((a,b)=>a+b.total,0); const p = sales.reduce((a,b)=>a+(b.profit||0),0);
             document.getElementById('repRev').innerText = r; document.getElementById('repCost').innerText = (r-p).toFixed(0); document.getElementById('repProfit').innerText = p.toFixed(0);
-            document.getElementById('itemTable').innerHTML = sales.map(s => `<tr><td class="p-3">${s.name}</td><td class="p-3">${s.qty}</td><td class="p-3 text-right text-teal-400 font-bold">${s.profit.toFixed(0)}</td></tr>`).join('');
+            document.getElementById('itemTable').innerHTML = sales.map(s => `<tr><td class="p-3">${s.name}</td><td class="p-3">${s.qty}</td><td class="p-3 text-right text-teal-400 font-bold">${s.profit ? s.profit.toFixed(0) : 0}</td></tr>`).join('');
         }
-        function savePurchase(e) {
-            e.preventDefault();
+        function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
             saveData(); closeModal('purchaseModal'); renderAll();
         }
         function downloadBackup() { const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify({inv, sales, purch, config})],{type:'application/json'})); a.download='Alazamat_Backup.json'; a.click(); }
-        function restoreBackup(i) { const r = new FileReader(); r.onload=(e)=>{ const d=JSON.parse(e.target.result); localStorage.setItem('az_inv_20', JSON.stringify(d.inv)); localStorage.setItem('az_sales_20', JSON.stringify(d.sales)); localStorage.setItem('az_purch_20', JSON.stringify(d.purch)); if(d.config) localStorage.setItem('az_config_20', JSON.stringify(d.config)); location.reload(); }; r.readAsText(i.files[0]); }
+        function restoreBackup(i) { const r = new FileReader(); r.onload=(e)=>{ const d=JSON.parse(e.target.result); localStorage.setItem('az_inv_21', JSON.stringify(d.inv)); localStorage.setItem('az_sales_21', JSON.stringify(d.sales)); localStorage.setItem('az_purch_21', JSON.stringify(d.purch)); if(d.config) localStorage.setItem('az_config_21', JSON.stringify(d.config)); location.reload(); }; r.readAsText(i.files[0]); }
     </script>
 </body>
 </html>
