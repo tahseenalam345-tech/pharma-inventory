@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v15.0</title>
+    <title>Alazamat Medical Store - v16.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -94,7 +94,7 @@
             <div class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg">A</div>
             <div>
                 <h1 class="font-bold text-xl tracking-tight text-teal-500">Alazamat</h1>
-                <p class="text-xs opacity-60">System v15.0</p>
+                <p class="text-xs opacity-60">System v16.0</p>
             </div>
             <button onclick="toggleSidebar()" class="md:hidden ml-auto p-2"><i class="fas fa-times text-xl"></i></button>
         </div>
@@ -127,8 +127,7 @@
         
         <section id="hero" class="p-8 md:p-16 flex flex-col items-center justify-center text-center min-h-[70vh]">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="https://via.placeholder.com/150/0f766e/ffffff?text=LOGO" class="w-48 h-48 rounded-full border-4 border-teal-500 shadow-[0_0_60px_rgba(20,184,166,0.4)] object-cover animate-pulse cursor-pointer" onclick="document.getElementById('logoInput').click()">
-                <div class="absolute -bottom-4 bg-teal-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg">Click to Upload Logo</div>
+                <img id="storeLogo" src="https://img.freepik.com/free-vector/medical-logo-gradient-style_23-2147822363.jpg?w=200" class="w-48 h-48 rounded-full border-4 border-teal-500 shadow-[0_0_60px_rgba(20,184,166,0.4)] object-cover animate-pulse cursor-pointer" onclick="document.getElementById('logoInput').click()">
                 <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="uploadLogo(this)">
             </div>
             
@@ -288,11 +287,11 @@
 
     <script>
         // --- DATA ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_15')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_15')) || [];
-        let purch = JSON.parse(localStorage.getItem('az_purch_15')) || [];
-        let config = JSON.parse(localStorage.getItem('az_config_15')) || {
-            logo: 'https://via.placeholder.com/150/0f766e/ffffff?text=LOGO',
+        let inv = JSON.parse(localStorage.getItem('az_inv_16')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_16')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_16')) || [];
+        let config = JSON.parse(localStorage.getItem('az_config_16')) || {
+            logo: 'https://img.freepik.com/free-vector/medical-logo-gradient-style_23-2147822363.jpg?w=200',
             theme: 'dark',
             user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=0f766e&color=fff' }
         };
@@ -495,10 +494,10 @@
 
         // --- CORE FUNCTIONS ---
         function saveData() {
-            localStorage.setItem('az_inv_15', JSON.stringify(inv));
-            localStorage.setItem('az_sales_15', JSON.stringify(sales));
-            localStorage.setItem('az_purch_15', JSON.stringify(purch));
-            localStorage.setItem('az_config_15', JSON.stringify(config));
+            localStorage.setItem('az_inv_16', JSON.stringify(inv));
+            localStorage.setItem('az_sales_16', JSON.stringify(sales));
+            localStorage.setItem('az_purch_16', JSON.stringify(purch));
+            localStorage.setItem('az_config_16', JSON.stringify(config));
         }
         function uploadLogo(i) { const f=i.files[0]; if(f) { const r=new FileReader(); r.onload=(e)=>{config.logo=e.target.result; saveData(); applyConfig();}; r.readAsDataURL(f); } }
         function updateProfilePic(i) { const f=i.files[0]; if(f) { const r=new FileReader(); r.onload=(e)=>{config.user.pic=e.target.result; saveData(); applyConfig();}; r.readAsDataURL(f); } }
@@ -531,7 +530,7 @@
             const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download='Alazamat_Backup.json'; a.click();
         }
         function restoreBackup(i) {
-            const r = new FileReader(); r.onload=(e)=>{ const d=JSON.parse(e.target.result); localStorage.setItem('az_inv_15', JSON.stringify(d.inv)); localStorage.setItem('az_sales_15', JSON.stringify(d.sales)); localStorage.setItem('az_purch_15', JSON.stringify(d.purch)); if(d.config) localStorage.setItem('az_config_15', JSON.stringify(d.config)); location.reload(); }; r.readAsText(i.files[0]);
+            const r = new FileReader(); r.onload=(e)=>{ const d=JSON.parse(e.target.result); localStorage.setItem('az_inv_16', JSON.stringify(d.inv)); localStorage.setItem('az_sales_16', JSON.stringify(d.sales)); localStorage.setItem('az_purch_16', JSON.stringify(d.purch)); if(d.config) localStorage.setItem('az_config_16', JSON.stringify(d.config)); location.reload(); }; r.readAsText(i.files[0]);
         }
     </script>
 </body>
