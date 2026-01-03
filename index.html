@@ -290,11 +290,11 @@
         let inv = JSON.parse(localStorage.getItem('az_inv_16')) || [];
         let sales = JSON.parse(localStorage.getItem('az_sales_16')) || [];
         let purch = JSON.parse(localStorage.getItem('az_purch_16')) || [];
-        let config = JSON.parse(localStorage.getItem('az_config_16')) || {
-            logo: 'https://img.freepik.com/free-vector/medical-logo-gradient-style_23-2147822363.jpg?w=200',
-            theme: 'dark',
-            user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=0f766e&color=fff' }
-        };
+       let config = JSON.parse(localStorage.getItem('az_config_16')) || {
+    logo: './1.jpg',
+    theme: 'dark',
+    user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=0f766e&color=fff' }
+};
 
         // --- INIT ---
         if(inv.length === 0) {
@@ -535,6 +535,7 @@
     </script>
 </body>
 </html>
+
 
 
 
