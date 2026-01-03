@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alazamat Medical Store - v10.0</title>
+    <title>Alazamat Medical Store - v11.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -16,18 +16,32 @@
             background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1920&auto=format&fit=crop');
             background-size: cover; background-attachment: fixed; color: white;
         }
-        .theme-dark .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); }
-        .theme-dark .card { background: rgba(30, 41, 59, 0.9); border: 1px solid #334155; color: white; }
+        .theme-dark .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); }
+        .theme-dark .card { background: rgba(30, 41, 59, 0.95); border: 1px solid #334155; color: white; }
         .theme-dark .input { background: #1e293b; border-color: #475569; color: white; }
         .theme-dark .sidebar { background: #0f172a; border-right: 1px solid #1e293b; }
 
         .theme-light {
-            background-color: #f1f5f9; color: #1e293b;
+            background-color: #f8fafc; color: #1e293b;
         }
-        .theme-light .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .theme-light .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
         .theme-light .card { background: white; border: 1px solid #e2e8f0; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .theme-light .input { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
+        .theme-light .input { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
         .theme-light .sidebar { background: white; border-right: 1px solid #e2e8f0; }
+
+        /* Welcome Animation */
+        #welcomeBanner {
+            position: fixed; top: -100px; left: 0; right: 0; 
+            z-index: 60; display: flex; justify-content: center;
+            transition: top 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+        }
+        .welcome-card {
+            background: rgba(16, 185, 129, 0.95); color: white;
+            padding: 1rem 2rem; border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            font-weight: bold; font-size: 1.1rem;
+            backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);
+        }
 
         /* Animations */
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
@@ -37,6 +51,16 @@
 <body id="appBody" class="theme-dark min-h-screen overflow-x-hidden">
     
     <div class="glass fixed inset-0 z-[-1]"></div>
+
+    <div id="welcomeBanner">
+        <div class="welcome-card flex items-center gap-3">
+            <span class="text-2xl">👋</span>
+            <div>
+                <p>Aslam o Alikum Boss!</p>
+                <p class="text-xs font-normal opacity-90">Good to see you, Muhammad Yaseen Alam</p>
+            </div>
+        </div>
+    </div>
 
     <button onclick="toggleSidebar()" class="fixed top-6 left-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition hover:scale-110">
         <i class="fas fa-bars text-xl"></i>
@@ -65,16 +89,16 @@
             </div>
         </nav>
 
-        <div class="p-4 bg-black/20 border-t border-gray-700/50">
+        <div class="p-4 bg-black/10 border-t border-gray-700/50">
             <div class="flex items-center gap-3">
                 <div class="relative group cursor-pointer" onclick="document.getElementById('profilePicInput').click()">
-                    <img id="userPicDisplay" src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff" class="w-12 h-12 rounded-full object-cover border-2 border-emerald-500">
+                    <img id="userPicDisplay" src="" class="w-12 h-12 rounded-full object-cover border-2 border-emerald-500">
                     <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fas fa-camera text-xs text-white"></i></div>
                     <input type="file" id="profilePicInput" class="hidden" accept="image/*" onchange="updateProfilePic(this)">
                 </div>
                 <div class="flex-1 min-w-0">
-                    <input type="text" id="userNameInput" value="Dr. Alazamat" class="bg-transparent font-bold w-full outline-none focus:border-b border-emerald-500" onchange="saveProfile()">
-                    <input type="text" id="userContactInput" value="+92 300 1234567" class="bg-transparent text-xs opacity-70 w-full outline-none focus:border-b border-emerald-500" onchange="saveProfile()">
+                    <input type="text" id="userNameInput" class="bg-transparent font-bold w-full outline-none focus:border-b border-emerald-500 text-sm" onchange="saveProfile()">
+                    <input type="text" id="userContactInput" class="bg-transparent text-xs opacity-70 w-full outline-none focus:border-b border-emerald-500" onchange="saveProfile()">
                 </div>
             </div>
         </div>
@@ -82,9 +106,9 @@
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm"></div>
 
     <main class="relative z-10 pb-24">
-        <section class="min-h-[70vh] flex flex-col items-center justify-center text-center p-6">
+        <section class="min-h-[70vh] flex flex-col items-center justify-center text-center p-6 pt-20">
             <div class="relative group mb-6">
-                <img id="mainLogo" src="https://via.placeholder.com/150/10b981/ffffff?text=LOGO" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-2xl object-cover">
+                <img id="mainLogo" src="" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-2xl object-cover">
                 <label class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
                     <span class="text-xs font-bold text-white">Change Logo</span>
                     <input type="file" class="hidden" accept="image/*" onchange="uploadLogo(this)">
@@ -93,7 +117,7 @@
             <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-2 fade-in">Alazamat</h1>
             <h2 class="text-2xl opacity-70 tracking-[0.3em] mb-8 fade-in">MEDICAL STORE</h2>
             <button onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" class="animate-bounce text-emerald-400 flex flex-col items-center">
-                <span class="text-xs font-bold uppercase">Scroll Down</span>
+                <span class="text-xs font-bold uppercase">View Medicines</span>
                 <i class="fas fa-chevron-down text-xl"></i>
             </button>
         </section>
@@ -106,8 +130,8 @@
                         <p class="opacity-60 text-sm">Manage stock & sales</p>
                     </div>
                     <div class="flex gap-2 w-full md:w-auto">
-                        <input type="text" id="search" placeholder="Search..." class="flex-1 input px-4 py-3 rounded-xl outline-none focus:border-emerald-500 border">
-                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">+ Add</button>
+                        <input type="text" id="search" placeholder="Search..." class="flex-1 input px-4 py-3 rounded-xl outline-none focus:border-emerald-500 border w-full">
+                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition whitespace-nowrap">+ Add</button>
                     </div>
                 </div>
                 <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
@@ -144,22 +168,40 @@
     </div>
 
     <div id="reportOverlay" onclick="if(event.target===this) closeOverlay('reportOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="card w-full max-w-3xl rounded-3xl p-8 shadow-2xl fade-in text-center relative">
-            <button onclick="closeOverlay('reportOverlay')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500 text-white"><i class="fas fa-times"></i></button>
-            <h2 class="text-3xl font-bold mb-8">Profit Reports</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 rounded-2xl bg-black/20 border border-gray-700/50">
+        <div class="card w-full max-w-4xl h-[80vh] rounded-3xl shadow-2xl fade-in flex flex-col overflow-hidden relative">
+            <div class="p-6 border-b border-gray-700/50 flex justify-between items-center bg-black/20">
+                 <h2 class="text-3xl font-bold">Profit Reports</h2>
+                 <button onclick="closeOverlay('reportOverlay')" class="w-8 h-8 rounded-full bg-red-500 text-white"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
+                <div class="p-6 rounded-2xl bg-black/10 border border-gray-700/50">
                     <p class="opacity-50 text-sm uppercase">Revenue</p>
                     <p class="text-3xl font-bold text-sky-400 mt-2" id="repRev">0</p>
                 </div>
-                <div class="p-6 rounded-2xl bg-black/20 border border-gray-700/50">
+                <div class="p-6 rounded-2xl bg-black/10 border border-gray-700/50">
                     <p class="opacity-50 text-sm uppercase">Cost</p>
                     <p class="text-3xl font-bold text-red-400 mt-2" id="repCost">0</p>
                 </div>
-                <div class="p-6 rounded-2xl bg-emerald-900/20 border border-emerald-500/50">
+                <div class="p-6 rounded-2xl bg-emerald-900/10 border border-emerald-500/50">
                     <p class="text-emerald-400 text-sm uppercase font-bold">Net Profit</p>
                     <p class="text-4xl font-bold mt-2" id="repProfit">0</p>
                 </div>
+            </div>
+
+            <div class="px-8 pb-4">
+                <button onclick="document.getElementById('itemizedReport').classList.toggle('hidden'); renderItemizedReport();" class="w-full bg-gray-700/50 hover:bg-gray-700 p-3 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2">
+                    <i class="fas fa-list"></i> View Itemized Details (Profit per Medicine)
+                </button>
+            </div>
+
+            <div id="itemizedReport" class="hidden flex-1 overflow-auto px-8 pb-8">
+                <table class="w-full text-left text-sm opacity-90">
+                    <thead class="bg-black/20 text-xs uppercase opacity-70 sticky top-0">
+                        <tr><th class="p-3">Medicine</th><th class="p-3">Qty Sold</th><th class="p-3">Total Sales</th><th class="p-3 text-right text-emerald-400">Profit Earned</th></tr>
+                    </thead>
+                    <tbody id="itemizedTable" class="divide-y divide-gray-700/30"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -183,7 +225,7 @@
                     <div class="grid grid-cols-3 gap-2">
                         <div><label class="text-[10px] opacity-50">Total Packs</label><input type="number" id="medTotalPacks" required class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
                         <div><label class="text-[10px] opacity-50">Items/Pack</label><input type="number" id="medPackSize" value="1" required class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
-                        <div><label class="text-[10px] opacity-50">Total Units</label><input type="number" id="medStock" readonly class="bg-black/20 text-gray-500 rounded w-full p-2 text-sm border border-transparent"></div>
+                        <div><label class="text-[10px] opacity-50">Total Units</label><input type="number" id="medStock" readonly class="bg-black/20 opacity-70 rounded w-full p-2 text-sm border border-transparent"></div>
                     </div>
                 </div>
 
@@ -242,21 +284,33 @@
 
     <script>
         // --- DATA & INIT ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_v10')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_v10')) || [];
-        let purch = JSON.parse(localStorage.getItem('az_purch_v10')) || [];
-        let config = JSON.parse(localStorage.getItem('az_config_v10')) || { 
+        let inv = JSON.parse(localStorage.getItem('az_inv_v11')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_v11')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_v11')) || [];
+        let config = JSON.parse(localStorage.getItem('az_config_v11')) || { 
             logo: 'https://via.placeholder.com/150/10b981/ffffff?text=LOGO',
             theme: 'dark',
-            user: { name: 'Dr. Alazamat', contact: '+92 300 1234567', pic: 'https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff' }
+            user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=10b981&color=fff' }
         };
 
-        // Load Sample Data if Empty
+        // Welcome Animation
+        window.onload = () => {
+            const banner = document.getElementById('welcomeBanner');
+            banner.style.top = '20px'; // Slide Down
+            window.addEventListener('scroll', () => {
+                if(window.scrollY > 50) banner.style.top = '-100px'; // Hide on scroll
+                else banner.style.top = '20px';
+            });
+            setTimeout(() => { banner.style.top = '-100px'; }, 5000); // Auto hide after 5s
+        };
+
+        // Load Sample Data (Better Images)
         if(inv.length === 0) {
             inv = [
-                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'https://img.freepik.com/free-vector/realistic-pills-blister-pack_52683-59691.jpg?w=150'},
-                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'https://img.freepik.com/free-vector/realistic-white-pills-bottle-mockup_1017-26804.jpg?w=150'},
-                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'https://img.freepik.com/free-vector/realistic-cough-syrup_23-2147545938.jpg?w=150'},
+                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=150&q=80'},
+                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=150&q=80'},
+                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=150&q=80'},
+                {id: 4, name: 'Disprin', brand: 'Reckitt', formula: 'Aspirin', packSize: 100, stock: 1000, cost: 50, price: 100, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&w=150&q=80'}
             ];
             updateData();
         }
@@ -269,17 +323,12 @@
         document.getElementById('userContactInput').value = config.user.contact;
         renderGrid();
 
-        // --- NAVIGATION & UI ---
+        // --- NAVIGATION ---
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebarOverlay');
-            if(sb.classList.contains('-translate-x-full')) {
-                sb.classList.remove('-translate-x-full');
-                ov.classList.remove('hidden');
-            } else {
-                sb.classList.add('-translate-x-full');
-                ov.classList.add('hidden');
-            }
+            sb.classList.toggle('-translate-x-full');
+            ov.classList.toggle('hidden');
         }
         function scrollToTop() { window.scrollTo({top:0, behavior:'smooth'}); toggleSidebar(); }
         function openOverlay(id) { document.getElementById(id).classList.remove('hidden'); toggleSidebar(); }
@@ -299,7 +348,7 @@
         // --- USER PROFILE ---
         function updateProfilePic(i) {
             const f = i.files[0];
-            if(f) resizeImage(f, 100, (res) => {
+            if(f) resizeImage(f, 150, (res) => {
                 config.user.pic = res;
                 document.getElementById('userPicDisplay').src = res;
                 updateData();
@@ -353,7 +402,7 @@
             document.getElementById('medStock').value = Math.ceil(p * s);
         }
 
-        // --- IMAGE COMPRESSION (SHRINK) ---
+        // --- IMAGE COMPRESSION ---
         function resizeImage(file, maxWidth, callback) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -365,7 +414,7 @@
                     canvas.width = maxWidth;
                     canvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    callback(canvas.toDataURL('image/jpeg', 0.6)); // 60% Quality
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
                 };
                 img.src = e.target.result;
             };
@@ -393,9 +442,7 @@
                 if(idx > -1) inv[idx] = item; else inv.push(item);
                 updateData(); closeModal('medModal'); renderGrid();
             };
-
-            if(file) resizeImage(file, 150, process); // Shrink to 150px
-            else process(editTempImg);
+            if(file) resizeImage(file, 150, process); else process(editTempImg);
         }
 
         let editTempImg = null;
@@ -417,7 +464,7 @@
         }
         function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); updateData(); renderGrid(); } }
 
-        // --- SALES & PRINTING (NEW POPUP METHOD) ---
+        // --- SALES ---
         let saleItem = null;
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
@@ -462,12 +509,36 @@
             printReceipt(s);
         }
 
+        // --- REPORTS (ITEMIZED) ---
+        function renderItemizedReport() {
+            const t = document.getElementById('itemizedTable'); t.innerHTML = '';
+            // Group sales by medicine name
+            const grouped = {};
+            sales.forEach(s => {
+                if(!grouped[s.name]) grouped[s.name] = { qty:0, total:0, profit:0 };
+                grouped[s.name].qty += s.qty;
+                grouped[s.name].total += s.total;
+                grouped[s.name].profit += s.profit;
+            });
+            
+            Object.keys(grouped).forEach(name => {
+                const i = grouped[name];
+                t.innerHTML += `<tr class="border-b border-gray-700/30"><td class="p-3 font-bold">${name}</td><td class="p-3">${i.qty}</td><td class="p-3">Rs. ${i.total}</td><td class="p-3 text-right text-emerald-400 font-bold">Rs. ${i.profit.toFixed(0)}</td></tr>`;
+            });
+        }
+        function renderReports() {
+            const r = sales.reduce((a,b)=>a+b.total,0);
+            const p = sales.reduce((a,b)=>a+b.profit,0);
+            document.getElementById('repRev').innerText = r;
+            document.getElementById('repCost').innerText = (r - p).toFixed(0);
+            document.getElementById('repProfit').innerText = p.toFixed(0);
+        }
+
+        // --- PRINT ---
         function printReceipt(s) {
-            // OPEN A NEW WINDOW FOR CLEAN PRINTING
             const win = window.open('', '', 'width=300,height=600');
             win.document.write(`
-                <html>
-                <head><style>
+                <html><head><style>
                     body { font-family: monospace; text-align: center; margin: 0; padding: 10px; }
                     .header { font-weight: bold; font-size: 14px; }
                     .small { font-size: 10px; }
@@ -475,35 +546,24 @@
                     table { width: 100%; font-size: 10px; }
                     .right { text-align: right; }
                     .total { font-size: 14px; font-weight: bold; }
-                </style></head>
-                <body>
+                </style></head><body>
                     <img src="${config.logo}" width="50"><br>
                     <div class="header">ALAZAMAT MEDICAL</div>
                     <div class="small">${config.user.contact}</div>
                     <div class="line"></div>
                     <div class="small" style="text-align:left">Date: ${s.date}<br>Inv#: ${s.id.toString().slice(-6)}</div>
                     <div class="line"></div>
-                    <table>
-                        <tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>
-                        <tr><td align="left">${s.name}</td><td>${s.qty}</td><td align="right">${s.sub}</td></tr>
-                    </table>
+                    <table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr><tr><td align="left">${s.name}</td><td>${s.qty}</td><td align="right">${s.sub}</td></tr></table>
                     <div class="line"></div>
-                    <div class="right small">
-                        Subtotal: ${s.sub}<br>
-                        Discount: ${s.disc}<br>
-                        <span class="total">NET: ${s.total}</span>
-                    </div>
-                    <div class="line"></div>
-                    <div class="small">No Returns without Receipt<br>Thank You!</div>
-                </body>
-                </html>
-            `);
+                    <div class="right small">Subtotal: ${s.sub}<br>Discount: ${s.disc}<br><span class="total">NET: ${s.total}</span></div>
+                    <div class="line"></div><div class="small">No Returns without Receipt<br>Thank You!</div>
+                </body></html>`);
             win.document.close();
             win.focus();
             setTimeout(() => { win.print(); win.close(); }, 500);
         }
 
-        // --- OTHER TABS ---
+        // --- UTILS ---
         function renderHistory() {
             const t = document.getElementById('historyTable'); t.innerHTML = '';
             sales.forEach(s => {
@@ -527,28 +587,15 @@
             });
             updateData(); closeModal('addPurchaseModal'); renderPurchases();
         }
-        function renderReports() {
-            const r = sales.reduce((a,b)=>a+b.total,0);
-            const p = sales.reduce((a,b)=>a+b.profit,0);
-            document.getElementById('repRev').innerText = r;
-            document.getElementById('repCost').innerText = (r - p).toFixed(0);
-            document.getElementById('repProfit').innerText = p.toFixed(0);
-        }
-
-        // --- CORE ---
         function uploadLogo(i) {
             const f = i.files[0];
-            if(f) resizeImage(f, 150, (res) => {
-                config.logo = res;
-                document.getElementById('mainLogo').src = res;
-                updateData();
-            });
+            if(f) resizeImage(f, 150, (res) => { config.logo = res; document.getElementById('mainLogo').src = res; updateData(); });
         }
         function updateData() {
-            localStorage.setItem('az_inv_v10', JSON.stringify(inv));
-            localStorage.setItem('az_sales_v10', JSON.stringify(sales));
-            localStorage.setItem('az_purch_v10', JSON.stringify(purch));
-            localStorage.setItem('az_config_v10', JSON.stringify(config));
+            localStorage.setItem('az_inv_v11', JSON.stringify(inv));
+            localStorage.setItem('az_sales_v11', JSON.stringify(sales));
+            localStorage.setItem('az_purch_v11', JSON.stringify(purch));
+            localStorage.setItem('az_config_v11', JSON.stringify(config));
         }
         function downloadBackup() {
             const d = JSON.stringify({inv, sales, purch, config});
@@ -559,10 +606,10 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                localStorage.setItem('az_inv_v10', JSON.stringify(d.inv));
-                localStorage.setItem('az_sales_v10', JSON.stringify(d.sales));
-                localStorage.setItem('az_purch_v10', JSON.stringify(d.purch));
-                if(d.config) localStorage.setItem('az_config_v10', JSON.stringify(d.config));
+                localStorage.setItem('az_inv_v11', JSON.stringify(d.inv));
+                localStorage.setItem('az_sales_v11', JSON.stringify(d.sales));
+                localStorage.setItem('az_purch_v11', JSON.stringify(d.purch));
+                if(d.config) localStorage.setItem('az_config_v11', JSON.stringify(d.config));
                 location.reload();
             };
             r.readAsText(i.files[0]);
