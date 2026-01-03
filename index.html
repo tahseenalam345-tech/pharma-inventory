@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alazamat Medical Store - v11.0</title>
+    <title>Alazamat Medical Store - v12.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Outfit', sans-serif; transition: background 0.3s, color 0.3s; }
+        body { font-family: 'Outfit', sans-serif; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
         
         /* THEMES */
         .theme-dark {
@@ -29,18 +29,19 @@
         .theme-light .input { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
         .theme-light .sidebar { background: white; border-right: 1px solid #e2e8f0; }
 
-        /* Welcome Animation */
-        #welcomeBanner {
-            position: fixed; top: -100px; left: 0; right: 0; 
-            z-index: 60; display: flex; justify-content: center;
-            transition: top 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+        /* TRAIN ANIMATION */
+        .train-container {
+            position: fixed; top: 10px; width: 100%; z-index: 100; pointer-events: none; overflow: hidden;
         }
-        .welcome-card {
-            background: rgba(16, 185, 129, 0.95); color: white;
-            padding: 1rem 2rem; border-radius: 0 0 20px 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            font-weight: bold; font-size: 1.1rem;
-            backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);
+        .train-text {
+            white-space: nowrap;
+            font-size: 1.5rem; font-weight: bold; color: #10b981; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: absolute; right: 0;
+            animation: trainMove 15s linear forwards; /* Runs once then stops/hides */
+        }
+        @keyframes trainMove {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-150vw); } /* Moves completely off screen left */
         }
 
         /* Animations */
@@ -48,17 +49,13 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body id="appBody" class="theme-dark min-h-screen overflow-x-hidden">
+<body id="appBody" class="theme-dark min-h-screen">
     
     <div class="glass fixed inset-0 z-[-1]"></div>
 
-    <div id="welcomeBanner">
-        <div class="welcome-card flex items-center gap-3">
-            <span class="text-2xl">👋</span>
-            <div>
-                <p>Aslam o Alikum Boss!</p>
-                <p class="text-xs font-normal opacity-90">Good to see you, Muhammad Yaseen Alam</p>
-            </div>
+    <div class="train-container">
+        <div class="train-text">
+            👋 Aslam o Alikum Boss! Good to see you, Muhammad Yaseen Alam
         </div>
     </div>
 
@@ -131,7 +128,7 @@
                     </div>
                     <div class="flex gap-2 w-full md:w-auto">
                         <input type="text" id="search" placeholder="Search..." class="flex-1 input px-4 py-3 rounded-xl outline-none focus:border-emerald-500 border w-full">
-                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition whitespace-nowrap">+ Add</button>
+                        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition whitespace-nowrap">+ Add</button>
                     </div>
                 </div>
                 <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
@@ -212,26 +209,26 @@
                 <h3 class="text-xl font-bold">Medicine Details</h3>
                 <button onclick="closeModal('medModal')" class="text-red-500"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <form onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
+            <form id="medForm" onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs opacity-50 font-bold uppercase">Name</label><input type="text" id="medName" required class="input rounded-lg w-full p-2 border"></div>
-                    <div><label class="text-xs opacity-50 font-bold uppercase">Brand</label><input type="text" id="medBrand" class="input rounded-lg w-full p-2 border"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Name</label><input type="text" id="medName" required placeholder="e.g. Panadol" class="input rounded-lg w-full p-2 border"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Brand</label><input type="text" id="medBrand" placeholder="e.g. GSK" class="input rounded-lg w-full p-2 border"></div>
                 </div>
-                <div><label class="text-xs opacity-50 font-bold uppercase">Formula</label><input type="text" id="medFormula" class="input rounded-lg w-full p-2 border"></div>
+                <div><label class="text-xs opacity-50 font-bold uppercase">Formula</label><input type="text" id="medFormula" placeholder="e.g. Paracetamol" class="input rounded-lg w-full p-2 border"></div>
                 
                 <div class="bg-black/10 p-4 rounded-xl border border-gray-700/50">
                     <p class="text-xs text-sky-400 font-bold uppercase mb-2">Stock & Packs</p>
                     <div class="grid grid-cols-3 gap-2">
-                        <div><label class="text-[10px] opacity-50">Total Packs</label><input type="number" id="medTotalPacks" required class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
+                        <div><label class="text-[10px] opacity-50">Total Packs</label><input type="number" id="medTotalPacks" required placeholder="0" class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
                         <div><label class="text-[10px] opacity-50">Items/Pack</label><input type="number" id="medPackSize" value="1" required class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
                         <div><label class="text-[10px] opacity-50">Total Units</label><input type="number" id="medStock" readonly class="bg-black/20 opacity-70 rounded w-full p-2 text-sm border border-transparent"></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs opacity-50 font-bold uppercase">Buy Cost (Pack)</label><input type="number" id="medCost" required class="input rounded-lg w-full p-2 border"></div>
-                    <div><label class="text-xs opacity-50 font-bold uppercase">Sell Price (Pack)</label><input type="number" id="medPrice" required class="input rounded-lg w-full p-2 border"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Buy Cost (Pack)</label><input type="number" id="medCost" required placeholder="0" class="input rounded-lg w-full p-2 border"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Sell Price (Pack)</label><input type="number" id="medPrice" required placeholder="0" class="input rounded-lg w-full p-2 border"></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -254,7 +251,13 @@
                 <button onclick="adjQty(1)" class="w-10 h-10 rounded-full bg-gray-600 text-white">+</button>
             </div>
             <div class="mb-4 text-left"><label class="text-xs font-bold uppercase opacity-50">Discount (Rs)</label><input type="number" id="saleDisc" placeholder="0" class="input w-full p-2 rounded-lg border" oninput="calcTotal()"></div>
-            <div class="bg-black/20 p-4 rounded-xl mb-6"><p class="text-xs opacity-50 uppercase">Total</p><p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p></div>
+            <div class="bg-black/20 p-4 rounded-xl mb-4"><p class="text-xs opacity-50 uppercase">Total</p><p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p></div>
+            
+            <label class="flex items-center justify-center gap-2 mb-6 cursor-pointer opacity-80 hover:opacity-100">
+                <input type="checkbox" id="printSlip" class="w-5 h-5 accent-emerald-500">
+                <span class="text-sm">Generate Receipt/Slip</span>
+            </label>
+
             <div class="flex gap-3">
                 <button onclick="closeModal('saleModal')" class="flex-1 bg-gray-600 text-white py-3 rounded-xl">Cancel</button>
                 <button onclick="confirmSale()" class="flex-1 bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg">Confirm</button>
@@ -284,33 +287,22 @@
 
     <script>
         // --- DATA & INIT ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_v11')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_v11')) || [];
-        let purch = JSON.parse(localStorage.getItem('az_purch_v11')) || [];
-        let config = JSON.parse(localStorage.getItem('az_config_v11')) || { 
+        let inv = JSON.parse(localStorage.getItem('az_inv_v12')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_v12')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_v12')) || [];
+        let config = JSON.parse(localStorage.getItem('az_config_v12')) || { 
             logo: 'https://via.placeholder.com/150/10b981/ffffff?text=LOGO',
             theme: 'dark',
             user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=10b981&color=fff' }
         };
 
-        // Welcome Animation
-        window.onload = () => {
-            const banner = document.getElementById('welcomeBanner');
-            banner.style.top = '20px'; // Slide Down
-            window.addEventListener('scroll', () => {
-                if(window.scrollY > 50) banner.style.top = '-100px'; // Hide on scroll
-                else banner.style.top = '20px';
-            });
-            setTimeout(() => { banner.style.top = '-100px'; }, 5000); // Auto hide after 5s
-        };
-
         // Load Sample Data (Better Images)
         if(inv.length === 0) {
             inv = [
-                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=150&q=80'},
-                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=150&q=80'},
-                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=150&q=80'},
-                {id: 4, name: 'Disprin', brand: 'Reckitt', formula: 'Aspirin', packSize: 100, stock: 1000, cost: 50, price: 100, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&w=150&q=80'}
+                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=150&q=80'}, // Red/Pill Style
+                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=150&q=80'}, // Blister Pack
+                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=150&q=80'}, // Bottle
+                {id: 4, name: 'Disprin', brand: 'Reckitt', formula: 'Aspirin', packSize: 100, stock: 1000, cost: 50, price: 100, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=150&q=80'}
             ];
             updateData();
         }
@@ -323,12 +315,17 @@
         document.getElementById('userContactInput').value = config.user.contact;
         renderGrid();
 
-        // --- NAVIGATION ---
+        // --- NAVIGATION & UI ---
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebarOverlay');
-            sb.classList.toggle('-translate-x-full');
-            ov.classList.toggle('hidden');
+            if(sb.classList.contains('-translate-x-full')) {
+                sb.classList.remove('-translate-x-full');
+                ov.classList.remove('hidden');
+            } else {
+                sb.classList.add('-translate-x-full');
+                ov.classList.add('hidden');
+            }
         }
         function scrollToTop() { window.scrollTo({top:0, behavior:'smooth'}); toggleSidebar(); }
         function openOverlay(id) { document.getElementById(id).classList.remove('hidden'); toggleSidebar(); }
@@ -342,7 +339,7 @@
             updateData();
         }
         function applyTheme(t) {
-            document.body.className = `min-h-screen overflow-x-hidden theme-${t}`;
+            document.getElementById('appBody').className = `min-h-screen overflow-x-hidden theme-${t}`;
         }
 
         // --- USER PROFILE ---
@@ -421,6 +418,16 @@
             reader.readAsDataURL(file);
         }
 
+        // --- ADD / EDIT LOGIC ---
+        function openAddModal() {
+            // Clear Form
+            document.getElementById('medForm').reset();
+            document.getElementById('medId').value = ''; 
+            document.getElementById('medStock').value = '';
+            editTempImg = null;
+            openModal('medModal');
+        }
+
         function saveMedicine(e) {
             e.preventDefault();
             const file = document.getElementById('medImg').files[0];
@@ -438,10 +445,18 @@
                     exp: document.getElementById('medExp').value,
                     img: imgData
                 };
-                const idx = inv.findIndex(i => i.id == item.id);
-                if(idx > -1) inv[idx] = item; else inv.push(item);
+                
+                const existingIdx = inv.findIndex(i => i.id == item.id);
+                if(existingIdx > -1) {
+                    // Update
+                    inv[existingIdx] = item;
+                } else {
+                    // Create New
+                    inv.push(item);
+                }
                 updateData(); closeModal('medModal'); renderGrid();
             };
+
             if(file) resizeImage(file, 150, process); else process(editTempImg);
         }
 
@@ -464,7 +479,7 @@
         }
         function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); updateData(); renderGrid(); } }
 
-        // --- SALES ---
+        // --- SALES & PRINTING ---
         let saleItem = null;
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
@@ -473,6 +488,7 @@
             document.getElementById('saleInfo').innerText = `Price: Rs. ${unit} / Unit`;
             document.getElementById('saleQty').value = 1;
             document.getElementById('saleDisc').value = '';
+            document.getElementById('printSlip').checked = false; // Default unchecked
             calcTotal();
             openModal('saleModal');
         }
@@ -506,35 +522,13 @@
             };
             sales.unshift(s);
             updateData(); closeModal('saleModal'); renderGrid();
-            printReceipt(s);
+
+            // Check if print is requested
+            if(document.getElementById('printSlip').checked) {
+                printReceipt(s);
+            }
         }
 
-        // --- REPORTS (ITEMIZED) ---
-        function renderItemizedReport() {
-            const t = document.getElementById('itemizedTable'); t.innerHTML = '';
-            // Group sales by medicine name
-            const grouped = {};
-            sales.forEach(s => {
-                if(!grouped[s.name]) grouped[s.name] = { qty:0, total:0, profit:0 };
-                grouped[s.name].qty += s.qty;
-                grouped[s.name].total += s.total;
-                grouped[s.name].profit += s.profit;
-            });
-            
-            Object.keys(grouped).forEach(name => {
-                const i = grouped[name];
-                t.innerHTML += `<tr class="border-b border-gray-700/30"><td class="p-3 font-bold">${name}</td><td class="p-3">${i.qty}</td><td class="p-3">Rs. ${i.total}</td><td class="p-3 text-right text-emerald-400 font-bold">Rs. ${i.profit.toFixed(0)}</td></tr>`;
-            });
-        }
-        function renderReports() {
-            const r = sales.reduce((a,b)=>a+b.total,0);
-            const p = sales.reduce((a,b)=>a+b.profit,0);
-            document.getElementById('repRev').innerText = r;
-            document.getElementById('repCost').innerText = (r - p).toFixed(0);
-            document.getElementById('repProfit').innerText = p.toFixed(0);
-        }
-
-        // --- PRINT ---
         function printReceipt(s) {
             const win = window.open('', '', 'width=300,height=600');
             win.document.write(`
@@ -563,7 +557,7 @@
             setTimeout(() => { win.print(); win.close(); }, 500);
         }
 
-        // --- UTILS ---
+        // --- OTHER TABS ---
         function renderHistory() {
             const t = document.getElementById('historyTable'); t.innerHTML = '';
             sales.forEach(s => {
@@ -587,15 +581,38 @@
             });
             updateData(); closeModal('addPurchaseModal'); renderPurchases();
         }
+        function renderReports() {
+            const r = sales.reduce((a,b)=>a+b.total,0);
+            const p = sales.reduce((a,b)=>a+b.profit,0);
+            document.getElementById('repRev').innerText = r;
+            document.getElementById('repCost').innerText = (r - p).toFixed(0);
+            document.getElementById('repProfit').innerText = p.toFixed(0);
+        }
+        function renderItemizedReport() {
+            const t = document.getElementById('itemizedTable'); t.innerHTML = '';
+            const grouped = {};
+            sales.forEach(s => {
+                if(!grouped[s.name]) grouped[s.name] = { qty:0, total:0, profit:0 };
+                grouped[s.name].qty += s.qty;
+                grouped[s.name].total += s.total;
+                grouped[s.name].profit += s.profit;
+            });
+            Object.keys(grouped).forEach(name => {
+                const i = grouped[name];
+                t.innerHTML += `<tr class="border-b border-gray-700/30"><td class="p-3 font-bold">${name}</td><td class="p-3">${i.qty}</td><td class="p-3">Rs. ${i.total}</td><td class="p-3 text-right text-emerald-400 font-bold">Rs. ${i.profit.toFixed(0)}</td></tr>`;
+            });
+        }
+
+        // --- CORE ---
         function uploadLogo(i) {
             const f = i.files[0];
             if(f) resizeImage(f, 150, (res) => { config.logo = res; document.getElementById('mainLogo').src = res; updateData(); });
         }
         function updateData() {
-            localStorage.setItem('az_inv_v11', JSON.stringify(inv));
-            localStorage.setItem('az_sales_v11', JSON.stringify(sales));
-            localStorage.setItem('az_purch_v11', JSON.stringify(purch));
-            localStorage.setItem('az_config_v11', JSON.stringify(config));
+            localStorage.setItem('az_inv_v12', JSON.stringify(inv));
+            localStorage.setItem('az_sales_v12', JSON.stringify(sales));
+            localStorage.setItem('az_purch_v12', JSON.stringify(purch));
+            localStorage.setItem('az_config_v12', JSON.stringify(config));
         }
         function downloadBackup() {
             const d = JSON.stringify({inv, sales, purch, config});
@@ -606,10 +623,10 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                localStorage.setItem('az_inv_v11', JSON.stringify(d.inv));
-                localStorage.setItem('az_sales_v11', JSON.stringify(d.sales));
-                localStorage.setItem('az_purch_v11', JSON.stringify(d.purch));
-                if(d.config) localStorage.setItem('az_config_v11', JSON.stringify(d.config));
+                localStorage.setItem('az_inv_v12', JSON.stringify(d.inv));
+                localStorage.setItem('az_sales_v12', JSON.stringify(d.sales));
+                localStorage.setItem('az_purch_v12', JSON.stringify(d.purch));
+                if(d.config) localStorage.setItem('az_config_v12', JSON.stringify(d.config));
                 location.reload();
             };
             r.readAsText(i.files[0]);
