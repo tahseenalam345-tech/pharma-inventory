@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v16.0</title>
+    <title>Alazamat Medical Store - Final v19.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Outfit', sans-serif; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
+        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         
         /* THEMES */
         .theme-dark {
@@ -17,36 +17,51 @@
             background-image: radial-gradient(at 0% 0%, hsla(192, 100%, 15%, 1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(160, 100%, 15%, 1) 0, transparent 50%);
             background-attachment: fixed;
         }
-        .theme-light { background-color: #f0fdfa; color: #0f172a; }
+        .theme-light { background-color: #f8fafc; color: #0f172a; }
 
-        /* COMPONENT STYLES */
+        /* GLASS CARD */
         .card { 
             backdrop-filter: blur(16px); border-radius: 1.5rem; transition: transform 0.3s;
         }
-        .theme-dark .card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); }
+        .theme-dark .card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.1); }
         .theme-light .card { background: rgba(255, 255, 255, 0.9); border: 1px solid #ccfbf1; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); }
 
+        /* INPUTS */
         .input { width: 100%; padding: 12px; rounded-xl; outline: none; transition: 0.3s; }
         .theme-dark .input { background: #1e293b; border: 1px solid #334155; color: white; }
         .theme-dark .input:focus { border-color: #2dd4bf; }
         .theme-light .input { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; }
 
-        /* SIDEBAR */
-        .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 18rem; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        /* SIDEBAR (HIDDEN BY DEFAULT) */
+        .sidebar { 
+            position: fixed; top: 0; left: 0; height: 100vh; width: 18rem; 
+            z-index: 60; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex; flex-direction: column;
+            transform: translateX(-100%); /* Hidden */
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+        .sidebar.open { transform: translateX(0); }
         .theme-dark .sidebar { background: #020617; border-right: 1px solid #1e293b; }
         .theme-light .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; }
 
-        /* TRAIN ANIMATION (FIXED TOP) */
-        .train-bar {
-            position: fixed; top: 0; left: 0; right: 0; height: 35px; 
-            background: #0f172a; border-bottom: 1px solid #334155;
-            z-index: 40; display: flex; align-items: center; overflow: hidden;
+        /* HOVER ZONE (Left Edge Trigger) */
+        .hover-zone {
+            position: fixed; top: 0; left: 0; width: 15px; height: 100vh; z-index: 55;
         }
+
+        /* TRAIN ANIMATION (Scrolls Away) */
+        .train-wrapper {
+            position: fixed; top: 0; left: 0; right: 0; height: 40px; z-index: 50;
+            background: #0f172a; border-bottom: 1px solid #334155;
+            transition: transform 0.5s ease; /* Smooth hide */
+        }
+        .train-wrapper.hidden-bar { transform: translateY(-100%); }
+        
         .train-text {
-            white-space: nowrap; font-weight: bold; color: #2dd4bf; font-size: 0.9rem;
+            white-space: nowrap; font-weight: bold; color: #2dd4bf; font-size: 0.95rem; line-height: 40px;
             animation: trainMove 25s linear infinite; padding-left: 100vw;
         }
-        @keyframes trainMove { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
+        @keyframes trainMove { 0% { transform: translateX(0); } 100% { transform: translateX(-150%); } }
         
         /* SHINING BUTTON */
         .btn-shine {
@@ -60,59 +75,65 @@
         }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* FOOTER */
-        .crazy-footer {
-            margin-top: 4rem; padding: 3rem 1rem; text-align: center; position: relative; overflow: hidden;
-            background: linear-gradient(to right, #0f172a, #115e59); color: white; border-top: 4px solid #2dd4bf;
+        /* SIGNATURE FOOTER */
+        .signature-footer {
+            margin-top: 5rem; padding: 3rem 1rem; text-align: center;
+            background: linear-gradient(to top, #020617, transparent);
+        }
+        .signature-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #2dd4bf, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
         }
 
-        /* RESPONSIVE UTILS */
-        .mobile-stack { flex-direction: row; }
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .mobile-stack { flex-direction: column; } /* Stacks headers on mobile */
-            .train-bar { z-index: 45; } /* Below sidebar */
-            #hero h1 { font-size: 2.5rem; } /* Smaller text on mobile */
+            .mobile-stack { flex-direction: column; }
+            .hover-zone { display: none; } /* Disable hover zone on touch screens */
         }
     </style>
 </head>
 <body id="appBody" class="theme-dark">
 
-    <div class="train-bar">
+    <div id="topBar" class="train-wrapper">
         <div class="train-text">
-            👋 Aslam o Alikum Boss! Welcome to Alazamat Medical Store System. Current User: Muhammad Yaseen Alam. Contact: +923107377846 💊💉
+            👋 Aslam o Alikum Boss! Welcome to Alazamat Medical Store System. User: Muhammad Yaseen Alam (+923107377846) 💊
         </div>
     </div>
 
-    <button onclick="toggleSidebar()" class="fixed top-12 left-4 z-40 bg-teal-500 text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center text-xl btn-shine border-2 border-white/20">
+    <div class="hover-zone" onmouseover="openSidebar()"></div>
+
+    <button onclick="toggleSidebar()" class="fixed top-14 left-4 z-40 bg-teal-500 text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center text-xl btn-shine border-2 border-white/20 transition hover:scale-110">
         <i class="fas fa-bars"></i>
     </button>
 
-    <aside id="sidebar" class="sidebar shadow-2xl">
-        <div class="p-6 border-b border-gray-700/20 flex items-center gap-3 mt-8 md:mt-0">
-            <div class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg">A</div>
+    <aside id="sidebar" class="sidebar" onmouseleave="closeSidebar()">
+        <div class="p-6 border-b border-gray-700/20 flex items-center gap-3 mt-4">
+            <img src="1.jpg" class="w-10 h-10 rounded-full object-cover border border-teal-500" onerror="this.src='https://via.placeholder.com/50/0f766e/ffffff?text=A'">
             <div>
                 <h1 class="font-bold text-xl tracking-tight text-teal-500">Alazamat</h1>
-                <p class="text-xs opacity-60">System v16.0</p>
+                <p class="text-xs opacity-60">System v19.0</p>
             </div>
-            <button onclick="toggleSidebar()" class="md:hidden ml-auto p-2"><i class="fas fa-times text-xl"></i></button>
+            <button onclick="closeSidebar()" class="ml-auto p-2 opacity-60 hover:opacity-100"><i class="fas fa-times text-xl"></i></button>
         </div>
 
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="scrollToSection('hero')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-home"></i> Home</button>
-            <button onclick="scrollToSection('inventory')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-pills"></i> Medicines</button>
-            <button onclick="scrollToSection('history')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-history"></i> Sales History</button>
-            <button onclick="scrollToSection('purchases')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-truck"></i> Buying Records</button>
-            <button onclick="scrollToSection('reports')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-chart-pie"></i> Profit Reports</button>
+            <button onclick="scrollToSection('hero')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-home w-6"></i> Home</button>
+            <button onclick="scrollToSection('inventory')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-pills w-6"></i> Medicines</button>
+            <button onclick="scrollToSection('history')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-history w-6"></i> Sales History</button>
+            <button onclick="scrollToSection('purchases')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-truck w-6"></i> Buying Records</button>
+            <button onclick="scrollToSection('reports')" class="nav-item w-full text-left p-3 rounded-xl hover:bg-teal-500/10 hover:text-teal-400 transition flex items-center gap-3"><i class="fas fa-chart-pie w-6"></i> Profit Reports</button>
         </nav>
 
         <div class="p-4 border-t border-gray-700/20 bg-black/5">
             <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-lg bg-gray-500/10 mb-4 hover:bg-gray-500/20"><span class="text-sm font-bold">Theme</span><i class="fas fa-adjust"></i></button>
             <div class="flex items-center gap-3">
                 <div class="relative group cursor-pointer" onclick="document.getElementById('profilePic').click()">
-                    <img id="userImg" src="./1.jpg" class ="w-10 h-10 rounded-full object-cover border border-teal-500">
-                    <input type="file" id="profilePic" class="hidden" onchange="updateProfilePic(this)">
+                    <img id="userImg" src="" class="w-10 h-10 rounded-full object-cover border border-teal-500">
+                    <input type="file" id="profilePic" class="hidden" accept="image/*" onchange="updateProfilePic(this)">
                 </div>
                 <div class="overflow-hidden">
                     <input type="text" id="userName" class="bg-transparent font-bold text-sm w-full outline-none truncate" onchange="saveConfig()">
@@ -121,13 +142,13 @@
             </div>
         </div>
     </aside>
-    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 hidden backdrop-blur-sm"></div>
+    <div id="sidebarOverlay" onclick="closeSidebar()" class="fixed inset-0 bg-black/60 z-50 hidden backdrop-blur-sm"></div>
 
-    <main class="md:ml-72 pt-12 min-h-screen flex flex-col">
+    <main class="min-h-screen flex flex-col pt-16">
         
         <section id="hero" class="p-8 md:p-16 flex flex-col items-center justify-center text-center min-h-[70vh]">
             <div class="relative group mb-8">
-               <img id="storeLogo" src="./1.jpg" class="w-48 h-48 rounded-full border-4 border-teal-500 shadow-[0_0_60px_rgba(20,184,166,0.4)] object-cover animate-pulse cursor-pointer" onclick="document.getElementById('logoInput').click()">
+                <img id="storeLogo" src="1.jpg" class="w-48 h-48 rounded-full border-4 border-teal-500 shadow-[0_0_60px_rgba(20,184,166,0.4)] object-cover animate-pulse cursor-pointer" onclick="document.getElementById('logoInput').click()" onerror="this.src='https://img.freepik.com/free-vector/medical-logo-gradient-style_23-2147822363.jpg?w=200'">
                 <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="uploadLogo(this)">
             </div>
             
@@ -135,7 +156,7 @@
             <h2 class="text-xl md:text-2xl opacity-70 tracking-[0.3em] uppercase mb-10">Medical Store</h2>
             
             <button onclick="scrollToSection('inventory')" class="btn-shine px-8 py-4 rounded-full shadow-2xl flex items-center gap-2 text-lg">
-                <span>Open Inventory</span> <i class="fas fa-arrow-down animate-bounce"></i>
+                <span>Start Selling</span> <i class="fas fa-arrow-down animate-bounce"></i>
             </button>
         </section>
 
@@ -143,7 +164,7 @@
             <div class="flex mobile-stack justify-between items-end mb-6 gap-4">
                 <div class="mb-2 md:mb-0">
                     <h2 class="text-3xl font-bold border-l-4 border-teal-500 pl-4 text-teal-400">Inventory</h2>
-                    <p class="text-xs opacity-50 ml-5 mt-1">Manage & Sell</p>
+                    <p class="text-xs opacity-50 ml-5 mt-1">Manage Stock</p>
                 </div>
                 <div class="flex flex-col md:flex-row w-full md:w-auto gap-2">
                     <input type="text" id="search" placeholder="Search medicine..." class="input w-full md:w-64">
@@ -156,8 +177,9 @@
         <section id="history" class="p-4 md:p-8">
             <h2 class="text-3xl font-bold border-l-4 border-yellow-400 pl-4 mb-6 text-yellow-400">Sales History</h2>
             <div class="card overflow-hidden">
-                <div class="overflow-x-auto"> <table class="w-full text-left min-w-[600px]">
-                        <thead class="bg-black/10 text-xs uppercase"><tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4">Disc</th><th class="p-4">Total</th><th class="p-4">Slip</th></tr></thead>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[700px]">
+                        <thead class="bg-black/10 text-xs uppercase"><tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4">Disc</th><th class="p-4">Profit</th><th class="p-4">Total</th><th class="p-4">Slip</th></tr></thead>
                         <tbody id="historyTable" class="divide-y divide-gray-700/20 text-sm"></tbody>
                     </table>
                 </div>
@@ -167,7 +189,7 @@
         <section id="purchases" class="p-4 md:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold border-l-4 border-purple-400 pl-4 text-purple-400">Buying Records</h2>
-                <button onclick="openModal('purchaseModal')" class="btn-shine bg-purple-500 px-6 py-2 rounded-xl">Add</button>
+                <button onclick="openModal('purchaseModal')" class="btn-shine bg-purple-500 px-6 py-2 rounded-xl">Add Record</button>
             </div>
             <div id="purchaseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
@@ -194,15 +216,9 @@
             </div>
         </section>
 
-        <footer class="crazy-footer">
-            <h2 class="text-3xl font-extrabold mb-2 text-teal-200">ALAZAMAT</h2>
-            <p class="text-teal-100 text-sm opacity-80">Serving Health with Excellence since 2026</p>
-            <div class="mt-6 flex justify-center gap-6 text-3xl text-teal-300">
-                <i class="fas fa-heartbeat animate-pulse"></i>
-                <i class="fas fa-mortar-pestle"></i>
-                <i class="fas fa-file-prescription"></i>
-            </div>
-            <p class="mt-8 text-xs opacity-50">System Developed for Muhammad Yaseen Alam</p>
+        <footer class="signature-footer">
+            <p class="text-xs opacity-50 uppercase tracking-widest mb-4">Developed & Managed By</p>
+            <div class="signature-text">M Tahseen Alam</div>
         </footer>
 
     </main>
@@ -216,7 +232,7 @@
             <form id="medForm" onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="medName" placeholder="Medicine Name" required class="input">
+                    <input type="text" id="medName" placeholder="Name" required class="input">
                     <input type="text" id="medBrand" placeholder="Brand" class="input">
                 </div>
                 <input type="text" id="medFormula" placeholder="Formula" class="input">
@@ -225,7 +241,7 @@
                     <p class="text-xs font-bold text-teal-500 uppercase mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
                         <input type="number" id="medTotalPacks" placeholder="Packs" required class="input text-sm" oninput="calcUnits()">
-                        <input type="number" id="medPackSize" placeholder="Items/Pack" value="1" required class="input text-sm" oninput="calcUnits()">
+                        <input type="number" id="medPackSize" placeholder="Itm/Pk" value="1" required class="input text-sm" oninput="calcUnits()">
                         <input type="number" id="medStock" placeholder="Total" readonly class="input text-sm opacity-60">
                     </div>
                 </div>
@@ -287,37 +303,51 @@
 
     <script>
         // --- DATA ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_16')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_16')) || [];
-        let purch = JSON.parse(localStorage.getItem('az_purch_16')) || [];
-       let config = JSON.parse(localStorage.getItem('az_config_16')) || {
-    logo: './1.jpg',
-    theme: 'dark',
-    user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=0f766e&color=fff' }
-};
+        let inv = JSON.parse(localStorage.getItem('az_inv_19')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_19')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_19')) || [];
+        let config = JSON.parse(localStorage.getItem('az_config_19')) || {
+            logo: '1.jpg',
+            theme: 'dark',
+            user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846', pic: 'https://ui-avatars.com/api/?name=MY&background=0f766e&color=fff' }
+        };
+
+        // --- SCROLL LISTENER FOR TRAIN ---
+        window.addEventListener('scroll', () => {
+            const bar = document.getElementById('topBar');
+            if (window.scrollY > 50) bar.classList.add('hidden-bar');
+            else bar.classList.remove('hidden-bar');
+        });
 
         // --- INIT ---
         if(inv.length === 0) {
+            // Updated Sample Data: Tries to look in 'imagr' folder first, then web fallback
             inv = [
-                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1550572017-4fcdbb56cc5d?q=80&w=300'},
-                {id: 2, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?q=80&w=300'},
-                {id: 3, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'https://images.unsplash.com/photo-1628771065518-0d82f22ef302?q=80&w=300'}
+                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'imagr/panadol.jpg'},
+                {id: 2, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'imagr/brufen.jpg'},
+                {id: 3, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'imagr/augmentin.jpg'}
             ];
             saveData();
         }
         applyConfig();
         renderAll();
 
-        // --- UI ---
+        // --- UI LOGIC ---
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.remove('hidden');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        }
         function toggleSidebar() { 
             const sb = document.getElementById('sidebar');
-            sb.classList.toggle('translate-x-0'); // Mobile slide in
-            sb.classList.toggle('-translate-x-full'); 
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+            if(sb.classList.contains('open')) closeSidebar(); else openSidebar();
         }
         function scrollToSection(id) { 
             document.getElementById(id).scrollIntoView({behavior: 'smooth'}); 
-            if(window.innerWidth < 768) toggleSidebar();
+            closeSidebar();
         }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -337,14 +367,15 @@
             const term = document.getElementById('search').value.toLowerCase();
             inv.filter(i => i.name.toLowerCase().includes(term)).forEach(i => {
                 const packs = (i.stock / i.packSize).toFixed(1);
+                // Fallback image logic handled in HTML onerror
                 g.innerHTML += `
                 <div class="card p-4 relative group hover:scale-[1.02] transition duration-300">
-                    <div class="absolute top-2 right-2 flex gap-2 z-10">
+                    <div class="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition">
                         <button onclick="editMed(${i.id})" class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg"><i class="fas fa-pen text-xs"></i></button>
                         <button onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     <div class="flex gap-4 mb-3">
-                        <img src="${i.img}" class="w-20 h-20 rounded-xl object-cover bg-black/20 border border-teal-500/30">
+                        <img src="${i.img}" class="w-20 h-20 rounded-xl object-cover bg-black/20 border border-teal-500/30" onerror="this.src='https://via.placeholder.com/150/10b981/ffffff?text=Rx'">
                         <div>
                             <h4 class="font-bold text-lg leading-tight mt-1">${i.name}</h4>
                             <p class="text-xs opacity-60 uppercase">${i.brand}</p>
@@ -376,31 +407,57 @@
             const s = parseFloat(document.getElementById('medPackSize').value) || 1;
             document.getElementById('medStock').value = Math.ceil(p * s);
         }
+        
+        // Auto Compress Image
+        function resizeImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const scale = 300 / img.width;
+                    canvas.width = 300;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function saveMedicine(e) {
             e.preventDefault();
             const file = document.getElementById('medImg').files[0];
-            const reader = new FileReader();
-            reader.onload = (evt) => processSave(evt.target.result);
-            if(file) reader.readAsDataURL(file); else processSave(editTempImg || 'https://via.placeholder.com/150?text=Rx');
-        }
-        function processSave(img) {
-            const item = {
-                id: document.getElementById('medId').value || Date.now(),
-                name: document.getElementById('medName').value,
-                brand: document.getElementById('medBrand').value,
-                formula: document.getElementById('medFormula').value,
-                packSize: parseInt(document.getElementById('medPackSize').value),
-                stock: parseInt(document.getElementById('medStock').value),
-                cost: parseFloat(document.getElementById('medCost').value),
-                price: parseFloat(document.getElementById('medPrice').value),
-                cat: document.getElementById('medCat').value,
-                exp: document.getElementById('medExp').value,
-                img: img
+            const process = (imgData) => {
+                const item = {
+                    id: document.getElementById('medId').value || Date.now(),
+                    name: document.getElementById('medName').value,
+                    brand: document.getElementById('medBrand').value,
+                    formula: document.getElementById('medFormula').value,
+                    packSize: parseInt(document.getElementById('medPackSize').value),
+                    stock: parseInt(document.getElementById('medStock').value),
+                    cost: parseFloat(document.getElementById('medCost').value),
+                    price: parseFloat(document.getElementById('medPrice').value),
+                    cat: document.getElementById('medCat').value,
+                    exp: document.getElementById('medExp').value,
+                    img: imgData
+                };
+                
+                const existingId = document.getElementById('medId').value;
+                if(existingId) {
+                    const idx = inv.findIndex(i => i.id == existingId);
+                    if(idx > -1) inv[idx] = item;
+                } else {
+                    inv.push(item);
+                }
+                saveData(); closeModal('medModal'); renderAll();
             };
-            const idx = inv.findIndex(i => i.id == item.id);
-            if(idx > -1) inv[idx] = item; else inv.push(item);
-            saveData(); closeModal('medModal'); renderAll();
+            
+            if(file) resizeImage(file, process); else process(editTempImg || 'https://via.placeholder.com/150?text=Rx');
         }
+
         let editTempImg = null;
         function editMed(id) {
             const i = inv.find(x => x.id == id);
@@ -420,7 +477,7 @@
         }
         function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); saveData(); renderAll(); } }
 
-        // --- SALES ---
+        // --- SALES & PRINT ---
         let saleItem = null;
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
@@ -467,7 +524,7 @@
             if(document.getElementById('printSlip').checked) printReceipt(s);
         }
 
-        // --- PRINT ---
+        // --- PRINT RECEIPT ---
         function printReceipt(s) {
             const win = window.open('', '', 'width=300,height=600');
             win.document.write(`
@@ -489,54 +546,35 @@
                     <div class="line"></div><div class="small">Thank You!</div>
                 </body></html>`);
             win.document.close(); win.focus();
-            setTimeout(() => { win.print(); win.close(); }, 500);
+            setTimeout(() => { win.print(); win.close(); }, 800);
         }
 
-        // --- CORE FUNCTIONS ---
+        // --- CORE ---
         function saveData() {
-            localStorage.setItem('az_inv_16', JSON.stringify(inv));
-            localStorage.setItem('az_sales_16', JSON.stringify(sales));
-            localStorage.setItem('az_purch_16', JSON.stringify(purch));
-            localStorage.setItem('az_config_16', JSON.stringify(config));
+            localStorage.setItem('az_inv_19', JSON.stringify(inv));
+            localStorage.setItem('az_sales_19', JSON.stringify(sales));
+            localStorage.setItem('az_purch_19', JSON.stringify(purch));
+            localStorage.setItem('az_config_19', JSON.stringify(config));
         }
-        function uploadLogo(i) { const f=i.files[0]; if(f) { const r=new FileReader(); r.onload=(e)=>{config.logo=e.target.result; saveData(); applyConfig();}; r.readAsDataURL(f); } }
-        function updateProfilePic(i) { const f=i.files[0]; if(f) { const r=new FileReader(); r.onload=(e)=>{config.user.pic=e.target.result; saveData(); applyConfig();}; r.readAsDataURL(f); } }
+        function uploadLogo(i) { const f=i.files[0]; if(f) resizeImage(f, (res)=>{config.logo=res; saveData(); applyConfig();}); }
+        function updateProfilePic(i) { const f=i.files[0]; if(f) resizeImage(f, (res)=>{config.user.pic=res; saveData(); applyConfig();}); }
         function saveConfig() { config.user.name = document.getElementById('userName').value; config.user.contact = document.getElementById('userContact').value; saveData(); }
         
         function renderAll() {
             renderGrid();
-            // History
-            document.getElementById('historyTable').innerHTML = sales.map(s => `<tr><td class="p-4 opacity-70 whitespace-nowrap">${s.date}</td><td class="p-4 font-bold">${s.name}</td><td class="p-4">${s.qty}</td><td class="p-4 text-red-400">${s.disc}</td><td class="p-4 font-bold text-teal-400">${s.total}</td><td class="p-4 text-center"><button onclick='printReceipt(${JSON.stringify(s)})'><i class="fas fa-print opacity-50 hover:opacity-100"></i></button></td></tr>`).join('');
-            // Purchases
+            document.getElementById('historyTable').innerHTML = sales.map(s => `<tr><td class="p-4 opacity-70 whitespace-nowrap">${s.date}</td><td class="p-4 font-bold">${s.name}</td><td class="p-4">${s.qty}</td><td class="p-4 text-red-400">${s.disc}</td><td class="p-4 text-green-400 font-bold">${s.profit.toFixed(0)}</td><td class="p-4 font-bold text-teal-400">${s.total}</td><td class="p-4 text-center"><button onclick='printReceipt(${JSON.stringify(s)})'><i class="fas fa-print opacity-50 hover:opacity-100"></i></button></td></tr>`).join('');
             document.getElementById('purchaseGrid').innerHTML = purch.map(p => `<div class="card p-4"><h4 class="font-bold text-lg">${p.dealer}</h4><p class="text-xs opacity-60 uppercase">${p.comp}</p><p class="text-sm my-2 bg-black/10 p-2 rounded">${p.items}</p><p class="text-right font-bold text-purple-400 text-xl">${p.amt}</p></div>`).join('');
-            // Reports
             const r = sales.reduce((a,b)=>a+b.total,0); const p = sales.reduce((a,b)=>a+b.profit,0);
             document.getElementById('repRev').innerText = r; document.getElementById('repCost').innerText = (r-p).toFixed(0); document.getElementById('repProfit').innerText = p.toFixed(0);
             document.getElementById('itemTable').innerHTML = sales.map(s => `<tr><td class="p-3">${s.name}</td><td class="p-3">${s.qty}</td><td class="p-3 text-right text-teal-400 font-bold">${s.profit.toFixed(0)}</td></tr>`).join('');
         }
         function savePurchase(e) {
             e.preventDefault();
-            purch.unshift({
-                dealer: document.getElementById('pDealer').value,
-                comp: document.getElementById('pCompany').value,
-                items: document.getElementById('pItems').value,
-                amt: document.getElementById('pAmount').value,
-                date: document.getElementById('pDate').value
-            });
+            purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
             saveData(); closeModal('purchaseModal'); renderAll();
         }
-        function downloadBackup() {
-            const d = JSON.stringify({inv, sales, purch, config});
-            const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download='Alazamat_Backup.json'; a.click();
-        }
-        function restoreBackup(i) {
-            const r = new FileReader(); r.onload=(e)=>{ const d=JSON.parse(e.target.result); localStorage.setItem('az_inv_16', JSON.stringify(d.inv)); localStorage.setItem('az_sales_16', JSON.stringify(d.sales)); localStorage.setItem('az_purch_16', JSON.stringify(d.purch)); if(d.config) localStorage.setItem('az_config_16', JSON.stringify(d.config)); location.reload(); }; r.readAsText(i.files[0]);
-        }
+        function downloadBackup() { const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify({inv, sales, purch, config})],{type:'application/json'})); a.download='Alazamat_Backup.json'; a.click(); }
+        function restoreBackup(i) { const r = new FileReader(); r.onload=(e)=>{ const d=JSON.parse(e.target.result); localStorage.setItem('az_inv_19', JSON.stringify(d.inv)); localStorage.setItem('az_sales_19', JSON.stringify(d.sales)); localStorage.setItem('az_purch_19', JSON.stringify(d.purch)); if(d.config) localStorage.setItem('az_config_19', JSON.stringify(d.config)); location.reload(); }; r.readAsText(i.files[0]); }
     </script>
 </body>
 </html>
-
-
-
-
-
