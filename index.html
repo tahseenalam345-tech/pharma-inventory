@@ -3,130 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alazamat Medical Store - v9.0</title>
+    <title>Alazamat Medical Store - v10.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+        body { font-family: 'Outfit', sans-serif; transition: background 0.3s, color 0.3s; }
         
-        /* AESTHETIC BACKGROUND */
-        .bg-aesthetic {
+        /* THEMES */
+        .theme-dark {
             background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-size: cover; background-attachment: fixed; color: white;
         }
-        .glass-overlay {
-            background: rgba(15, 23, 42, 0.9); /* Dark Blue Tint */
-            backdrop-filter: blur(5px);
-            position: fixed; inset: 0; z-index: -1;
+        .theme-dark .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); }
+        .theme-dark .card { background: rgba(30, 41, 59, 0.9); border: 1px solid #334155; color: white; }
+        .theme-dark .input { background: #1e293b; border-color: #475569; color: white; }
+        .theme-dark .sidebar { background: #0f172a; border-right: 1px solid #1e293b; }
+
+        .theme-light {
+            background-color: #f1f5f9; color: #1e293b;
         }
+        .theme-light .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .theme-light .card { background: white; border: 1px solid #e2e8f0; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .theme-light .input { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
+        .theme-light .sidebar { background: white; border-right: 1px solid #e2e8f0; }
 
         /* Animations */
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Print Styles (Thermal) */
-        @media print {
-            body * { visibility: hidden; }
-            #receiptArea, #receiptArea * { visibility: visible; }
-            #receiptArea { 
-                position: absolute; left: 0; top: 0; width: 72mm; 
-                background: white; color: black; font-family: monospace; padding: 10px;
-            }
-        }
     </style>
 </head>
-<body class="bg-aesthetic text-white min-h-screen">
+<body id="appBody" class="theme-dark min-h-screen overflow-x-hidden">
     
-    <div class="glass-overlay"></div>
+    <div class="glass fixed inset-0 z-[-1]"></div>
 
     <button onclick="toggleSidebar()" class="fixed top-6 left-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition hover:scale-110">
         <i class="fas fa-bars text-xl"></i>
     </button>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 shadow-2xl transform -translate-x-full transition duration-300 z-50 border-r border-slate-700 flex flex-col">
-        <div class="p-8 flex justify-between items-center border-b border-slate-700">
-            <h2 class="font-bold text-xl text-emerald-400">Alazamat</h2>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 w-80 transform -translate-x-full transition duration-300 z-50 flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-gray-700/50 flex justify-between items-center">
+            <h2 class="font-bold text-2xl text-emerald-500 tracking-wide">Alazamat</h2>
+            <button onclick="toggleSidebar()" class="opacity-50 hover:opacity-100"><i class="fas fa-times text-xl"></i></button>
         </div>
-        <nav class="flex-1 p-6 space-y-4">
-            <button onclick="scrollToTop()" class="sidebar-btn"><i class="fas fa-home text-sky-400"></i> Home</button>
-            <button onclick="openOverlay('historyOverlay'); renderHistory()" class="sidebar-btn"><i class="fas fa-history text-yellow-400"></i> Sales History</button>
-            <button onclick="openOverlay('purchaseOverlay'); renderPurchases()" class="sidebar-btn"><i class="fas fa-truck text-purple-400"></i> Buying Records</button>
-            <button onclick="openOverlay('reportOverlay'); renderReports()" class="sidebar-btn"><i class="fas fa-chart-line text-red-400"></i> Profit Report</button>
+        
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="scrollToTop()" class="nav-btn"><i class="fas fa-home text-sky-400 w-6"></i> Home</button>
+            <button onclick="openOverlay('historyOverlay'); renderHistory()" class="nav-btn"><i class="fas fa-history text-yellow-400 w-6"></i> Sales History</button>
+            <button onclick="openOverlay('purchaseOverlay'); renderPurchases()" class="nav-btn"><i class="fas fa-truck text-purple-400 w-6"></i> Buying Records</button>
+            <button onclick="openOverlay('reportOverlay'); renderReports()" class="nav-btn"><i class="fas fa-chart-line text-red-400 w-6"></i> Profit Reports</button>
             
-            <div class="mt-8 pt-8 border-t border-slate-700">
-                <button onclick="downloadBackup()" class="sidebar-btn text-sm"><i class="fas fa-download"></i> Backup Data</button>
-                <label class="sidebar-btn text-sm cursor-pointer">
-                    <i class="fas fa-upload"></i> Restore Data
+            <div class="pt-4 mt-4 border-t border-gray-700/50">
+                <p class="text-xs font-bold opacity-50 uppercase mb-2 px-2">Settings</p>
+                <button onclick="toggleTheme()" class="nav-btn"><i class="fas fa-adjust w-6"></i> Switch Theme</button>
+                <button onclick="downloadBackup()" class="nav-btn"><i class="fas fa-download w-6"></i> Backup Data</button>
+                <label class="nav-btn cursor-pointer">
+                    <i class="fas fa-upload w-6"></i> Restore Data
                     <input type="file" class="hidden" onchange="restoreBackup(this)">
                 </label>
             </div>
         </nav>
-    </aside>
-    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden"></div>
 
-    <main class="relative z-10 pb-20">
-        
-        <section class="min-h-[80vh] flex flex-col items-center justify-center text-center p-6">
-            <div class="relative group mb-8">
-                <img id="mainLogo" src="https://via.placeholder.com/150?text=LOGO" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.3)] object-cover">
+        <div class="p-4 bg-black/20 border-t border-gray-700/50">
+            <div class="flex items-center gap-3">
+                <div class="relative group cursor-pointer" onclick="document.getElementById('profilePicInput').click()">
+                    <img id="userPicDisplay" src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff" class="w-12 h-12 rounded-full object-cover border-2 border-emerald-500">
+                    <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fas fa-camera text-xs text-white"></i></div>
+                    <input type="file" id="profilePicInput" class="hidden" accept="image/*" onchange="updateProfilePic(this)">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <input type="text" id="userNameInput" value="Dr. Alazamat" class="bg-transparent font-bold w-full outline-none focus:border-b border-emerald-500" onchange="saveProfile()">
+                    <input type="text" id="userContactInput" value="+92 300 1234567" class="bg-transparent text-xs opacity-70 w-full outline-none focus:border-b border-emerald-500" onchange="saveProfile()">
+                </div>
+            </div>
+        </div>
+    </aside>
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm"></div>
+
+    <main class="relative z-10 pb-24">
+        <section class="min-h-[70vh] flex flex-col items-center justify-center text-center p-6">
+            <div class="relative group mb-6">
+                <img id="mainLogo" src="https://via.placeholder.com/150/10b981/ffffff?text=LOGO" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-2xl object-cover">
                 <label class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
-                    <span class="text-xs font-bold">Upload Logo</span>
+                    <span class="text-xs font-bold text-white">Change Logo</span>
                     <input type="file" class="hidden" accept="image/*" onchange="uploadLogo(this)">
                 </label>
             </div>
-            <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 fade-in">Alazamat</h1>
-            <h2 class="text-2xl font-light tracking-[0.5em] text-slate-300 mb-10 fade-in">MEDICAL STORE</h2>
-            <button onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" class="animate-bounce text-emerald-400 flex flex-col items-center gap-2">
-                <span class="text-sm font-bold uppercase">View Inventory</span>
-                <i class="fas fa-chevron-down text-2xl"></i>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-2 fade-in">Alazamat</h1>
+            <h2 class="text-2xl opacity-70 tracking-[0.3em] mb-8 fade-in">MEDICAL STORE</h2>
+            <button onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" class="animate-bounce text-emerald-400 flex flex-col items-center">
+                <span class="text-xs font-bold uppercase">Scroll Down</span>
+                <i class="fas fa-chevron-down text-xl"></i>
             </button>
         </section>
 
-        <section id="inventory" class="p-4 md:p-8">
-            <div class="max-w-7xl mx-auto bg-slate-900/80 backdrop-blur-md rounded-3xl p-6 md:p-10 border border-slate-700 shadow-2xl">
+        <section id="inventory" class="px-4 md:px-8">
+            <div class="max-w-7xl mx-auto card rounded-3xl p-6 md:p-8 shadow-2xl">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div>
-                        <h2 class="text-3xl font-bold text-white">Inventory</h2>
-                        <p class="text-slate-400 text-sm">Manage stock and sell medicines</p>
+                        <h2 class="text-3xl font-bold">Inventory</h2>
+                        <p class="opacity-60 text-sm">Manage stock & sales</p>
                     </div>
                     <div class="flex gap-2 w-full md:w-auto">
-                        <input type="text" id="search" placeholder="Search medicine..." class="flex-1 bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl outline-none focus:border-emerald-500">
-                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-black px-6 py-3 rounded-xl font-bold shadow-lg transition">+ Add New</button>
+                        <input type="text" id="search" placeholder="Search..." class="flex-1 input px-4 py-3 rounded-xl outline-none focus:border-emerald-500 border">
+                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">+ Add</button>
                     </div>
                 </div>
-
                 <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
         </section>
     </main>
 
     <div id="historyOverlay" onclick="if(event.target===this) closeOverlay('historyOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-3xl border border-slate-700 flex flex-col shadow-2xl fade-in overflow-hidden">
-            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+        <div class="card w-full max-w-5xl h-[85vh] rounded-3xl flex flex-col shadow-2xl fade-in overflow-hidden">
+            <div class="p-6 border-b border-gray-700/50 flex justify-between items-center bg-black/20">
                 <h2 class="text-2xl font-bold text-yellow-400">Sales History</h2>
-                <button onclick="closeOverlay('historyOverlay')" class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+                <button onclick="closeOverlay('historyOverlay')" class="w-8 h-8 rounded-full bg-red-500 text-white"><i class="fas fa-times"></i></button>
             </div>
             <div class="flex-1 overflow-auto p-6">
-                <table class="w-full text-left text-slate-300">
-                    <thead class="bg-slate-800 text-xs uppercase text-slate-500 sticky top-0"><tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Print</th></tr></thead>
-                    <tbody id="historyTable" class="divide-y divide-slate-800"></tbody>
+                <table class="w-full text-left opacity-90">
+                    <thead class="text-xs uppercase opacity-50 border-b border-gray-600"><tr><th class="p-3">Date</th><th class="p-3">Item</th><th class="p-3">Qty</th><th class="p-3">Discount</th><th class="p-3 text-right">Total</th><th class="p-3 text-center">Receipt</th></tr></thead>
+                    <tbody id="historyTable" class="divide-y divide-gray-700/50"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <div id="purchaseOverlay" onclick="if(event.target===this) closeOverlay('purchaseOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-3xl border border-slate-700 flex flex-col shadow-2xl fade-in overflow-hidden">
-            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+        <div class="card w-full max-w-5xl h-[85vh] rounded-3xl flex flex-col shadow-2xl fade-in overflow-hidden">
+            <div class="p-6 border-b border-gray-700/50 flex justify-between items-center bg-black/20">
                 <h2 class="text-2xl font-bold text-purple-400">Buying Records</h2>
-                <div class="flex gap-3">
+                <div class="flex gap-2">
                     <button onclick="openModal('addPurchaseModal')" class="bg-purple-500 px-4 py-1 rounded text-white text-sm font-bold">Add New</button>
-                    <button onclick="closeOverlay('purchaseOverlay')" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+                    <button onclick="closeOverlay('purchaseOverlay')" class="w-8 h-8 rounded-full bg-red-500 text-white"><i class="fas fa-times"></i></button>
                 </div>
             </div>
             <div id="purchaseGrid" class="flex-1 overflow-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start"></div>
@@ -134,191 +144,204 @@
     </div>
 
     <div id="reportOverlay" onclick="if(event.target===this) closeOverlay('reportOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-700 p-8 shadow-2xl fade-in text-center relative">
-            <button onclick="closeOverlay('reportOverlay')" class="absolute top-4 right-4 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
-            <h2 class="text-3xl font-bold text-white mb-8">Profit Reports</h2>
+        <div class="card w-full max-w-3xl rounded-3xl p-8 shadow-2xl fade-in text-center relative">
+            <button onclick="closeOverlay('reportOverlay')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500 text-white"><i class="fas fa-times"></i></button>
+            <h2 class="text-3xl font-bold mb-8">Profit Reports</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                    <p class="text-slate-400 text-sm uppercase">Revenue</p>
+                <div class="p-6 rounded-2xl bg-black/20 border border-gray-700/50">
+                    <p class="opacity-50 text-sm uppercase">Revenue</p>
                     <p class="text-3xl font-bold text-sky-400 mt-2" id="repRev">0</p>
                 </div>
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                    <p class="text-slate-400 text-sm uppercase">Cost</p>
+                <div class="p-6 rounded-2xl bg-black/20 border border-gray-700/50">
+                    <p class="opacity-50 text-sm uppercase">Cost</p>
                     <p class="text-3xl font-bold text-red-400 mt-2" id="repCost">0</p>
                 </div>
-                <div class="bg-emerald-900/30 p-6 rounded-2xl border border-emerald-500/50">
-                    <p class="text-emerald-400 text-sm uppercase font-bold">Profit</p>
-                    <p class="text-4xl font-bold text-white mt-2" id="repProfit">0</p>
+                <div class="p-6 rounded-2xl bg-emerald-900/20 border border-emerald-500/50">
+                    <p class="text-emerald-400 text-sm uppercase font-bold">Net Profit</p>
+                    <p class="text-4xl font-bold mt-2" id="repProfit">0</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="medModal" onclick="if(event.target===this) closeModal('medModal')" class="fixed inset-0 bg-black/80 hidden z-[90] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-800 w-full max-w-2xl rounded-2xl border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-slate-700 flex justify-between items-center">
+        <div class="card w-full max-w-2xl rounded-2xl flex flex-col max-h-[90vh] shadow-2xl">
+            <div class="p-5 border-b border-gray-700/50 flex justify-between items-center">
                 <h3 class="text-xl font-bold">Medicine Details</h3>
-                <button onclick="closeModal('medModal')" class="bg-red-500 w-8 h-8 rounded-full text-white"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal('medModal')" class="text-red-500"><i class="fas fa-times text-xl"></i></button>
             </div>
             <form onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="lbl">Name</label><input type="text" id="medName" required class="input"></div>
-                    <div><label class="lbl">Brand</label><input type="text" id="medBrand" class="input"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Name</label><input type="text" id="medName" required class="input rounded-lg w-full p-2 border"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Brand</label><input type="text" id="medBrand" class="input rounded-lg w-full p-2 border"></div>
                 </div>
-                <div><label class="lbl">Formula</label><input type="text" id="medFormula" class="input"></div>
-                <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
-                    <p class="text-xs text-sky-400 uppercase font-bold mb-3">Stock Logic</p>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div><label class="lbl">Packs</label><input type="number" id="medTotalPacks" required class="input bg-slate-800" oninput="calcUnits()"></div>
-                        <div><label class="lbl">Per Pack</label><input type="number" id="medPackSize" value="1" required class="input bg-slate-800" oninput="calcUnits()"></div>
-                        <div><label class="lbl">Total Units</label><input type="number" id="medStock" readonly class="input bg-black/50 text-slate-400"></div>
+                <div><label class="text-xs opacity-50 font-bold uppercase">Formula</label><input type="text" id="medFormula" class="input rounded-lg w-full p-2 border"></div>
+                
+                <div class="bg-black/10 p-4 rounded-xl border border-gray-700/50">
+                    <p class="text-xs text-sky-400 font-bold uppercase mb-2">Stock & Packs</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div><label class="text-[10px] opacity-50">Total Packs</label><input type="number" id="medTotalPacks" required class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
+                        <div><label class="text-[10px] opacity-50">Items/Pack</label><input type="number" id="medPackSize" value="1" required class="input rounded w-full p-2 text-sm border" oninput="calcUnits()"></div>
+                        <div><label class="text-[10px] opacity-50">Total Units</label><input type="number" id="medStock" readonly class="bg-black/20 text-gray-500 rounded w-full p-2 text-sm border border-transparent"></div>
                     </div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="lbl">Buy Cost (Pack)</label><input type="number" id="medCost" required class="input"></div>
-                    <div><label class="lbl">Sell Price (Pack)</label><input type="number" id="medPrice" required class="input"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Buy Cost (Pack)</label><input type="number" id="medCost" required class="input rounded-lg w-full p-2 border"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Sell Price (Pack)</label><input type="number" id="medPrice" required class="input rounded-lg w-full p-2 border"></div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="lbl">Category</label><select id="medCat" class="input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Other</option></select></div>
-                    <div><label class="lbl">Expiry</label><input type="date" id="medExp" class="input"></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Category</label><select id="medCat" class="input rounded-lg w-full p-2 border"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Other</option></select></div>
+                    <div><label class="text-xs opacity-50 font-bold uppercase">Expiry</label><input type="date" id="medExp" class="input rounded-lg w-full p-2 border"></div>
                 </div>
-                <div><label class="lbl">Image</label><input type="file" id="medImg" accept="image/*" class="w-full text-sm text-slate-400"></div>
-                <button class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-xl">Save</button>
+                <div><label class="text-xs opacity-50 font-bold uppercase">Image</label><input type="file" id="medImg" accept="image/*" class="w-full text-sm opacity-70"></div>
+                <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-lg">Save Medicine</button>
             </form>
         </div>
     </div>
 
     <div id="saleModal" onclick="if(event.target===this) closeModal('saleModal')" class="fixed inset-0 bg-black/80 hidden z-[90] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-800 w-full max-w-sm rounded-2xl border border-slate-700 shadow-2xl p-6 text-center">
-            <h3 class="text-xl font-bold text-white mb-1" id="saleName">Name</h3>
-            <p class="text-sm text-slate-400 mb-6" id="saleInfo">Info</p>
+        <div class="card w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl">
+            <h3 class="text-xl font-bold mb-1" id="saleName">Name</h3>
+            <p class="text-sm opacity-60 mb-6" id="saleInfo">Info</p>
             <div class="flex justify-center items-center gap-4 mb-4">
-                <button onclick="adjQty(-1)" class="w-10 h-10 rounded-full bg-slate-700 text-white">-</button>
-                <input type="number" id="saleQty" value="1" class="w-20 bg-transparent text-3xl font-bold text-center text-white border-b-2 border-emerald-500 outline-none" oninput="calcTotal()">
-                <button onclick="adjQty(1)" class="w-10 h-10 rounded-full bg-slate-700 text-white">+</button>
+                <button onclick="adjQty(-1)" class="w-10 h-10 rounded-full bg-gray-600 text-white">-</button>
+                <input type="number" id="saleQty" value="1" class="w-20 bg-transparent text-3xl font-bold text-center border-b-2 border-emerald-500 outline-none" oninput="calcTotal()">
+                <button onclick="adjQty(1)" class="w-10 h-10 rounded-full bg-gray-600 text-white">+</button>
             </div>
-            <div class="mb-4 text-left"><label class="lbl">Discount (Rs)</label><input type="number" id="saleDisc" placeholder="0" class="input" oninput="calcTotal()"></div>
-            <div class="bg-slate-900 p-4 rounded-xl mb-6"><p class="text-xs text-slate-500 uppercase">Total</p><p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p></div>
+            <div class="mb-4 text-left"><label class="text-xs font-bold uppercase opacity-50">Discount (Rs)</label><input type="number" id="saleDisc" placeholder="0" class="input w-full p-2 rounded-lg border" oninput="calcTotal()"></div>
+            <div class="bg-black/20 p-4 rounded-xl mb-6"><p class="text-xs opacity-50 uppercase">Total</p><p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p></div>
             <div class="flex gap-3">
-                <button onclick="closeModal('saleModal')" class="flex-1 bg-slate-700 text-white py-3 rounded-xl">Cancel</button>
-                <button onclick="confirmSale()" class="flex-1 bg-emerald-500 text-black font-bold py-3 rounded-xl">Confirm</button>
+                <button onclick="closeModal('saleModal')" class="flex-1 bg-gray-600 text-white py-3 rounded-xl">Cancel</button>
+                <button onclick="confirmSale()" class="flex-1 bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg">Confirm</button>
             </div>
         </div>
     </div>
 
-    <div id="addPurchaseModal" onclick="if(event.target===this) closeModal('addPurchaseModal')" class="fixed inset-0 bg-black/90 hidden z-[95] flex items-center justify-center p-4">
-        <div class="bg-slate-800 w-full max-w-md rounded-2xl p-6 border border-slate-700">
-            <div class="flex justify-between mb-4"><h3 class="font-bold text-white">Add Purchase</h3><button onclick="closeModal('addPurchaseModal')" class="text-red-500"><i class="fas fa-times text-xl"></i></button></div>
+    <div id="addPurchaseModal" onclick="if(event.target===this) closeModal('addPurchaseModal')" class="fixed inset-0 bg-black/80 hidden z-[95] flex items-center justify-center p-4">
+        <div class="card w-full max-w-md rounded-2xl p-6 shadow-2xl">
+            <div class="flex justify-between mb-4"><h3 class="font-bold">Add Purchase</h3><button onclick="closeModal('addPurchaseModal')" class="text-red-500"><i class="fas fa-times text-xl"></i></button></div>
             <form onsubmit="savePurchase(event)" class="space-y-4">
-                <input type="text" id="pDealer" placeholder="Dealer Name" class="input">
-                <input type="text" id="pCompany" placeholder="Company Name" class="input">
-                <textarea id="pItems" placeholder="Items List" class="input h-24"></textarea>
-                <input type="number" id="pAmount" placeholder="Amount Paid" class="input">
-                <input type="date" id="pDate" class="input">
-                <button class="w-full bg-purple-500 text-white py-3 rounded-xl font-bold">Save</button>
+                <input type="text" id="pDealer" placeholder="Dealer Name" class="input w-full p-3 rounded-xl border">
+                <input type="text" id="pCompany" placeholder="Company Name" class="input w-full p-3 rounded-xl border">
+                <textarea id="pItems" placeholder="Items List" class="input w-full p-3 rounded-xl border h-24"></textarea>
+                <input type="number" id="pAmount" placeholder="Amount Paid" class="input w-full p-3 rounded-xl border">
+                <input type="date" id="pDate" class="input w-full p-3 rounded-xl border">
+                <button class="w-full bg-purple-500 text-white py-3 rounded-xl font-bold shadow-lg">Save</button>
             </form>
         </div>
     </div>
 
-    <div id="receiptArea" class="hidden">
-        <div style="text-align: center;">
-            <img id="recLogo" src="" style="width: 40px; height: 40px; margin: 0 auto; display: block;">
-            <h2 style="font-size: 12px; font-weight: bold; margin: 5px 0 0 0;">ALAZAMAT MEDICAL</h2>
-            <p style="font-size: 8px;">Lahore, Pakistan</p>
-        </div>
-        <div style="font-size: 9px; margin: 5px 0; border-bottom: 1px dashed black; padding-bottom: 5px;">
-            <span id="recDate"></span> | Inv# <span id="recId"></span>
-        </div>
-        <table style="width: 100%; font-size: 9px;">
-            <tr><th align="left">Item</th><th align="center">Qty</th><th align="right">Total</th></tr>
-            <tr>
-                <td id="recItem" style="padding-top:5px"></td>
-                <td id="recQty" align="center" style="padding-top:5px"></td>
-                <td id="recFinal" align="right" style="padding-top:5px"></td>
-            </tr>
-        </table>
-        <div style="text-align: right; font-size: 10px; margin-top: 5px; border-top: 1px dashed black; padding-top: 5px;">
-            Sub: <span id="recSub"></span> | Disc: <span id="recDiscDisp"></span><br>
-            <strong>NET: <span id="recNet"></span></strong>
-        </div>
-        <p style="font-size: 8px; text-align: center; margin-top: 10px;">Thank You!</p>
-    </div>
-
     <style>
-        .input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 12px; rounded-xl; color: white; outline: none; }
-        .input:focus { border-color: #10b981; }
-        .lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .sidebar-btn { width: 100%; text-align: left; padding: 12px; border-radius: 12px; color: #cbd5e1; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
-        .sidebar-btn:hover { background: #1e293b; color: white; padding-left: 16px; }
+        .nav-btn { width: 100%; text-align: left; padding: 12px; border-radius: 12px; transition: all 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); padding-left: 16px; }
+        .theme-light .nav-btn:hover { background: rgba(0,0,0,0.05); }
     </style>
 
     <script>
-        // --- DATA & SAMPLE DATA ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_v9')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_v9')) || [];
-        let purch = JSON.parse(localStorage.getItem('az_purch_v9')) || [];
-        let logo = localStorage.getItem('az_logo_v9') || 'https://via.placeholder.com/150?text=LOGO';
+        // --- DATA & INIT ---
+        let inv = JSON.parse(localStorage.getItem('az_inv_v10')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_v10')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_v10')) || [];
+        let config = JSON.parse(localStorage.getItem('az_config_v10')) || { 
+            logo: 'https://via.placeholder.com/150/10b981/ffffff?text=LOGO',
+            theme: 'dark',
+            user: { name: 'Dr. Alazamat', contact: '+92 300 1234567', pic: 'https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff' }
+        };
 
-        // Auto-load Sample Data if empty
+        // Load Sample Data if Empty
         if(inv.length === 0) {
             inv = [
-                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: null},
-                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: null},
-                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: null},
-                {id: 4, name: 'Disprin', brand: 'Reckitt', formula: 'Aspirin', packSize: 100, stock: 1000, cost: 50, price: 100, cat: 'Tablet', img: null}
+                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: 'https://img.freepik.com/free-vector/realistic-pills-blister-pack_52683-59691.jpg?w=150'},
+                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: 'https://img.freepik.com/free-vector/realistic-white-pills-bottle-mockup_1017-26804.jpg?w=150'},
+                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: 'https://img.freepik.com/free-vector/realistic-cough-syrup_23-2147545938.jpg?w=150'},
             ];
             updateData();
         }
 
-        document.getElementById('mainLogo').src = logo;
+        // Apply Config
+        applyTheme(config.theme);
+        document.getElementById('mainLogo').src = config.logo;
+        document.getElementById('userPicDisplay').src = config.user.pic;
+        document.getElementById('userNameInput').value = config.user.name;
+        document.getElementById('userContactInput').value = config.user.contact;
         renderGrid();
 
-        // --- NAVIGATION ---
+        // --- NAVIGATION & UI ---
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebarOverlay');
-            sb.classList.toggle('-translate-x-full');
-            ov.classList.toggle('hidden');
+            if(sb.classList.contains('-translate-x-full')) {
+                sb.classList.remove('-translate-x-full');
+                ov.classList.remove('hidden');
+            } else {
+                sb.classList.add('-translate-x-full');
+                ov.classList.add('hidden');
+            }
         }
         function scrollToTop() { window.scrollTo({top:0, behavior:'smooth'}); toggleSidebar(); }
         function openOverlay(id) { document.getElementById(id).classList.remove('hidden'); toggleSidebar(); }
         function closeOverlay(id) { document.getElementById(id).classList.add('hidden'); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function toggleTheme() {
+            config.theme = config.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(config.theme);
+            updateData();
+        }
+        function applyTheme(t) {
+            document.body.className = `min-h-screen overflow-x-hidden theme-${t}`;
+        }
 
-        // --- GRID & CRUD ---
+        // --- USER PROFILE ---
+        function updateProfilePic(i) {
+            const f = i.files[0];
+            if(f) resizeImage(f, 100, (res) => {
+                config.user.pic = res;
+                document.getElementById('userPicDisplay').src = res;
+                updateData();
+            });
+        }
+        function saveProfile() {
+            config.user.name = document.getElementById('userNameInput').value;
+            config.user.contact = document.getElementById('userContactInput').value;
+            updateData();
+        }
+
+        // --- INVENTORY ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
-            
             inv.filter(i => i.name.toLowerCase().includes(term)).forEach(i => {
-                const img = i.img || 'https://via.placeholder.com/100?text=Rx';
+                const img = i.img || 'https://via.placeholder.com/150/10b981/ffffff?text=Rx';
                 const packs = (i.stock / i.packSize).toFixed(1);
                 
                 g.innerHTML += `
-                <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700 relative group hover:border-emerald-500 transition shadow-xl backdrop-blur-sm flex flex-col justify-between">
-                    <div class="absolute top-2 right-2 flex gap-2 z-10 opacity-80 hover:opacity-100">
-                        <button onclick="editMed(${i.id})" class="bg-blue-600 text-white p-2 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-pen text-xs"></i></button>
-                        <button onclick="delMed(${i.id})" class="bg-red-600 text-white p-2 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-trash text-xs"></i></button>
+                <div class="card rounded-2xl p-4 flex flex-col justify-between relative group hover:border-emerald-500 transition shadow-lg">
+                    <div class="absolute top-2 right-2 flex gap-2 opacity-50 group-hover:opacity-100 transition z-10">
+                        <button onclick="editMed(${i.id})" class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-pen text-xs"></i></button>
+                        <button onclick="delMed(${i.id})" class="bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     
-                    <div class="flex gap-4 mb-4">
-                        <img src="${img}" class="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-600">
+                    <div class="flex gap-4 mb-3">
+                        <img src="${img}" class="w-16 h-16 rounded-xl object-cover bg-gray-900 border border-gray-600">
                         <div>
-                            <h4 class="font-bold text-white text-lg leading-tight">${i.name}</h4>
-                            <p class="text-xs text-slate-400 uppercase tracking-wide">${i.brand}</p>
-                            <p class="text-xs text-slate-500 italic mt-1">${i.formula || ''}</p>
+                            <h4 class="font-bold text-lg leading-tight">${i.name}</h4>
+                            <p class="text-xs opacity-60 uppercase">${i.brand}</p>
+                            <p class="text-xs opacity-50 italic">${i.formula || ''}</p>
                         </div>
                     </div>
                     
-                    <div class="bg-slate-900/50 p-3 rounded-xl grid grid-cols-2 gap-y-2 text-xs mb-3">
-                        <div><span class="text-slate-500 block">Packs</span><span class="text-emerald-400 font-bold">${packs}</span></div>
-                        <div><span class="text-slate-500 block">Units</span><span class="text-white font-bold">${i.stock}</span></div>
-                        <div><span class="text-slate-500 block">Price/Pack</span><span class="text-white">Rs. ${i.price}</span></div>
-                        <div><span class="text-slate-500 block">Price/Unit</span><span class="text-white">Rs. ${(i.price/i.packSize).toFixed(2)}</span></div>
+                    <div class="bg-black/10 p-2 rounded-xl grid grid-cols-2 gap-y-1 text-xs mb-3">
+                        <div><span class="opacity-50 block">Packs</span><span class="text-emerald-500 font-bold">${packs}</span></div>
+                        <div><span class="opacity-50 block">Units</span><span class="font-bold">${i.stock}</span></div>
+                        <div><span class="opacity-50 block">Price/Pack</span>Rs. ${i.price}</div>
+                        <div><span class="opacity-50 block">Price/Unit</span>Rs. ${(i.price/i.packSize).toFixed(2)}</div>
                     </div>
-                    <button onclick="openSaleModal(${i.id})" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-2 rounded-lg transition transform active:scale-95">SELL</button>
+                    <button onclick="openSaleModal(${i.id})" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg transition transform active:scale-95 shadow-md">SELL</button>
                 </div>`;
             });
         }
@@ -330,31 +353,49 @@
             document.getElementById('medStock').value = Math.ceil(p * s);
         }
 
+        // --- IMAGE COMPRESSION (SHRINK) ---
+        function resizeImage(file, maxWidth, callback) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL('image/jpeg', 0.6)); // 60% Quality
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function saveMedicine(e) {
             e.preventDefault();
             const file = document.getElementById('medImg').files[0];
-            const reader = new FileReader();
-            reader.onload = (evt) => processSave(evt.target.result);
-            if(file) reader.readAsDataURL(file); else processSave(editTempImg);
-        }
-
-        function processSave(imgData) {
-            const item = {
-                id: document.getElementById('medId').value || Date.now(),
-                name: document.getElementById('medName').value,
-                brand: document.getElementById('medBrand').value,
-                formula: document.getElementById('medFormula').value,
-                packSize: parseInt(document.getElementById('medPackSize').value),
-                stock: parseInt(document.getElementById('medStock').value),
-                cost: parseFloat(document.getElementById('medCost').value),
-                price: parseFloat(document.getElementById('medPrice').value),
-                cat: document.getElementById('medCat').value,
-                exp: document.getElementById('medExp').value,
-                img: imgData
+            const process = (imgData) => {
+                const item = {
+                    id: document.getElementById('medId').value || Date.now(),
+                    name: document.getElementById('medName').value,
+                    brand: document.getElementById('medBrand').value,
+                    formula: document.getElementById('medFormula').value,
+                    packSize: parseInt(document.getElementById('medPackSize').value),
+                    stock: parseInt(document.getElementById('medStock').value),
+                    cost: parseFloat(document.getElementById('medCost').value),
+                    price: parseFloat(document.getElementById('medPrice').value),
+                    cat: document.getElementById('medCat').value,
+                    exp: document.getElementById('medExp').value,
+                    img: imgData
+                };
+                const idx = inv.findIndex(i => i.id == item.id);
+                if(idx > -1) inv[idx] = item; else inv.push(item);
+                updateData(); closeModal('medModal'); renderGrid();
             };
-            const idx = inv.findIndex(i => i.id == item.id);
-            if(idx > -1) inv[idx] = item; else inv.push(item);
-            updateData(); closeModal('medModal'); renderGrid();
+
+            if(file) resizeImage(file, 150, process); // Shrink to 150px
+            else process(editTempImg);
         }
 
         let editTempImg = null;
@@ -374,21 +415,15 @@
             editTempImg = i.img;
             openModal('medModal');
         }
+        function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); updateData(); renderGrid(); } }
 
-        function delMed(id) {
-            if(confirm('Delete this medicine?')) {
-                inv = inv.filter(x => x.id != id);
-                updateData(); renderGrid();
-            }
-        }
-
-        // --- SALES ---
+        // --- SALES & PRINTING (NEW POPUP METHOD) ---
         let saleItem = null;
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
             document.getElementById('saleName').innerText = saleItem.name;
             const unit = (saleItem.price / saleItem.packSize).toFixed(2);
-            document.getElementById('saleInfo').innerText = `Unit Price: Rs. ${unit} | Stock: ${saleItem.stock} Units`;
+            document.getElementById('saleInfo').innerText = `Price: Rs. ${unit} / Unit`;
             document.getElementById('saleQty').value = 1;
             document.getElementById('saleDisc').value = '';
             calcTotal();
@@ -410,7 +445,6 @@
         function confirmSale() {
             const q = parseInt(document.getElementById('saleQty').value);
             if(q > saleItem.stock) return alert('Low Stock');
-            
             const d = parseFloat(document.getElementById('saleDisc').value) || 0;
             const unitSell = saleItem.price / saleItem.packSize;
             const unitCost = saleItem.cost / saleItem.packSize;
@@ -427,30 +461,59 @@
             updateData(); closeModal('saleModal'); renderGrid();
             printReceipt(s);
         }
+
         function printReceipt(s) {
-            document.getElementById('recLogo').src = logo;
-            document.getElementById('recDate').innerText = s.date;
-            document.getElementById('recId').innerText = s.id.toString().slice(-6);
-            document.getElementById('recItem').innerText = s.name;
-            document.getElementById('recQty').innerText = s.qty;
-            document.getElementById('recFinal').innerText = s.sub;
-            document.getElementById('recSub').innerText = s.sub;
-            document.getElementById('recDiscDisp').innerText = s.disc;
-            document.getElementById('recNet').innerText = s.total;
-            setTimeout(() => window.print(), 300);
+            // OPEN A NEW WINDOW FOR CLEAN PRINTING
+            const win = window.open('', '', 'width=300,height=600');
+            win.document.write(`
+                <html>
+                <head><style>
+                    body { font-family: monospace; text-align: center; margin: 0; padding: 10px; }
+                    .header { font-weight: bold; font-size: 14px; }
+                    .small { font-size: 10px; }
+                    .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+                    table { width: 100%; font-size: 10px; }
+                    .right { text-align: right; }
+                    .total { font-size: 14px; font-weight: bold; }
+                </style></head>
+                <body>
+                    <img src="${config.logo}" width="50"><br>
+                    <div class="header">ALAZAMAT MEDICAL</div>
+                    <div class="small">${config.user.contact}</div>
+                    <div class="line"></div>
+                    <div class="small" style="text-align:left">Date: ${s.date}<br>Inv#: ${s.id.toString().slice(-6)}</div>
+                    <div class="line"></div>
+                    <table>
+                        <tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>
+                        <tr><td align="left">${s.name}</td><td>${s.qty}</td><td align="right">${s.sub}</td></tr>
+                    </table>
+                    <div class="line"></div>
+                    <div class="right small">
+                        Subtotal: ${s.sub}<br>
+                        Discount: ${s.disc}<br>
+                        <span class="total">NET: ${s.total}</span>
+                    </div>
+                    <div class="line"></div>
+                    <div class="small">No Returns without Receipt<br>Thank You!</div>
+                </body>
+                </html>
+            `);
+            win.document.close();
+            win.focus();
+            setTimeout(() => { win.print(); win.close(); }, 500);
         }
 
-        // --- OTHER ---
+        // --- OTHER TABS ---
         function renderHistory() {
             const t = document.getElementById('historyTable'); t.innerHTML = '';
             sales.forEach(s => {
-                t.innerHTML += `<tr class="border-b border-slate-700 hover:bg-slate-800"><td class="p-4 text-xs text-slate-400">${s.date}</td><td class="p-4 font-bold text-white">${s.name}</td><td class="p-4 text-slate-300">${s.qty}</td><td class="p-4 text-emerald-400 font-bold text-right">Rs. ${s.total}</td><td class="p-4 text-center"><button onclick='printReceipt(${JSON.stringify(s)})' class="text-slate-400 hover:text-white"><i class="fas fa-print"></i></button></td></tr>`;
+                t.innerHTML += `<tr class="border-b border-gray-700/50 hover:bg-white/5"><td class="p-3 text-xs opacity-70">${s.date}</td><td class="p-3 font-bold">${s.name}</td><td class="p-3">${s.qty}</td><td class="p-3 text-red-400">Rs. ${s.disc}</td><td class="p-3 text-emerald-400 font-bold text-right">Rs. ${s.total}</td><td class="p-3 text-center"><button onclick='printReceipt(${JSON.stringify(s)})' class="opacity-50 hover:opacity-100"><i class="fas fa-print"></i></button></td></tr>`;
             });
         }
         function renderPurchases() {
             const g = document.getElementById('purchaseGrid'); g.innerHTML = '';
             purch.forEach(p => {
-                g.innerHTML += `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="font-bold text-white">${p.dealer}</h4><p class="text-xs text-slate-400 uppercase">${p.comp}</p><p class="text-sm my-2 text-slate-300">${p.items}</p><p class="text-right text-purple-400 font-bold">Rs. ${p.amt}</p></div>`;
+                g.innerHTML += `<div class="bg-black/20 p-4 rounded-xl border border-gray-700/50"><h4 class="font-bold">${p.dealer}</h4><p class="text-xs opacity-60 uppercase">${p.comp}</p><p class="text-sm my-2 opacity-80">${p.items}</p><p class="text-right text-purple-400 font-bold">Rs. ${p.amt}</p></div>`;
             });
         }
         function savePurchase(e) {
@@ -471,19 +534,24 @@
             document.getElementById('repCost').innerText = (r - p).toFixed(0);
             document.getElementById('repProfit').innerText = p.toFixed(0);
         }
+
+        // --- CORE ---
         function uploadLogo(i) {
             const f = i.files[0];
-            const r = new FileReader();
-            r.onload = (e) => { logo = e.target.result; localStorage.setItem('az_logo_v9', logo); document.getElementById('mainLogo').src = logo; };
-            if(f) r.readAsDataURL(f);
+            if(f) resizeImage(f, 150, (res) => {
+                config.logo = res;
+                document.getElementById('mainLogo').src = res;
+                updateData();
+            });
         }
         function updateData() {
-            localStorage.setItem('az_inv_v9', JSON.stringify(inv));
-            localStorage.setItem('az_sales_v9', JSON.stringify(sales));
-            localStorage.setItem('az_purch_v9', JSON.stringify(purch));
+            localStorage.setItem('az_inv_v10', JSON.stringify(inv));
+            localStorage.setItem('az_sales_v10', JSON.stringify(sales));
+            localStorage.setItem('az_purch_v10', JSON.stringify(purch));
+            localStorage.setItem('az_config_v10', JSON.stringify(config));
         }
         function downloadBackup() {
-            const d = JSON.stringify({inv, sales, purch, logo});
+            const d = JSON.stringify({inv, sales, purch, config});
             const b = new Blob([d],{type:'application/json'});
             const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='Alazamat_Backup.json'; a.click();
         }
@@ -491,10 +559,10 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                localStorage.setItem('az_inv_v9', JSON.stringify(d.inv));
-                localStorage.setItem('az_sales_v9', JSON.stringify(d.sales));
-                localStorage.setItem('az_purch_v9', JSON.stringify(d.purch));
-                if(d.logo) localStorage.setItem('az_logo_v9', d.logo);
+                localStorage.setItem('az_inv_v10', JSON.stringify(d.inv));
+                localStorage.setItem('az_sales_v10', JSON.stringify(d.sales));
+                localStorage.setItem('az_purch_v10', JSON.stringify(d.purch));
+                if(d.config) localStorage.setItem('az_config_v10', JSON.stringify(d.config));
                 location.reload();
             };
             r.readAsText(i.files[0]);
