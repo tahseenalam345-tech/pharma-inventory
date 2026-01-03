@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alazamat Medical Store - v8.0</title>
+    <title>Alazamat Medical Store - v9.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -13,22 +13,22 @@
         
         /* AESTHETIC BACKGROUND */
         .bg-aesthetic {
-            background-image: url('https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=1920&auto=format&fit=crop');
+            background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
         .glass-overlay {
-            background: rgba(15, 23, 42, 0.85); /* Dark Blue Tint */
-            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.9); /* Dark Blue Tint */
+            backdrop-filter: blur(5px);
             position: fixed; inset: 0; z-index: -1;
         }
 
         /* Animations */
-        .fade-in-up { animation: fadeInUp 1s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print Styles */
+        /* Print Styles (Thermal) */
         @media print {
             body * { visibility: hidden; }
             #receiptArea, #receiptArea * { visibility: visible; }
@@ -43,14 +43,14 @@
     
     <div class="glass-overlay"></div>
 
-    <button onclick="toggleSidebar()" class="fixed top-6 left-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white p-3 rounded-full shadow-lg transition transform hover:scale-110">
+    <button onclick="toggleSidebar()" class="fixed top-6 left-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition hover:scale-110">
         <i class="fas fa-bars text-xl"></i>
     </button>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900/95 backdrop-blur-xl transform -translate-x-full transition duration-300 z-50 border-r border-slate-700 shadow-2xl flex flex-col">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 shadow-2xl transform -translate-x-full transition duration-300 z-50 border-r border-slate-700 flex flex-col">
         <div class="p-8 flex justify-between items-center border-b border-slate-700">
             <h2 class="font-bold text-xl text-emerald-400">Alazamat</h2>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
         </div>
         <nav class="flex-1 p-6 space-y-4">
             <button onclick="scrollToTop()" class="sidebar-btn"><i class="fas fa-home text-sky-400"></i> Home</button>
@@ -69,9 +69,9 @@
     </aside>
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden"></div>
 
-    <main class="relative z-10">
+    <main class="relative z-10 pb-20">
         
-        <section id="hero" class="min-h-screen flex flex-col items-center justify-center text-center p-6">
+        <section class="min-h-[80vh] flex flex-col items-center justify-center text-center p-6">
             <div class="relative group mb-8">
                 <img id="mainLogo" src="https://via.placeholder.com/150?text=LOGO" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.3)] object-cover">
                 <label class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
@@ -79,98 +79,127 @@
                     <input type="file" class="hidden" accept="image/*" onchange="uploadLogo(this)">
                 </label>
             </div>
-
-            <h1 class="text-6xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 fade-in-up" style="animation-delay: 0.1s;">Alazamat</h1>
-            <h2 class="text-2xl md:text-3xl font-light tracking-[0.5em] text-slate-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">MEDICAL STORE</h2>
-            
+            <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 fade-in">Alazamat</h1>
+            <h2 class="text-2xl font-light tracking-[0.5em] text-slate-300 mb-10 fade-in">MEDICAL STORE</h2>
             <button onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" class="animate-bounce text-emerald-400 flex flex-col items-center gap-2">
-                <span class="text-sm font-bold uppercase">View Medicines</span>
+                <span class="text-sm font-bold uppercase">View Inventory</span>
                 <i class="fas fa-chevron-down text-2xl"></i>
             </button>
         </section>
 
-        <section id="inventory" class="min-h-screen bg-slate-900/80 backdrop-blur-md border-t border-slate-700 p-4 md:p-12">
-            <div class="max-w-7xl mx-auto">
+        <section id="inventory" class="p-4 md:p-8">
+            <div class="max-w-7xl mx-auto bg-slate-900/80 backdrop-blur-md rounded-3xl p-6 md:p-10 border border-slate-700 shadow-2xl">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div>
-                        <h2 class="text-3xl font-bold text-white mb-2">Inventory</h2>
-                        <p class="text-slate-400 text-sm">Manage stock, prices, and formulas</p>
+                        <h2 class="text-3xl font-bold text-white">Inventory</h2>
+                        <p class="text-slate-400 text-sm">Manage stock and sell medicines</p>
                     </div>
                     <div class="flex gap-2 w-full md:w-auto">
                         <input type="text" id="search" placeholder="Search medicine..." class="flex-1 bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl outline-none focus:border-emerald-500">
-                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-black px-6 py-3 rounded-xl font-bold transition shadow-lg">+ Add</button>
+                        <button onclick="openModal('medModal')" class="bg-emerald-500 hover:bg-emerald-600 text-black px-6 py-3 rounded-xl font-bold shadow-lg transition">+ Add New</button>
                     </div>
                 </div>
 
-                <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    </div>
+                <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
         </section>
-
     </main>
 
-    <div id="medModal" class="fixed inset-0 bg-black/80 hidden z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div id="historyOverlay" onclick="if(event.target===this) closeOverlay('historyOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-3xl border border-slate-700 flex flex-col shadow-2xl fade-in overflow-hidden">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h2 class="text-2xl font-bold text-yellow-400">Sales History</h2>
+                <button onclick="closeOverlay('historyOverlay')" class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex-1 overflow-auto p-6">
+                <table class="w-full text-left text-slate-300">
+                    <thead class="bg-slate-800 text-xs uppercase text-slate-500 sticky top-0"><tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Print</th></tr></thead>
+                    <tbody id="historyTable" class="divide-y divide-slate-800"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="purchaseOverlay" onclick="if(event.target===this) closeOverlay('purchaseOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-3xl border border-slate-700 flex flex-col shadow-2xl fade-in overflow-hidden">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h2 class="text-2xl font-bold text-purple-400">Buying Records</h2>
+                <div class="flex gap-3">
+                    <button onclick="openModal('addPurchaseModal')" class="bg-purple-500 px-4 py-1 rounded text-white text-sm font-bold">Add New</button>
+                    <button onclick="closeOverlay('purchaseOverlay')" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div id="purchaseGrid" class="flex-1 overflow-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start"></div>
+        </div>
+    </div>
+
+    <div id="reportOverlay" onclick="if(event.target===this) closeOverlay('reportOverlay')" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-700 p-8 shadow-2xl fade-in text-center relative">
+            <button onclick="closeOverlay('reportOverlay')" class="absolute top-4 right-4 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            <h2 class="text-3xl font-bold text-white mb-8">Profit Reports</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                    <p class="text-slate-400 text-sm uppercase">Revenue</p>
+                    <p class="text-3xl font-bold text-sky-400 mt-2" id="repRev">0</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                    <p class="text-slate-400 text-sm uppercase">Cost</p>
+                    <p class="text-3xl font-bold text-red-400 mt-2" id="repCost">0</p>
+                </div>
+                <div class="bg-emerald-900/30 p-6 rounded-2xl border border-emerald-500/50">
+                    <p class="text-emerald-400 text-sm uppercase font-bold">Profit</p>
+                    <p class="text-4xl font-bold text-white mt-2" id="repProfit">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="medModal" onclick="if(event.target===this) closeModal('medModal')" class="fixed inset-0 bg-black/80 hidden z-[90] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-slate-800 w-full max-w-2xl rounded-2xl border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center">
                 <h3 class="text-xl font-bold">Medicine Details</h3>
-                <button onclick="closeModal('medModal')" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="closeModal('medModal')" class="bg-red-500 w-8 h-8 rounded-full text-white"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="saveMedicine(event)" class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
-                
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="lbl">Name</label><input type="text" id="medName" required class="input"></div>
                     <div><label class="lbl">Brand</label><input type="text" id="medBrand" class="input"></div>
                 </div>
                 <div><label class="lbl">Formula</label><input type="text" id="medFormula" class="input"></div>
-
                 <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
-                    <p class="text-xs text-sky-400 uppercase font-bold mb-3">Stock & Packs</p>
+                    <p class="text-xs text-sky-400 uppercase font-bold mb-3">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-3">
-                        <div><label class="lbl">Total Packs</label><input type="number" id="medTotalPacks" required class="input bg-slate-800" oninput="calcUnits()"></div>
-                        <div><label class="lbl">Items/Pack</label><input type="number" id="medPackSize" value="1" required class="input bg-slate-800" oninput="calcUnits()"></div>
+                        <div><label class="lbl">Packs</label><input type="number" id="medTotalPacks" required class="input bg-slate-800" oninput="calcUnits()"></div>
+                        <div><label class="lbl">Per Pack</label><input type="number" id="medPackSize" value="1" required class="input bg-slate-800" oninput="calcUnits()"></div>
                         <div><label class="lbl">Total Units</label><input type="number" id="medStock" readonly class="input bg-black/50 text-slate-400"></div>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="lbl">Buying Cost (Pack)</label><input type="number" id="medCost" required class="input"></div>
-                    <div><label class="lbl">Selling Price (Pack)</label><input type="number" id="medPrice" required class="input"></div>
+                    <div><label class="lbl">Buy Cost (Pack)</label><input type="number" id="medCost" required class="input"></div>
+                    <div><label class="lbl">Sell Price (Pack)</label><input type="number" id="medPrice" required class="input"></div>
                 </div>
-                
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="lbl">Category</label><select id="medCat" class="input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Other</option></select></div>
                     <div><label class="lbl">Expiry</label><input type="date" id="medExp" class="input"></div>
                 </div>
                 <div><label class="lbl">Image</label><input type="file" id="medImg" accept="image/*" class="w-full text-sm text-slate-400"></div>
-
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-xl mt-4">Save Medicine</button>
+                <button class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-xl">Save</button>
             </form>
         </div>
     </div>
 
-    <div id="saleModal" class="fixed inset-0 bg-black/80 hidden z-[70] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div id="saleModal" onclick="if(event.target===this) closeModal('saleModal')" class="fixed inset-0 bg-black/80 hidden z-[90] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-slate-800 w-full max-w-sm rounded-2xl border border-slate-700 shadow-2xl p-6 text-center">
             <h3 class="text-xl font-bold text-white mb-1" id="saleName">Name</h3>
             <p class="text-sm text-slate-400 mb-6" id="saleInfo">Info</p>
-
             <div class="flex justify-center items-center gap-4 mb-4">
                 <button onclick="adjQty(-1)" class="w-10 h-10 rounded-full bg-slate-700 text-white">-</button>
                 <input type="number" id="saleQty" value="1" class="w-20 bg-transparent text-3xl font-bold text-center text-white border-b-2 border-emerald-500 outline-none" oninput="calcTotal()">
                 <button onclick="adjQty(1)" class="w-10 h-10 rounded-full bg-slate-700 text-white">+</button>
             </div>
-            <p class="text-xs text-slate-500 mb-4">Units (Tablets/Capsules)</p>
-            
-            <div class="mb-4 text-left">
-                <label class="lbl">Discount (Rs)</label>
-                <input type="number" id="saleDisc" placeholder="0" class="input" oninput="calcTotal()">
-            </div>
-
-            <div class="bg-slate-900 p-4 rounded-xl mb-6">
-                <p class="text-xs text-slate-500 uppercase">Total Amount</p>
-                <p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p>
-            </div>
-
+            <div class="mb-4 text-left"><label class="lbl">Discount (Rs)</label><input type="number" id="saleDisc" placeholder="0" class="input" oninput="calcTotal()"></div>
+            <div class="bg-slate-900 p-4 rounded-xl mb-6"><p class="text-xs text-slate-500 uppercase">Total</p><p class="text-3xl font-bold text-emerald-400" id="saleTotal">0</p></div>
             <div class="flex gap-3">
                 <button onclick="closeModal('saleModal')" class="flex-1 bg-slate-700 text-white py-3 rounded-xl">Cancel</button>
                 <button onclick="confirmSale()" class="flex-1 bg-emerald-500 text-black font-bold py-3 rounded-xl">Confirm</button>
@@ -178,56 +207,9 @@
         </div>
     </div>
 
-    <div id="historyOverlay" class="fixed inset-0 bg-slate-900 z-[80] hidden flex flex-col animate-enter">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-            <h2 class="text-2xl font-bold text-yellow-400">Sales History</h2>
-            <button onclick="closeOverlay('historyOverlay')" class="text-white text-2xl"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="flex-1 overflow-auto p-6">
-            <table class="w-full text-left text-slate-300">
-                <thead class="bg-slate-800 text-xs uppercase text-slate-500"><tr><th class="p-4">Date</th><th class="p-4">Item</th><th class="p-4">Qty</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Receipt</th></tr></thead>
-                <tbody id="historyTable" class="divide-y divide-slate-800"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="purchaseOverlay" class="fixed inset-0 bg-slate-900 z-[80] hidden flex flex-col animate-enter">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-            <h2 class="text-2xl font-bold text-purple-400">Buying Records</h2>
-            <div class="flex gap-4">
-                <button onclick="openModal('addPurchaseModal')" class="bg-purple-500 text-white px-4 py-2 rounded-lg font-bold">Add Record</button>
-                <button onclick="closeOverlay('purchaseOverlay')" class="text-white text-2xl"><i class="fas fa-times"></i></button>
-            </div>
-        </div>
-        <div id="purchaseGrid" class="flex-1 overflow-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start"></div>
-    </div>
-
-    <div id="reportOverlay" class="fixed inset-0 bg-slate-900 z-[80] hidden flex flex-col animate-enter">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-red-400">Profit Reports</h2>
-            <button onclick="closeOverlay('reportOverlay')" class="text-white text-2xl"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="p-12 flex flex-col items-center">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
-                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 text-center">
-                    <p class="text-slate-400 uppercase">Total Revenue</p>
-                    <p class="text-4xl font-bold text-sky-400 mt-2" id="repRev">0</p>
-                </div>
-                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 text-center">
-                    <p class="text-slate-400 uppercase">Total Cost</p>
-                    <p class="text-4xl font-bold text-red-400 mt-2" id="repCost">0</p>
-                </div>
-                <div class="bg-emerald-900/30 p-8 rounded-3xl border border-emerald-500/50 text-center">
-                    <p class="text-emerald-400 uppercase font-bold">Net Profit</p>
-                    <p class="text-5xl font-bold text-white mt-2" id="repProfit">0</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="addPurchaseModal" class="fixed inset-0 bg-black/90 hidden z-[90] flex items-center justify-center p-4">
+    <div id="addPurchaseModal" onclick="if(event.target===this) closeModal('addPurchaseModal')" class="fixed inset-0 bg-black/90 hidden z-[95] flex items-center justify-center p-4">
         <div class="bg-slate-800 w-full max-w-md rounded-2xl p-6 border border-slate-700">
-            <div class="flex justify-between mb-4"><h3 class="font-bold text-white">Add Purchase</h3><button onclick="closeModal('addPurchaseModal')">x</button></div>
+            <div class="flex justify-between mb-4"><h3 class="font-bold text-white">Add Purchase</h3><button onclick="closeModal('addPurchaseModal')" class="text-red-500"><i class="fas fa-times text-xl"></i></button></div>
             <form onsubmit="savePurchase(event)" class="space-y-4">
                 <input type="text" id="pDealer" placeholder="Dealer Name" class="input">
                 <input type="text" id="pCompany" placeholder="Company Name" class="input">
@@ -241,25 +223,23 @@
 
     <div id="receiptArea" class="hidden">
         <div style="text-align: center;">
-            <img id="recLogo" src="" style="width: 50px; height: 50px; margin: 0 auto; display: block;">
-            <h2 style="font-size: 14px; font-weight: bold; margin: 5px 0 0 0;">ALAZAMAT</h2>
-            <p style="font-size: 10px; margin: 0;">Medical Store</p>
+            <img id="recLogo" src="" style="width: 40px; height: 40px; margin: 0 auto; display: block;">
+            <h2 style="font-size: 12px; font-weight: bold; margin: 5px 0 0 0;">ALAZAMAT MEDICAL</h2>
             <p style="font-size: 8px;">Lahore, Pakistan</p>
         </div>
         <div style="font-size: 9px; margin: 5px 0; border-bottom: 1px dashed black; padding-bottom: 5px;">
-            Date: <span id="recDate"></span><br>Inv #: <span id="recId"></span>
+            <span id="recDate"></span> | Inv# <span id="recId"></span>
         </div>
         <table style="width: 100%; font-size: 9px;">
             <tr><th align="left">Item</th><th align="center">Qty</th><th align="right">Total</th></tr>
             <tr>
-                <td id="recItem" style="padding-top:5px">Name</td>
-                <td id="recQty" align="center" style="padding-top:5px">1</td>
-                <td id="recFinal" align="right" style="padding-top:5px">0</td>
+                <td id="recItem" style="padding-top:5px"></td>
+                <td id="recQty" align="center" style="padding-top:5px"></td>
+                <td id="recFinal" align="right" style="padding-top:5px"></td>
             </tr>
         </table>
         <div style="text-align: right; font-size: 10px; margin-top: 5px; border-top: 1px dashed black; padding-top: 5px;">
-            Sub: <span id="recSub"></span><br>
-            Disc: <span id="recDiscDisp"></span><br>
+            Sub: <span id="recSub"></span> | Disc: <span id="recDiscDisp"></span><br>
             <strong>NET: <span id="recNet"></span></strong>
         </div>
         <p style="font-size: 8px; text-align: center; margin-top: 10px;">Thank You!</p>
@@ -274,11 +254,22 @@
     </style>
 
     <script>
-        // --- DATA & INIT ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_v8')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_v8')) || [];
-        let purch = JSON.parse(localStorage.getItem('az_purch_v8')) || [];
-        let logo = localStorage.getItem('az_logo_v8') || 'https://via.placeholder.com/150?text=LOGO';
+        // --- DATA & SAMPLE DATA ---
+        let inv = JSON.parse(localStorage.getItem('az_inv_v9')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_v9')) || [];
+        let purch = JSON.parse(localStorage.getItem('az_purch_v9')) || [];
+        let logo = localStorage.getItem('az_logo_v9') || 'https://via.placeholder.com/150?text=LOGO';
+
+        // Auto-load Sample Data if empty
+        if(inv.length === 0) {
+            inv = [
+                {id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 100, stock: 500, cost: 300, price: 400, cat: 'Tablet', img: null},
+                {id: 2, name: 'Augmentin', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 50, cost: 400, price: 550, cat: 'Tablet', img: null},
+                {id: 3, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 20, cost: 90, price: 120, cat: 'Syrup', img: null},
+                {id: 4, name: 'Disprin', brand: 'Reckitt', formula: 'Aspirin', packSize: 100, stock: 1000, cost: 50, price: 100, cat: 'Tablet', img: null}
+            ];
+            updateData();
+        }
 
         document.getElementById('mainLogo').src = logo;
         renderGrid();
@@ -287,23 +278,52 @@
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebarOverlay');
-            if(sb.classList.contains('-translate-x-full')) {
-                sb.classList.remove('-translate-x-full');
-                ov.classList.remove('hidden');
-            } else {
-                sb.classList.add('-translate-x-full');
-                ov.classList.add('hidden');
-            }
+            sb.classList.toggle('-translate-x-full');
+            ov.classList.toggle('hidden');
         }
         function scrollToTop() { window.scrollTo({top:0, behavior:'smooth'}); toggleSidebar(); }
-        
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        
         function openOverlay(id) { document.getElementById(id).classList.remove('hidden'); toggleSidebar(); }
         function closeOverlay(id) { document.getElementById(id).classList.add('hidden'); }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // --- INVENTORY ---
+        // --- GRID & CRUD ---
+        function renderGrid() {
+            const g = document.getElementById('grid'); g.innerHTML = '';
+            const term = document.getElementById('search').value.toLowerCase();
+            
+            inv.filter(i => i.name.toLowerCase().includes(term)).forEach(i => {
+                const img = i.img || 'https://via.placeholder.com/100?text=Rx';
+                const packs = (i.stock / i.packSize).toFixed(1);
+                
+                g.innerHTML += `
+                <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700 relative group hover:border-emerald-500 transition shadow-xl backdrop-blur-sm flex flex-col justify-between">
+                    <div class="absolute top-2 right-2 flex gap-2 z-10 opacity-80 hover:opacity-100">
+                        <button onclick="editMed(${i.id})" class="bg-blue-600 text-white p-2 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-pen text-xs"></i></button>
+                        <button onclick="delMed(${i.id})" class="bg-red-600 text-white p-2 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-trash text-xs"></i></button>
+                    </div>
+                    
+                    <div class="flex gap-4 mb-4">
+                        <img src="${img}" class="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-600">
+                        <div>
+                            <h4 class="font-bold text-white text-lg leading-tight">${i.name}</h4>
+                            <p class="text-xs text-slate-400 uppercase tracking-wide">${i.brand}</p>
+                            <p class="text-xs text-slate-500 italic mt-1">${i.formula || ''}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900/50 p-3 rounded-xl grid grid-cols-2 gap-y-2 text-xs mb-3">
+                        <div><span class="text-slate-500 block">Packs</span><span class="text-emerald-400 font-bold">${packs}</span></div>
+                        <div><span class="text-slate-500 block">Units</span><span class="text-white font-bold">${i.stock}</span></div>
+                        <div><span class="text-slate-500 block">Price/Pack</span><span class="text-white">Rs. ${i.price}</span></div>
+                        <div><span class="text-slate-500 block">Price/Unit</span><span class="text-white">Rs. ${(i.price/i.packSize).toFixed(2)}</span></div>
+                    </div>
+                    <button onclick="openSaleModal(${i.id})" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-2 rounded-lg transition transform active:scale-95">SELL</button>
+                </div>`;
+            });
+        }
+        document.getElementById('search').addEventListener('input', renderGrid);
+
         function calcUnits() {
             const p = parseFloat(document.getElementById('medTotalPacks').value) || 0;
             const s = parseFloat(document.getElementById('medPackSize').value) || 1;
@@ -314,10 +334,8 @@
             e.preventDefault();
             const file = document.getElementById('medImg').files[0];
             const reader = new FileReader();
-            reader.onload = (evt) => {
-                processSave(evt.target.result);
-            };
-            if(file) reader.readAsDataURL(file); else processSave(editTempImg); // Use existing image if editing
+            reader.onload = (evt) => processSave(evt.target.result);
+            if(file) reader.readAsDataURL(file); else processSave(editTempImg);
         }
 
         function processSave(imgData) {
@@ -334,14 +352,9 @@
                 exp: document.getElementById('medExp').value,
                 img: imgData
             };
-
             const idx = inv.findIndex(i => i.id == item.id);
-            if(idx > -1) inv[idx] = item;
-            else inv.push(item);
-
-            updateData();
-            closeModal('medModal');
-            renderGrid();
+            if(idx > -1) inv[idx] = item; else inv.push(item);
+            updateData(); closeModal('medModal'); renderGrid();
         }
 
         let editTempImg = null;
@@ -362,37 +375,12 @@
             openModal('medModal');
         }
 
-        function renderGrid() {
-            const g = document.getElementById('grid'); g.innerHTML = '';
-            const term = document.getElementById('search').value.toLowerCase();
-            
-            inv.filter(i => i.name.toLowerCase().includes(term)).forEach(i => {
-                const img = i.img || 'https://via.placeholder.com/100?text=Rx';
-                const packs = (i.stock / i.packSize).toFixed(1);
-                
-                g.innerHTML += `
-                <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700 relative group hover:border-emerald-500 transition shadow-xl backdrop-blur-sm">
-                    <button onclick="editMed(${i.id})" class="absolute top-3 right-3 bg-slate-700 text-sky-400 p-2 rounded-full z-10 hover:bg-white transition"><i class="fas fa-pen"></i></button>
-                    
-                    <div class="flex gap-4 mb-4 cursor-pointer" onclick="openSaleModal(${i.id})">
-                        <img src="${img}" class="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-600">
-                        <div>
-                            <h4 class="font-bold text-white text-lg leading-tight">${i.name}</h4>
-                            <p class="text-xs text-slate-400 uppercase tracking-wide">${i.brand}</p>
-                            <p class="text-xs text-slate-500 italic mt-1">${i.formula || ''}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-900/50 p-3 rounded-xl grid grid-cols-2 gap-y-2 text-xs" onclick="openSaleModal(${i.id})">
-                        <div><span class="text-slate-500 block">Packs</span><span class="text-emerald-400 font-bold">${packs}</span></div>
-                        <div><span class="text-slate-500 block">Units</span><span class="text-white font-bold">${i.stock}</span></div>
-                        <div><span class="text-slate-500 block">Pack Price</span><span class="text-white">Rs. ${i.price}</span></div>
-                        <div><span class="text-slate-500 block">Unit Price</span><span class="text-white">Rs. ${(i.price/i.packSize).toFixed(2)}</span></div>
-                    </div>
-                </div>`;
-            });
+        function delMed(id) {
+            if(confirm('Delete this medicine?')) {
+                inv = inv.filter(x => x.id != id);
+                updateData(); renderGrid();
+            }
         }
-        document.getElementById('search').addEventListener('input', renderGrid);
 
         // --- SALES ---
         let saleItem = null;
@@ -431,23 +419,14 @@
             
             saleItem.stock -= q;
             const s = {
-                id: Date.now(),
-                date: new Date().toLocaleString(),
-                name: saleItem.name,
-                qty: q,
-                sub: sub,
-                disc: d,
-                total: tot,
+                id: Date.now(), date: new Date().toLocaleString(),
+                name: saleItem.name, qty: q, sub: sub, disc: d, total: tot,
                 profit: tot - (unitCost * q)
             };
             sales.unshift(s);
-            updateData();
-            closeModal('saleModal');
-            renderGrid();
+            updateData(); closeModal('saleModal'); renderGrid();
             printReceipt(s);
         }
-
-        // --- PRINT ---
         function printReceipt(s) {
             document.getElementById('recLogo').src = logo;
             document.getElementById('recDate').innerText = s.date;
@@ -461,7 +440,7 @@
             setTimeout(() => window.print(), 300);
         }
 
-        // --- RECORDS ---
+        // --- OTHER ---
         function renderHistory() {
             const t = document.getElementById('historyTable'); t.innerHTML = '';
             sales.forEach(s => {
@@ -486,28 +465,22 @@
             updateData(); closeModal('addPurchaseModal'); renderPurchases();
         }
         function renderReports() {
-            const rev = sales.reduce((a,b)=>a+b.total,0);
-            const prof = sales.reduce((a,b)=>a+b.profit,0);
-            document.getElementById('repRev').innerText = rev;
-            document.getElementById('repCost').innerText = (rev - prof).toFixed(0);
-            document.getElementById('repProfit').innerText = prof.toFixed(0);
+            const r = sales.reduce((a,b)=>a+b.total,0);
+            const p = sales.reduce((a,b)=>a+b.profit,0);
+            document.getElementById('repRev').innerText = r;
+            document.getElementById('repCost').innerText = (r - p).toFixed(0);
+            document.getElementById('repProfit').innerText = p.toFixed(0);
         }
-
-        // --- BACKUP & LOGO ---
         function uploadLogo(i) {
             const f = i.files[0];
             const r = new FileReader();
-            r.onload = (e) => {
-                logo = e.target.result;
-                localStorage.setItem('az_logo_v8', logo);
-                document.getElementById('mainLogo').src = logo;
-            };
+            r.onload = (e) => { logo = e.target.result; localStorage.setItem('az_logo_v9', logo); document.getElementById('mainLogo').src = logo; };
             if(f) r.readAsDataURL(f);
         }
         function updateData() {
-            localStorage.setItem('az_inv_v8', JSON.stringify(inv));
-            localStorage.setItem('az_sales_v8', JSON.stringify(sales));
-            localStorage.setItem('az_purch_v8', JSON.stringify(purch));
+            localStorage.setItem('az_inv_v9', JSON.stringify(inv));
+            localStorage.setItem('az_sales_v9', JSON.stringify(sales));
+            localStorage.setItem('az_purch_v9', JSON.stringify(purch));
         }
         function downloadBackup() {
             const d = JSON.stringify({inv, sales, purch, logo});
@@ -518,10 +491,10 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                localStorage.setItem('az_inv_v8', JSON.stringify(d.inv));
-                localStorage.setItem('az_sales_v8', JSON.stringify(d.sales));
-                localStorage.setItem('az_purch_v8', JSON.stringify(d.purch));
-                if(d.logo) localStorage.setItem('az_logo_v8', d.logo);
+                localStorage.setItem('az_inv_v9', JSON.stringify(d.inv));
+                localStorage.setItem('az_sales_v9', JSON.stringify(d.sales));
+                localStorage.setItem('az_purch_v9', JSON.stringify(d.purch));
+                if(d.logo) localStorage.setItem('az_logo_v9', d.logo);
                 location.reload();
             };
             r.readAsText(i.files[0]);
