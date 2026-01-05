@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v26.0</title>
+    <title>Alazamat Medical Store - v27.0 (Stable)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -109,18 +109,18 @@
             <img src="1.jpg" class="w-10 h-10 rounded-full object-cover border border-emerald-500" onerror="this.src='https://via.placeholder.com/50?text=AM'">
             <div>
                 <h1 class="font-bold text-xl text-emerald-400">Alazamat</h1>
-                <p class="text-xs text-gray-400">System v26.0</p>
+                <p class="text-xs text-gray-400">System v27.0</p>
             </div>
             <button type="button" onclick="closeSidebar()" class="ml-auto text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
         </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="scrollToSection('hero')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-home"></i> Home</button>
-            <button onclick="scrollToSection('inventory')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-pills"></i> Inventory</button>
-            <button onclick="scrollToSection('history')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-history"></i> Sales History</button>
-            <button onclick="scrollToSection('purchases')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-truck"></i> Buying Records</button>
-            <button onclick="scrollToSection('reports')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-chart-pie"></i> Profit Reports</button>
+            <button type="button" onclick="scrollToSection('hero')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-home"></i> Home</button>
+            <button type="button" onclick="scrollToSection('inventory')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-pills"></i> Inventory</button>
+            <button type="button" onclick="scrollToSection('history')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-history"></i> Sales History</button>
+            <button type="button" onclick="scrollToSection('purchases')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-truck"></i> Buying Records</button>
+            <button type="button" onclick="scrollToSection('reports')" class="w-full text-left p-3 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-400 flex items-center gap-3 transition"><i class="fas fa-chart-pie"></i> Profit Reports</button>
             <div class="mt-4 pt-4 border-t border-gray-700/50">
-                <button onclick="downloadBackup()" class="w-full text-left p-3 text-sm text-gray-400 hover:text-white"><i class="fas fa-download mr-2"></i> Export Data</button>
+                <button type="button" onclick="downloadBackup()" class="w-full text-left p-3 text-sm text-gray-400 hover:text-white"><i class="fas fa-download mr-2"></i> Export Data</button>
                 <label class="w-full text-left p-3 text-sm text-gray-400 hover:text-white cursor-pointer block"><i class="fas fa-upload mr-2"></i> Import Data <input type="file" class="hidden" onchange="restoreBackup(this)"></label>
             </div>
         </nav>
@@ -275,11 +275,10 @@
 
     <script>
         // --- DATA ---
-        let inv = JSON.parse(localStorage.getItem('az_inv_26')) || [];
-        let sales = JSON.parse(localStorage.getItem('az_sales_26')) || [];
+        let inv = JSON.parse(localStorage.getItem('az_inv_27')) || [];
+        let sales = JSON.parse(localStorage.getItem('az_sales_27')) || [];
         let cart = [];
         
-        // DEFAULT IMAGES MAP
         const defaultImages = {
             'Tablet': 'https://img.freepik.com/free-vector/realistic-pills-blister-pack_52683-59691.jpg?w=200',
             'Capsule': 'https://img.freepik.com/free-vector/realistic-pills-background_52683-65239.jpg?w=200',
@@ -288,7 +287,6 @@
             'Other': 'https://via.placeholder.com/150/10b981/FFFFFF?text=Rx'
         };
 
-        // --- SCROLL AWAY HEADER ---
         window.addEventListener('scroll', () => {
             const bar = document.getElementById('topBar');
             if(window.scrollY > 50) bar.classList.add('hidden-bar'); else bar.classList.remove('hidden-bar');
@@ -297,14 +295,8 @@
         // --- UI FUNCS ---
         function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.remove('hidden'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.add('hidden'); }
-        function toggleSidebar() { 
-            const sb = document.getElementById('sidebar');
-            if(sb.classList.contains('open')) closeSidebar(); else openSidebar();
-        }
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({behavior: 'smooth'});
-            closeSidebar();
-        }
+        function toggleSidebar() { const sb = document.getElementById('sidebar'); if(sb.classList.contains('open')) closeSidebar(); else openSidebar(); }
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior: 'smooth'}); closeSidebar(); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -393,20 +385,17 @@
                     img: imgData
                 };
                 
-                // If update, replace; if new, push
                 const idx = inv.findIndex(i => i.id == item.id);
                 if(idx > -1) inv[idx] = item; else inv.push(item);
                 
                 saveData(); closeModal('medModal'); renderGrid();
             };
 
-            // Image Logic: File -> EditTemp -> Default
             if (file) {
                 resizeImage(file, process);
             } else if (editTempImg) {
                 process(editTempImg);
             } else {
-                // Use default based on category
                 process(defaultImages[cat] || defaultImages['Other']);
             }
         }
@@ -425,7 +414,7 @@
             document.getElementById('medPrice').value = i.price;
             document.getElementById('medCat').value = i.cat;
             document.getElementById('medExp').value = i.exp;
-            editTempImg = i.img; // Keep existing image
+            editTempImg = i.img;
             openModal('medModal');
         }
         function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); saveData(); renderGrid(); } }
@@ -438,7 +427,7 @@
             saleItem = inv.find(i => i.id == id);
             document.getElementById('saleName').innerText = saleItem.name;
             document.getElementById('saleQty').value = 1;
-            setSaleType('Unit'); // Reset to unit
+            setSaleType('Unit');
             openModal('saleModal');
         }
         function setSaleType(type) {
@@ -460,7 +449,6 @@
         function addToBill() {
             const q = parseInt(document.getElementById('saleQty').value);
             const deduct = isPackSale ? (q * saleItem.packSize) : q;
-            
             if(deduct > saleItem.stock) { alert('Low Stock'); return; }
             
             const unitPrice = isPackSale ? saleItem.price : (saleItem.price / saleItem.packSize);
@@ -471,6 +459,7 @@
             closeModal('saleModal'); updateCartUI();
         }
         function updateCartUI() { document.getElementById('cartCount').innerText = `${cart.length} Items`; }
+        
         function renderBill() {
             const t = document.getElementById('billTable'); t.innerHTML = '';
             let sub = 0;
