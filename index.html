@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical - v36.0 (Stable & No Reload)</title>
+    <title>Alazamat Medical - v37.0 (No Reload + Fast)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -93,6 +93,12 @@
             background: #10b981; border-color: #10b981; color: black; font-weight: bold;
         }
         .radio-input { display: none; }
+        
+        /* FALLBACK IMAGE STYLE */
+        .img-placeholder {
+            width: 5rem; height: 5rem; border-radius: 0.75rem; background: #334155; 
+            display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.7rem;
+        }
     </style>
 </head>
 <body>
@@ -143,7 +149,7 @@
         
         <section id="hero" class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=ALAZAMAT'">
+                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover bg-slate-800" onerror="this.style.display='none'">
             </div>
             <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-2">ALAZAMAT</h1>
             <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] mb-10">MEDICAL STORE SYSTEM</h2>
@@ -155,7 +161,7 @@
         <section id="inventory" class="max-w-7xl mx-auto px-6 py-10">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                 <div><h2 class="text-4xl font-bold text-white">Inventory</h2><p class="text-gray-400 text-sm">Manage medicines & stock</p></div>
-                <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+                <form onsubmit="event.preventDefault(); return false;" class="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
                     <select id="searchFilter" class="modern-input w-full md:w-32 bg-slate-800" onchange="renderGrid()">
                         <option value="all">All</option>
                         <option value="name">Name</option>
@@ -164,7 +170,7 @@
                     </select>
                     <input type="text" id="search" placeholder="Search..." class="modern-input pl-10 w-full md:w-64">
                     <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
-                </div>
+                </form>
             </div>
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </section>
@@ -352,9 +358,14 @@
         let cart = [];
         let lastSale = null;
 
-        // *** CRITICAL FIX: AGGRESSIVE RELOAD BLOCKER ***
-        // This listens for the 'Enter' key on the entire page. 
-        // If it's an INPUT or SELECT (not a textarea), it kills the reload.
+        // *** SUPER AGGRESSIVE RELOAD BLOCKERS ***
+        // 1. Block any global submit events
+        window.addEventListener('submit', function(e) {
+            e.preventDefault();
+            return false;
+        }, true);
+
+        // 2. Block Enter Key on Inputs/Selects
         window.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const tag = e.target.nodeName;
@@ -409,7 +420,7 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function closeSuccess() { document.getElementById('successModal').classList.add('hidden'); }
 
-        // --- INVENTORY RENDER (FIXED WHOLE NUMBERS) ---
+        // --- INVENTORY RENDER (FIXED) ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filterType = document.getElementById('searchFilter').value;
@@ -427,7 +438,6 @@
             });
             
             filtered.forEach(i => {
-                // *** FIXED LOGIC: INTEGERS ONLY ***
                 const fullPacks = Math.floor(i.stock / i.packSize);
                 const looseUnits = i.stock % i.packSize;
                 
@@ -436,11 +446,21 @@
                     packDisplay += ` <span class="text-yellow-400 text-[10px]">(+${looseUnits} loose)</span>`;
                 }
 
+                // Image Logic: Try URL, if invalid use generic fallback instantly (No external fetch)
                 let displayImg = i.img;
-                if(displayImg && displayImg.length < 200 && !displayImg.startsWith('http') && !displayImg.startsWith('data:')) {
-                     displayImg = defaultImages[i.cat] || defaultImages['Other'];
+                let imgHtml = '';
+                
+                if(displayImg && displayImg.length > 5) {
+                    // It has an image string
+                    imgHtml = `<img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                               <div class="img-placeholder w-20 h-20 rounded-xl hidden border border-white/10"><i class="fas fa-image text-2xl"></i></div>`;
+                } else {
+                    // No image string, use fallback
+                    imgHtml = `<img src="${defaultImages[i.cat] || defaultImages['Other']}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                               <div class="img-placeholder w-20 h-20 rounded-xl hidden border border-white/10"><i class="fas fa-image text-2xl"></i></div>`;
                 }
-                if(!displayImg) displayImg = defaultImages[i.cat] || defaultImages['Other'];
 
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-5 flex flex-col relative group">
@@ -449,8 +469,7 @@
                         <button type="button" onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     <div class="flex gap-4 mb-4">
-                        <img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
-                             onerror="this.onerror=null; this.src='${defaultImages['Other']}'">
+                        ${imgHtml}
                         <div>
                             <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
