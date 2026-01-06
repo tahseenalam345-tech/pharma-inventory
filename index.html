@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v38.0 (Fixed Reload)</title>
+    <title>Alazamat Medical Store - v35.0 (Fixed Logic)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -17,8 +17,9 @@
             background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.15) 0px, transparent 50%);
             background-attachment: fixed;
             overflow-x: hidden;
-            margin: 0; /* Reset margin */
         }
+
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
@@ -64,10 +65,7 @@
             position: fixed; top: 0; left: 0; right: 0; height: 35px; 
             background: #020617; border-bottom: 1px solid #1e293b;
             z-index: 40; display: flex; align-items: center; overflow: hidden;
-            transition: transform 0.3s ease; /* Smooth hide */
         }
-        .train-bar.hidden-bar { transform: translateY(-100%); } /* MISSING CSS FIXED */
-
         .train-text {
             white-space: nowrap; font-weight: bold; color: #10b981; font-size: 0.9rem;
             animation: trainMove 25s linear infinite; padding-left: 100vw;
@@ -105,8 +103,7 @@
         </div>
     </div>
 
-    <div class="contents">
-    <input type="text" style="display:none"> <button type="button" onclick="toggleSidebar()" class="fixed top-12 left-4 z-50 bg-black/50 backdrop-blur-md text-white p-4 rounded-full border border-white/10 hover:border-emerald-500 hover:text-emerald-400 transition-all shadow-2xl">
+    <button type="button" onclick="toggleSidebar()" class="fixed top-12 left-4 z-50 bg-black/50 backdrop-blur-md text-white p-4 rounded-full border border-white/10 hover:border-emerald-500 hover:text-emerald-400 transition-all shadow-2xl">
         <i class="fas fa-bars text-xl"></i>
     </button>
 
@@ -146,8 +143,7 @@
         
         <section id="hero" class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" 
-                     onerror="this.onerror=null; this.src='https://placehold.co/150/10b981/FFFFFF?text=ALAZAMAT'">
+                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=ALAZAMAT'">
             </div>
             <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-2">ALAZAMAT</h1>
             <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] mb-10">MEDICAL STORE SYSTEM</h2>
@@ -159,16 +155,16 @@
         <section id="inventory" class="max-w-7xl mx-auto px-6 py-10">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                 <div><h2 class="text-4xl font-bold text-white">Inventory</h2><p class="text-gray-400 text-sm">Manage medicines & stock</p></div>
-                <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+                <form onsubmit="return false;" class="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
                     <select id="searchFilter" class="modern-input w-full md:w-32 bg-slate-800" onchange="renderGrid()">
                         <option value="all">All</option>
                         <option value="name">Name</option>
                         <option value="formula">Formula</option>
                         <option value="brand">Brand</option>
                     </select>
-                    <input type="text" id="search" placeholder="Search..." class="modern-input pl-10 w-full md:w-64" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="text" id="search" placeholder="Search..." class="modern-input pl-10 w-full md:w-64">
                     <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
-                </div>
+                </form>
             </div>
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </section>
@@ -214,9 +210,8 @@
             <div style="font-family: 'Great Vibes', cursive; font-size: 2rem; color: #10b981;">M Tahseen Alam</div>
             <p>Developed for Alazamat Medical Store</p>
         </footer>
+    </main>
 
-    </div>
-    
     <div id="successModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4">
         <div class="glass-card p-8 rounded-2xl text-center max-w-sm w-full">
             <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
@@ -225,8 +220,8 @@
             <h3 class="text-2xl font-bold text-white mb-2">Sale Completed!</h3>
             <p class="text-gray-400 mb-6">Bill Saved Successfully.</p>
             <div class="flex flex-col gap-3">
-                <button type="button" onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
-                <button type="button" onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
+                <button onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
+                <button onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
             </div>
         </div>
     </div>
@@ -240,25 +235,25 @@
             <div class="space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="medName" placeholder="Name" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
-                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="text" id="medName" placeholder="Name" class="modern-input">
+                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
                 </div>
-                <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input">
                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
                     <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-sm" oninput="calcUnits()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
-                        <input type="number" id="medPackSize" value="1" placeholder="Items/Pack" class="modern-input text-sm" oninput="calcUnits()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
-                        <input type="number" id="medStock" placeholder="Total Units" readonly class="modern-input text-sm bg-black/40 text-gray-500" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                        <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-sm" oninput="calcUnits()">
+                        <input type="number" id="medPackSize" value="1" placeholder="Items/Pack" class="modern-input text-sm" oninput="calcUnits()">
+                        <input type="number" id="medStock" placeholder="Total Units" readonly class="modern-input text-sm bg-black/40 text-gray-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="medCost" placeholder="Cost Price (Pack)" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
-                    <input type="number" id="medPrice" placeholder="Sell Price (Pack)" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="number" id="medCost" placeholder="Cost Price (Pack)" class="modern-input">
+                    <input type="number" id="medPrice" placeholder="Sell Price (Pack)" class="modern-input">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <select id="medCat" class="modern-input bg-slate-900"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
-                    <input type="date" id="medExp" class="modern-input text-white" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="date" id="medExp" class="modern-input text-white">
                 </div>
                 <input type="file" id="medImg" accept="image/*" class="modern-input text-sm text-gray-400">
                 <button type="button" onclick="saveMedicine()" class="btn-jelly w-full">Save Changes</button>
@@ -280,7 +275,7 @@
 
             <div class="flex justify-center items-center gap-4 mb-4">
                 <button type="button" onclick="adjQty(-1)" class="w-12 h-12 rounded-full bg-white/10 text-xl">-</button>
-                <input type="number" id="saleQty" value="1" class="w-24 bg-transparent text-4xl font-bold text-center border-b-2 border-emerald-500 outline-none" oninput="calcTotal()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                <input type="number" id="saleQty" value="1" class="w-24 bg-transparent text-4xl font-bold text-center border-b-2 border-emerald-500 outline-none" oninput="calcTotal()">
                 <button type="button" onclick="adjQty(1)" class="w-12 h-12 rounded-full bg-white/10 text-xl">+</button>
             </div>
             
@@ -309,14 +304,16 @@
                 </table>
             </div>
             <div class="p-6 border-t border-white/10 bg-black/20">
+                
                 <div class="flex items-center gap-2 mb-4">
                     <span class="text-gray-400 text-sm">Discount:</span>
                     <select id="discType" class="modern-input w-20 p-1 text-sm bg-slate-800" onchange="renderBill()">
                         <option value="amt">Rs</option>
                         <option value="perc">%</option>
                     </select>
-                    <input type="number" id="billDisc" value="0" placeholder="Value" class="modern-input w-full text-right" oninput="renderBill()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="number" id="billDisc" value="0" placeholder="Value" class="modern-input w-full text-right" oninput="renderBill()">
                 </div>
+
                 <div class="flex justify-between items-center mb-6 text-xl font-bold">
                     <span>Grand Total</span>
                     <span class="text-emerald-400" id="billGrandTotal">0</span>
@@ -330,35 +327,47 @@
         <div class="glass-card w-full max-w-md p-8 rounded-2xl">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Add Purchase</h3><button type="button" onclick="closeModal('purchaseModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
-                <input type="text" id="pDealer" placeholder="Dealer Name" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
-                <input type="text" id="pCompany" placeholder="Company Name" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                <input type="text" id="pDealer" placeholder="Dealer Name" class="modern-input">
+                <input type="text" id="pCompany" placeholder="Company Name" class="modern-input">
                 <textarea id="pItems" placeholder="Items List" class="modern-input h-24"></textarea>
-                <input type="number" id="pAmount" placeholder="Amount Paid" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
-                <input type="date" id="pDate" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                <input type="number" id="pAmount" placeholder="Amount Paid" class="modern-input">
+                <input type="date" id="pDate" class="modern-input">
                 <button type="button" onclick="savePurchase()" class="btn-jelly w-full bg-purple-600">Save Record</button>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIG
-        // I have restored your ORIGINAL GitHub variables here
+        // ==========================================
+        //  ⚠️ CONFIGURATION ⚠️
+        // ==========================================
         const ghUser = "tahseenalam345-tech"; 
         const ghRepo = "pharma-inventory"; 
         const branch = "main"; 
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
 
-        // DATA
+        // ==========================================
+        
         let inv = [], sales = [], purch = [];
         let cart = [];
         let lastSale = null;
 
+        // Prevent Enter key from reloading
+        window.addEventListener('keydown', function(e) {
+            if (e.keyIdentifier == 'U+000A' || e.keyIdentifier == 'Enter' || e.keyCode == 13) {
+                if (e.target.nodeName == 'INPUT' || e.target.nodeName == 'TEXTAREA') {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        }, true);
+
+        // --- LOAD DATA & DEFAULTS ---
         function initData() {
             try {
-                // Using v38 to keep your data
-                inv = JSON.parse(localStorage.getItem('az_inv_38')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_38')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_38')) || [];
+                inv = JSON.parse(localStorage.getItem('az_inv_34')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_34')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_34')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -373,20 +382,13 @@
         }
         initData();
 
-        // FIX: Added error handling to logo to prevent loop
-        const logo = document.getElementById('storeLogo');
-        logo.src = baseURL + "1.jpg";
-        logo.onerror = function() { 
-            this.onerror = null; // Stop the loop
-            this.src='https://placehold.co/150/10b981/FFFFFF?text=ALAZAMAT'; 
-        };
+        document.getElementById('storeLogo').src = baseURL + "1.jpg";
 
-        // Restored your ORIGINAL Image logic
         const defaultImages = {
             'Tablet': baseURL + 'download (1).jpg',  
             'Syrup': baseURL + 'download (2).jpg',   
             'Injection': baseURL + 'download (3).jpg', 
-            'Capsule': baseURL + 'download.jpg',      
+            'Capsule': baseURL + 'download.jpg',       
             'Other': baseURL + 'download.jpg'
         };
 
@@ -395,7 +397,7 @@
             if(window.scrollY > 50) bar.classList.add('hidden-bar'); else bar.classList.remove('hidden-bar');
         });
 
-        // UI FUNCS
+        // --- UI FUNCS ---
         function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.remove('hidden'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.add('hidden'); }
         function toggleSidebar() { const sb = document.getElementById('sidebar'); if(sb.classList.contains('active')) closeSidebar(); else openSidebar(); }
@@ -404,13 +406,7 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function closeSuccess() { document.getElementById('successModal').classList.add('hidden'); }
 
-        // RENDER GRID WITH DEBOUNCE
-        let searchTimeout = null;
-        document.getElementById('search').addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(renderGrid, 300);
-        });
-
+        // --- INVENTORY RENDER (FIXED PACK LOGIC) ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filterType = document.getElementById('searchFilter').value;
@@ -428,18 +424,20 @@
             });
             
             filtered.forEach(i => {
-                const wholePacks = Math.floor(i.stock / i.packSize);
+                // *** FIXED LOGIC: Show Integers Only ***
+                const fullPacks = Math.floor(i.stock / i.packSize);
                 const looseUnits = i.stock % i.packSize;
-                const packsDisplay = `Packs: ${wholePacks} | Loose: ${looseUnits}`;
+                
+                let packDisplay = `<b class="text-white text-lg">${fullPacks}</b> Packs`;
+                if(looseUnits > 0) {
+                    packDisplay += ` <span class="text-yellow-400 text-[10px]">(+${looseUnits} loose)</span>`;
+                }
 
                 let displayImg = i.img;
                 if(displayImg && displayImg.length < 200 && !displayImg.startsWith('http') && !displayImg.startsWith('data:')) {
-                        displayImg = defaultImages[i.cat] || defaultImages['Other'];
+                     displayImg = defaultImages[i.cat] || defaultImages['Other'];
                 }
                 if(!displayImg) displayImg = defaultImages[i.cat] || defaultImages['Other'];
-
-                // Fallback Logic with Safety Stop
-                const fallbackImg = defaultImages['Other'];
 
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-5 flex flex-col relative group">
@@ -449,7 +447,7 @@
                     </div>
                     <div class="flex gap-4 mb-4">
                         <img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
-                                onerror="this.onerror=null; this.src='${fallbackImg}';">
+                             onerror="this.onerror=null; this.src='${defaultImages['Other']}'">
                         <div>
                             <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
@@ -458,18 +456,19 @@
                         </div>
                     </div>
                     <div class="bg-black/20 p-3 rounded-xl grid grid-cols-2 gap-y-1 text-xs mb-4 border border-white/5">
-                        <div class="text-gray-400 col-span-2 text-center border-b border-white/5 pb-1 mb-1 font-bold text-emerald-400">${packsDisplay}</div>
+                        <div class="text-gray-400 col-span-2 text-center pb-2 border-b border-white/5 mb-2">${packDisplay}</div>
                         <div class="text-gray-400">Total Units: <b class="text-white">${i.stock}</b></div>
-                        <div class="text-gray-400 text-right">Items/Pack: <b class="text-white">${i.packSize}</b></div>
+                        <div class="text-gray-400">Pack Size: <b class="text-white">${i.packSize}</b></div>
                         <div class="text-gray-400">Price (Pk): <span class="text-emerald-400">${i.price}</span></div>
-                        <div class="text-gray-400 text-right">Price (Un): <span class="text-emerald-400">${(i.price/i.packSize).toFixed(2)}</span></div>
+                        <div class="text-gray-400">Price (Un): <span class="text-emerald-400">${(i.price/i.packSize).toFixed(2)}</span></div>
                     </div>
                     <button type="button" onclick="openSaleModal(${i.id})" class="btn-jelly w-full shadow-lg">ADD TO BILL</button>
                 </div>`;
             });
         }
+        document.getElementById('search').addEventListener('input', renderGrid);
 
-        // CRUD
+        // --- CRUD ---
         function openAddModal() {
             document.getElementById('medId').value = ''; document.getElementById('medName').value = '';
             document.getElementById('medBrand').value = ''; document.getElementById('medFormula').value = '';
@@ -480,7 +479,8 @@
         function calcUnits() {
             const p = parseFloat(document.getElementById('medTotalPacks').value) || 0;
             const s = parseFloat(document.getElementById('medPackSize').value) || 1;
-            document.getElementById('medStock').value = Math.ceil(p * s);
+            // FIXED: Use Math.round to ensure clean integers for stock
+            document.getElementById('medStock').value = Math.round(p * s);
         }
         function resizeImage(file, cb) {
             const r = new FileReader(); r.onload = (e) => {
@@ -491,47 +491,77 @@
                 }; img.src = e.target.result;
             }; r.readAsDataURL(file);
         }
+        
         function saveMedicine() {
             const f = document.getElementById('medImg').files[0];
             const cat = document.getElementById('medCat').value;
+            
             const proc = (img) => {
                 const idVal = document.getElementById('medId').value;
                 const newName = document.getElementById('medName').value.trim();
                 const newBrand = document.getElementById('medBrand').value.trim();
                 const currentId = idVal ? parseInt(idVal) : null;
-                const duplicate = inv.find(i => i.name.toLowerCase() === newName.toLowerCase() && i.brand.toLowerCase() === newBrand.toLowerCase() && i.id !== currentId);
-                if (duplicate) { alert("⚠️ ERROR: Medicine with this Name & Brand already exists!"); return; }
+
+                const duplicate = inv.find(i => 
+                    i.name.toLowerCase() === newName.toLowerCase() && 
+                    i.brand.toLowerCase() === newBrand.toLowerCase() &&
+                    i.id !== currentId
+                );
+
+                if (duplicate) {
+                    alert("⚠️ ERROR: Medicine with this Name & Brand already exists!");
+                    return; 
+                }
+
                 const item = {
-                    id: currentId || Date.now(), name: newName, brand: newBrand, formula: document.getElementById('medFormula').value, 
+                    id: currentId || Date.now(),
+                    name: newName, 
+                    brand: newBrand,
+                    formula: document.getElementById('medFormula').value, 
                     packSize: parseInt(document.getElementById('medPackSize').value)||1,
-                    stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0,
-                    price: parseFloat(document.getElementById('medPrice').value)||0, cat: cat, exp: document.getElementById('medExp').value, img: img
+                    stock: parseInt(document.getElementById('medStock').value)||0, 
+                    cost: parseFloat(document.getElementById('medCost').value)||0,
+                    price: parseFloat(document.getElementById('medPrice').value)||0, 
+                    cat: cat,
+                    exp: document.getElementById('medExp').value, 
+                    img: img
                 };
-                const idx = inv.findIndex(i => i.id == item.id); if(idx > -1) inv[idx] = item; else inv.push(item);
+
+                const idx = inv.findIndex(i => i.id == item.id);
+                if(idx > -1) inv[idx] = item; else inv.push(item);
                 saveData(); closeModal('medModal'); renderGrid();
             };
-            if(f) resizeImage(f, proc); else if(editTempImg) proc(editTempImg); else proc(defaultImages[cat] || defaultImages['Other']);
+
+            if(f) resizeImage(f, proc); 
+            else if(editTempImg) proc(editTempImg); 
+            else proc(defaultImages[cat] || defaultImages['Other']);
         }
+        
         let editTempImg = null;
         function editMed(id) {
             const i = inv.find(x => x.id == id);
             document.getElementById('medId').value = i.id; document.getElementById('medName').value = i.name;
             document.getElementById('medBrand').value = i.brand || ''; document.getElementById('medFormula').value = i.formula || '';
             document.getElementById('medPackSize').value = i.packSize; document.getElementById('medStock').value = i.stock;
-            document.getElementById('medTotalPacks').value = (i.stock / i.packSize).toFixed(1);
+            // FIXED: Calculate packs without decimals for display if perfect match
+            const packs = i.stock / i.packSize;
+            document.getElementById('medTotalPacks').value = Number.isInteger(packs) ? packs : packs.toFixed(2);
             document.getElementById('medCost').value = i.cost; document.getElementById('medPrice').value = i.price;
             document.getElementById('medCat').value = i.cat; document.getElementById('medExp').value = i.exp;
             editTempImg = i.img; openModal('medModal');
         }
         function delMed(id) { if(confirm('Delete?')) { inv = inv.filter(x => x.id != id); saveData(); renderGrid(); } }
 
-        // SALES
-        let saleItem = null; let isPackSale = false;
+        // --- SALES ---
+        let saleItem = null;
+        let isPackSale = false;
+
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
             document.getElementById('saleName').innerText = saleItem.name;
             document.getElementById('saleQty').value = 1;
-            setSaleType('Unit'); openModal('saleModal');
+            setSaleType('Unit');
+            openModal('saleModal');
         }
         function setSaleType(type) {
             isPackSale = (type === 'Pack');
@@ -539,7 +569,10 @@
             document.getElementById('sellPack').checked = isPackSale;
             calcTotal();
         }
-        function adjQty(n) { let q = parseInt(document.getElementById('saleQty').value) + n; if(q < 1) q = 1; document.getElementById('saleQty').value = q; calcTotal(); }
+        function adjQty(n) {
+            let q = parseInt(document.getElementById('saleQty').value) + n;
+            if(q < 1) q = 1; document.getElementById('saleQty').value = q; calcTotal();
+        }
         function calcTotal() {
             const q = parseInt(document.getElementById('saleQty').value);
             const unitPrice = isPackSale ? saleItem.price : (saleItem.price / saleItem.packSize);
@@ -550,70 +583,120 @@
             const q = parseInt(document.getElementById('saleQty').value);
             const deduct = isPackSale ? (q * saleItem.packSize) : q;
             if(deduct > saleItem.stock) { alert('Low Stock'); return; }
+            
             const unitPrice = isPackSale ? saleItem.price : (saleItem.price / saleItem.packSize);
             const total = Math.ceil(unitPrice * q);
             const profit = total - ((saleItem.cost / saleItem.packSize) * deduct);
+
             cart.push({ id: Date.now(), medId: saleItem.id, name: saleItem.name, type: isPackSale?'Pack':'Unit', qty: q, deduct: deduct, price: total, profit: profit });
             closeModal('saleModal'); updateCartUI();
         }
         function updateCartUI() { document.getElementById('cartCount').innerText = `${cart.length} Items`; }
+        
         function renderBill() {
-            const t = document.getElementById('billTable'); t.innerHTML = ''; let sub = 0;
+            const t = document.getElementById('billTable'); t.innerHTML = '';
+            let sub = 0;
             cart.forEach((c, i) => {
                 sub += c.price;
-                t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button type="button" onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+                t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
             });
+            
+            // Discount Logic
             const discType = document.getElementById('discType').value;
             const discInput = parseFloat(document.getElementById('billDisc').value) || 0;
-            let finalDisc = (discType === 'perc') ? Math.floor(sub * (discInput / 100)) : discInput;
+            let finalDisc = 0;
+
+            if (discType === 'perc') {
+                finalDisc = Math.floor(sub * (discInput / 100));
+            } else {
+                finalDisc = discInput;
+            }
+
             if(finalDisc > sub) finalDisc = sub;
+
             document.getElementById('billGrandTotal').innerText = `Rs. ${sub - finalDisc}`;
         }
+
         function checkout() {
             if(cart.length === 0) return alert('Cart Empty');
+            
             let sub = 0, prof = 0;
             cart.forEach(c => { sub += c.price; prof += c.profit; });
+            
             const discType = document.getElementById('discType').value;
             const discInput = parseFloat(document.getElementById('billDisc').value) || 0;
-            let finalDisc = (discType === 'perc') ? Math.floor(sub * (discInput / 100)) : discInput;
-            cart.forEach(c => { const idx = inv.findIndex(i => i.id == c.medId); if(idx > -1) inv[idx].stock -= c.deduct; });
-            const s = { id: Date.now().toString().slice(-6), date: new Date().toLocaleString(), qty: cart.length, disc: finalDisc, total: sub - finalDisc, profit: prof - finalDisc, items: cart };
-            sales.unshift(s); saveData(); lastSale = s;
-            cart = []; updateCartUI(); closeModal('billModal'); renderAll();
+            let finalDisc = 0;
+            if (discType === 'perc') finalDisc = Math.floor(sub * (discInput / 100));
+            else finalDisc = discInput;
+
+            cart.forEach(c => {
+                const idx = inv.findIndex(i => i.id == c.medId);
+                if(idx > -1) inv[idx].stock -= c.deduct;
+            });
+
+            const s = { 
+                id: Date.now().toString().slice(-6), 
+                date: new Date().toLocaleString(), 
+                qty: cart.length, 
+                disc: finalDisc, 
+                total: sub - finalDisc, 
+                profit: prof - finalDisc, 
+                items: cart 
+            };
+            
+            sales.unshift(s); 
+            saveData(); 
+            lastSale = s; 
+
+            cart = []; 
+            updateCartUI(); 
+            closeModal('billModal'); 
+            renderAll();
+            
             openModal('successModal');
         }
-        function printLastBill() { if(lastSale) printBill(lastSale); }
+
+        function printLastBill() {
+            if(lastSale) printBill(lastSale);
+        }
+
         function printBill(s) {
             let h = ''; s.items.forEach(i => h += `<tr><td align="left">${i.name} (${i.type})</td><td align="center">${i.qty}</td><td align="right">${i.price}</td></tr>`);
             const w = window.open('', '', 'width=300,height=600');
             w.document.write(`<html><head><style>body{font-family:monospace;text-align:center;padding:10px}hr{border:0;border-top:1px dashed #000}table{width:100%;font-size:10px}</style></head><body><img src="${baseURL + '1.jpg'}" width="50" style="border-radius:50%" onerror="this.style.display='none'"><br><b>ALAZAMAT MEDICAL</b><br>+923107377846<hr>Date: ${s.date}<br>Inv: ${s.id}<hr><table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>${h}</table><hr><div style="text-align:right">Disc: ${s.disc}<br><b>NET: ${s.total}</b></div><hr>Thank You!</body></html>`);
-            w.document.close(); w.focus(); setTimeout(() => { w.print(); w.close(); }, 800);
+            w.document.close(); 
+            w.focus(); 
+            setTimeout(() => { w.print(); w.close(); }, 800);
         }
+
+        // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_38', JSON.stringify(inv));
-            localStorage.setItem('az_sales_38', JSON.stringify(sales));
-            localStorage.setItem('az_purch_38', JSON.stringify(purch));
+            localStorage.setItem('az_inv_34', JSON.stringify(inv));
+            localStorage.setItem('az_sales_34', JSON.stringify(sales));
+            localStorage.setItem('az_purch_34', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
             saveData(); closeModal('purchaseModal'); renderAll();
         }
         function downloadBackup() {
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({inv, sales, purch})], {type: 'application/json'}));
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify({inv, sales, purch})], {type: 'application/json'}));
             a.download = 'Alazamat_Backup.json'; a.click();
         }
         function restoreBackup(input) {
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_38', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_38', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_38', JSON.stringify(d.purch));
-                alert('Data Restored! The page will updated.');
-                inv = d.inv || []; sales = d.sales || []; purch = d.purch || [];
-                renderAll(); // RENDER WITHOUT RELOAD
-            }; r.readAsText(input.files[0]);
+                if(d.inv) localStorage.setItem('az_inv_34', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_34', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_34', JSON.stringify(d.purch));
+                alert('Restored! Reloading...');
+                location.reload();
+            };
+            r.readAsText(input.files[0]);
         }
+
         function renderAll() {
             renderGrid();
             document.getElementById('historyTable').innerHTML = sales.map(s => `<tr><td class="p-3">${s.date}</td><td class="p-3">#${s.id}</td><td class="p-3">${s.qty}</td><td class="p-3 text-right text-red-400">${s.disc}</td><td class="p-3 text-right font-bold text-emerald-400">${s.total}</td><td class="p-3 text-center"><button type="button" onclick='printBill(${JSON.stringify(s)})'><i class="fas fa-print opacity-50 hover:opacity-100"></i></button></td></tr>`).join('');
@@ -621,6 +704,7 @@
             const r = sales.reduce((a,b)=>a+b.total,0); const p = sales.reduce((a,b)=>a+(b.profit||0),0);
             document.getElementById('repRev').innerText = r; document.getElementById('repCost').innerText = (r-p).toFixed(0); document.getElementById('repProfit').innerText = p.toFixed(0);
         }
+        
         renderAll();
     </script>
 </body>
