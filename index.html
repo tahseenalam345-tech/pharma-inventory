@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v41.0 (Final Perfected)</title>
+    <title>Alazamat Medical Store - v41.0 (Production)</title>
+    <meta name="description" content="Inventory and Billing System for Alazamat Medical Store">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
-    <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0ea5e9">
-
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0ea5e9">
+    
     <style>
         /* CORE STYLES */
         body { 
@@ -29,7 +30,7 @@
 
         /* GLASS CARD */
         .glass-card {
-            background: rgba(17, 24, 39, 0.9); /* Slightly darker for better text contrast */
+            background: rgba(17, 24, 39, 0.9);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
@@ -185,7 +186,7 @@
                         <option value="formula">Formula</option>
                     </select>
                     <input type="text" id="search" placeholder="Search medicine..." class="modern-input w-full md:w-64">
-                    <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
+                    <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap z-20 relative"><i class="fas fa-plus"></i> Add</button>
                 </div>
             </div>
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
@@ -301,7 +302,7 @@
         </div>
     </div>
 
-    <div id="medModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'medModal')">
+    <div id="medModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl p-6" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold">Medicine Details</h3>
@@ -339,7 +340,7 @@
         </div>
     </div>
 
-    <div id="saleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'saleModal')">
+    <div id="saleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-6 rounded-2xl text-center" onclick="event.stopPropagation()">
             <h3 class="text-2xl font-bold mb-1" id="saleName">Item</h3>
             <p class="text-emerald-300 font-bold mb-2 text-lg" id="salePotency">500mg</p>
@@ -369,7 +370,7 @@
         </div>
     </div>
 
-    <div id="billModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'billModal')">
+    <div id="billModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-lg h-[85vh] flex flex-col rounded-2xl" onclick="event.stopPropagation()">
             <div class="p-6 border-b border-white/10 flex justify-between items-center">
                 <h3 class="text-2xl font-bold text-white">Current Bill</h3>
@@ -407,7 +408,7 @@
         </div>
     </div>
 
-    <div id="purchaseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'purchaseModal')">
+    <div id="purchaseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-8 rounded-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Buying Record</h3><button type="button" onclick="closeModal('purchaseModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
@@ -422,7 +423,7 @@
         </div>
     </div>
 
-    <div id="expModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'expModal')">
+    <div id="expModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-8 rounded-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Add Expense</h3><button type="button" onclick="closeModal('expModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
@@ -442,7 +443,7 @@
         </div>
     </div>
 
-    <div id="attModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'attModal')">
+    <div id="attModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-8 rounded-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Mark Attendance</h3><button type="button" onclick="closeModal('attModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
@@ -527,31 +528,36 @@
         };
 
         // --- UI & LOGIC HELPERS ---
+        // NEW FIXED CLOSE MODAL LOGIC
         function openModal(id) { 
             const m = document.getElementById(id); 
             m.classList.remove('hidden'); 
-            m.classList.add('flex'); // Ensure flex display
+            m.classList.add('flex');
             document.getElementById('modalOverlayLayer').classList.remove('hidden');
         }
         
         function closeModal(id) { 
             document.getElementById(id).classList.add('hidden'); 
             document.getElementById(id).classList.remove('flex');
-            // Check if any other modal is open before hiding overlay
+            // Check if any other modal is still open
             const openModals = document.querySelectorAll('.fixed.z-50:not(.hidden)');
             if(openModals.length === 0) document.getElementById('modalOverlayLayer').classList.add('hidden');
         }
 
-        // FIXED: Click outside modal to close
-        function handleOutsideClick(e, id) {
-            if(e.target.id === id) closeModal(id);
+        // GLOBAL CLOSE FUNCTION FOR OVERLAY CLICK
+        function closeAllModals() {
+            const modals = document.querySelectorAll('.fixed.z-50');
+            modals.forEach(m => {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            });
+            document.getElementById('modalOverlayLayer').classList.add('hidden');
         }
 
         function toggleSidebar(e) {
             if(e) e.stopPropagation();
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('hidden');
-            // Close notification panel if open
             document.getElementById('notifPanel').classList.add('hidden');
         }
         
@@ -565,7 +571,7 @@
             const p = document.getElementById('notifPanel');
             if(p.classList.contains('hidden')) { 
                 p.classList.remove('hidden'); setTimeout(()=>p.classList.remove('opacity-0', 'scale-95'),10); 
-                closeSidebar(); // Close sidebar if open
+                closeSidebar(); 
             }
             else { p.classList.add('opacity-0', 'scale-95'); setTimeout(()=>p.classList.add('hidden'),200); }
         }
@@ -622,7 +628,6 @@
             filtered.forEach(i => {
                 const wholePacks = Math.floor(i.stock / i.packSize);
                 const looseUnits = i.stock % i.packSize;
-                // FIXED: COLORFUL STOCK DISPLAY
                 let stockDisplay = (i.cat === 'Syrup' || i.packSize === 1) 
                     ? `<b class="text-yellow-300 text-sm">${i.stock}</b> <span class="text-gray-400">Units</span>` 
                     : `<b class="text-yellow-300 text-sm">${wholePacks}</b> <span class="text-gray-400">Pk</span> | <b class="text-yellow-300 text-sm">${looseUnits}</b> <span class="text-gray-400">Lose</span>`;
@@ -745,7 +750,7 @@
         }
         function delExp(id) { if(confirm('Delete?')) { expenses = expenses.filter(e => e.id !== id); saveData(); renderAll(); } }
 
-        // --- ATTENDANCE (TABLE REDESIGN) ---
+        // --- ATTENDANCE ---
         function saveAttendance() {
             const dateStr = document.getElementById('attDateInput').value;
             const dateObj = new Date(dateStr);
@@ -760,8 +765,6 @@
                 status: document.getElementById('attStatus').value,
                 reason: document.getElementById('attReason').value
             };
-            
-            // Overwrite existing for same date
             attendance = attendance.filter(a => a.date !== rec.date);
             attendance.unshift(rec);
             saveData(); closeModal('attModal'); renderAttendance();
@@ -769,7 +772,6 @@
 
         function renderAttendance() {
             const t = document.getElementById('attTable');
-            // Sort by Date Descending
             const sorted = attendance.sort((a,b) => new Date(b.date) - new Date(a.date));
             t.innerHTML = sorted.map(a => `
                 <tr>
@@ -899,10 +901,9 @@
 
     </script>
     <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}
-</script>
-
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+      }
+    </script>
 </body>
 </html>
