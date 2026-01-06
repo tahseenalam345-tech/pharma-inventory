@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v37.0 (No Reload Guaranteed)</title>
+    <title>Alazamat Medical Store - v38.0 (Ironclad No-Reload)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -101,6 +101,9 @@
         </div>
     </div>
 
+    <form onsubmit="return false;" class="contents">
+    <input type="text" style="display:none">
+
     <button type="button" onclick="toggleSidebar()" class="fixed top-12 left-4 z-50 bg-black/50 backdrop-blur-md text-white p-4 rounded-full border border-white/10 hover:border-emerald-500 hover:text-emerald-400 transition-all shadow-2xl">
         <i class="fas fa-bars text-xl"></i>
     </button>
@@ -160,7 +163,7 @@
                         <option value="formula">Formula</option>
                         <option value="brand">Brand</option>
                     </select>
-                    <input type="text" id="search" placeholder="Search..." class="modern-input pl-10 w-full md:w-64">
+                    <input type="text" id="search" placeholder="Search..." class="modern-input pl-10 w-full md:w-64" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                     <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
                 </div>
             </div>
@@ -209,8 +212,7 @@
             <p>Developed for Alazamat Medical Store</p>
         </footer>
 
-    </main>
-
+    </form>
     <div id="successModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4">
         <div class="glass-card p-8 rounded-2xl text-center max-w-sm w-full">
             <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
@@ -234,25 +236,25 @@
             <div class="space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="medName" placeholder="Name" class="modern-input">
-                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
+                    <input type="text" id="medName" placeholder="Name" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 </div>
-                <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input">
+                <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
                     <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-sm" oninput="calcUnits()">
-                        <input type="number" id="medPackSize" value="1" placeholder="Items/Pack" class="modern-input text-sm" oninput="calcUnits()">
-                        <input type="number" id="medStock" placeholder="Total Units" readonly class="modern-input text-sm bg-black/40 text-gray-500">
+                        <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-sm" oninput="calcUnits()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                        <input type="number" id="medPackSize" value="1" placeholder="Items/Pack" class="modern-input text-sm" oninput="calcUnits()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                        <input type="number" id="medStock" placeholder="Total Units" readonly class="modern-input text-sm bg-black/40 text-gray-500" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="medCost" placeholder="Cost Price (Pack)" class="modern-input">
-                    <input type="number" id="medPrice" placeholder="Sell Price (Pack)" class="modern-input">
+                    <input type="number" id="medCost" placeholder="Cost Price (Pack)" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                    <input type="number" id="medPrice" placeholder="Sell Price (Pack)" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <select id="medCat" class="modern-input bg-slate-900"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
-                    <input type="date" id="medExp" class="modern-input text-white">
+                    <input type="date" id="medExp" class="modern-input text-white" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 </div>
                 <input type="file" id="medImg" accept="image/*" class="modern-input text-sm text-gray-400">
                 <button type="button" onclick="saveMedicine()" class="btn-jelly w-full">Save Changes</button>
@@ -274,7 +276,7 @@
 
             <div class="flex justify-center items-center gap-4 mb-4">
                 <button type="button" onclick="adjQty(-1)" class="w-12 h-12 rounded-full bg-white/10 text-xl">-</button>
-                <input type="number" id="saleQty" value="1" class="w-24 bg-transparent text-4xl font-bold text-center border-b-2 border-emerald-500 outline-none" oninput="calcTotal()">
+                <input type="number" id="saleQty" value="1" class="w-24 bg-transparent text-4xl font-bold text-center border-b-2 border-emerald-500 outline-none" oninput="calcTotal()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 <button type="button" onclick="adjQty(1)" class="w-12 h-12 rounded-full bg-white/10 text-xl">+</button>
             </div>
             
@@ -309,7 +311,7 @@
                         <option value="amt">Rs</option>
                         <option value="perc">%</option>
                     </select>
-                    <input type="number" id="billDisc" value="0" placeholder="Value" class="modern-input w-full text-right" oninput="renderBill()">
+                    <input type="number" id="billDisc" value="0" placeholder="Value" class="modern-input w-full text-right" oninput="renderBill()" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 </div>
                 <div class="flex justify-between items-center mb-6 text-xl font-bold">
                     <span>Grand Total</span>
@@ -324,25 +326,17 @@
         <div class="glass-card w-full max-w-md p-8 rounded-2xl">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Add Purchase</h3><button type="button" onclick="closeModal('purchaseModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
-                <input type="text" id="pDealer" placeholder="Dealer Name" class="modern-input">
-                <input type="text" id="pCompany" placeholder="Company Name" class="modern-input">
+                <input type="text" id="pDealer" placeholder="Dealer Name" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                <input type="text" id="pCompany" placeholder="Company Name" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 <textarea id="pItems" placeholder="Items List" class="modern-input h-24"></textarea>
-                <input type="number" id="pAmount" placeholder="Amount Paid" class="modern-input">
-                <input type="date" id="pDate" class="modern-input">
+                <input type="number" id="pAmount" placeholder="Amount Paid" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
+                <input type="date" id="pDate" class="modern-input" onkeydown="if(event.key === 'Enter') event.preventDefault();">
                 <button type="button" onclick="savePurchase()" class="btn-jelly w-full bg-purple-600">Save Record</button>
             </div>
         </div>
     </div>
 
     <script>
-        // GLOBAL EVENT LISTENER TO BLOCK 'ENTER' KEY RELOADS
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                return false;
-            }
-        });
-
         // CONFIG
         const ghUser = "tahseenalam345-tech"; 
         const ghRepo = "pharma-inventory"; 
@@ -356,9 +350,9 @@
 
         function initData() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_37')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_37')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_37')) || [];
+                inv = JSON.parse(localStorage.getItem('az_inv_38')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_38')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_38')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -580,9 +574,9 @@
             w.document.close(); w.focus(); setTimeout(() => { w.print(); w.close(); }, 800);
         }
         function saveData() {
-            localStorage.setItem('az_inv_37', JSON.stringify(inv));
-            localStorage.setItem('az_sales_37', JSON.stringify(sales));
-            localStorage.setItem('az_purch_37', JSON.stringify(purch));
+            localStorage.setItem('az_inv_38', JSON.stringify(inv));
+            localStorage.setItem('az_sales_38', JSON.stringify(sales));
+            localStorage.setItem('az_purch_38', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -596,9 +590,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_37', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_37', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_37', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_38', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_38', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_38', JSON.stringify(d.purch));
                 alert('Data Restored! The page will updated.');
                 inv = d.inv || []; sales = d.sales || []; purch = d.purch || [];
                 renderAll(); // RENDER WITHOUT RELOAD
