@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v42.0 (Final Fix)</title>
+    <title>Alazamat Medical Store - v43.0 (Buttons & Images Fixed)</title>
     <meta name="description" content="Inventory and Billing System for Alazamat Medical Store">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -51,6 +51,7 @@
             background: linear-gradient(135deg, #10b981, #059669);
             color: white; border: none; padding: 12px 24px; font-weight: 600; border-radius: 12px;
             transition: all 0.2s; position: relative; overflow: hidden; cursor: pointer;
+            z-index: 10;
         }
         .btn-jelly:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
         .btn-jelly:active { transform: scale(0.98); }
@@ -97,7 +98,6 @@
             position: absolute; top: 0; right: 0; width: 15px; height: 15px;
             background: red; border-radius: 50%; border: 2px solid #1f2937;
         }
-        
     </style>
 </head>
 <body>
@@ -167,7 +167,7 @@
         
         <section id="hero" class="min-h-[50vh] flex flex-col items-center justify-center text-center px-4 relative">
             <div class="relative group mb-6">
-                <img id="storeLogo" src="" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=AMS'">
+                <img id="storeLogo" src="https://placehold.co/200x200/10b981/ffffff?text=AMS+Logo" class="w-32 h-32 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.src='https://placehold.co/200x200?text=AMS'">
             </div>
             <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-2">ALAZAMAT</h1>
             <h2 class="text-lg md:text-xl text-gray-400 tracking-[0.3em] mb-6">MEDICAL STORE</h2>
@@ -179,14 +179,14 @@
         <section id="inventory" class="max-w-7xl mx-auto px-4 py-8">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                 <div><h2 class="text-3xl font-bold text-white">Inventory</h2></div>
-                <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto items-center">
-                    <select id="searchFilter" class="modern-input w-full md:w-32 bg-slate-800" onchange="renderGrid()">
+                <div class="flex flex-row gap-2 w-full md:w-auto items-center">
+                    <select id="searchFilter" class="modern-input w-24 md:w-32 bg-slate-800" onchange="renderGrid()">
                         <option value="all">All</option>
                         <option value="name">Name</option>
                         <option value="formula">Formula</option>
                     </select>
-                    <input type="text" id="search" placeholder="Search medicine..." class="modern-input w-full md:w-64">
-                    <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap z-20 relative"><i class="fas fa-plus"></i> Add</button>
+                    <input type="text" id="search" placeholder="Search..." class="modern-input flex-1">
+                    <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap flex-none z-30" style="min-width: 80px;"><i class="fas fa-plus"></i> Add</button>
                 </div>
             </div>
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
@@ -203,13 +203,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left min-w-[800px]">
                         <thead class="bg-white/5 text-gray-400 border-b border-white/10 text-xs uppercase">
-                            <tr>
-                                <th class="p-3">Date</th>
-                                <th class="p-3">Bill ID</th>
-                                <th class="p-3">Method</th>
-                                <th class="p-3 text-right">Total</th>
-                                <th class="p-3 text-center">Action</th>
-                            </tr>
+                            <tr><th class="p-3">Date</th><th class="p-3">Bill ID</th><th class="p-3">Method</th><th class="p-3 text-right">Total</th><th class="p-3 text-center">Action</th></tr>
                         </thead>
                         <tbody id="historyTable" class="divide-y divide-white/5 text-sm text-gray-300"></tbody>
                     </table>
@@ -265,15 +259,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left min-w-[700px]">
                         <thead class="bg-white/5 text-gray-400 border-b border-white/10 text-xs uppercase">
-                            <tr>
-                                <th class="p-3">Date</th>
-                                <th class="p-3">Day</th>
-                                <th class="p-3">In</th>
-                                <th class="p-3">Out</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Reason</th>
-                                <th class="p-3"></th>
-                            </tr>
+                            <tr><th class="p-3">Date</th><th class="p-3">Day</th><th class="p-3">In</th><th class="p-3">Out</th><th class="p-3">Status</th><th class="p-3">Reason</th><th class="p-3"></th></tr>
                         </thead>
                         <tbody id="attTable" class="divide-y divide-white/5 text-sm text-gray-300"></tbody>
                     </table>
@@ -486,12 +472,12 @@
         // INIT
         function initData() {
             try {
-                // v42 KEYS
-                inv = JSON.parse(localStorage.getItem('az_inv_42')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_42')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_42')) || [];
-                expenses = JSON.parse(localStorage.getItem('az_exp_42')) || [];
-                attendance = JSON.parse(localStorage.getItem('az_att_42')) || [];
+                // v43 KEYS
+                inv = JSON.parse(localStorage.getItem('az_inv_43')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_43')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_43')) || [];
+                expenses = JSON.parse(localStorage.getItem('az_exp_43')) || [];
+                attendance = JSON.parse(localStorage.getItem('az_att_43')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -506,7 +492,6 @@
             updateTopStats();
             renderAttendance();
             
-            // Set Today's Date
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('expDate').value = today;
             document.getElementById('attDateInput').value = today;
@@ -514,22 +499,24 @@
         }
         
         function saveData() {
-            localStorage.setItem('az_inv_42', JSON.stringify(inv));
-            localStorage.setItem('az_sales_42', JSON.stringify(sales));
-            localStorage.setItem('az_purch_42', JSON.stringify(purch));
-            localStorage.setItem('az_exp_42', JSON.stringify(expenses));
-            localStorage.setItem('az_att_42', JSON.stringify(attendance));
+            localStorage.setItem('az_inv_43', JSON.stringify(inv));
+            localStorage.setItem('az_sales_43', JSON.stringify(sales));
+            localStorage.setItem('az_purch_43', JSON.stringify(purch));
+            localStorage.setItem('az_exp_43', JSON.stringify(expenses));
+            localStorage.setItem('az_att_43', JSON.stringify(attendance));
             updateTopStats();
         }
 
+        // FIXED: IMAGES NOW USE PLACEHOLDERS WITH TEXT
         const defaultImages = {
-            'Tablet': baseURL + 'download (1).jpg', 'Syrup': baseURL + 'download (2).jpg',
-            'Injection': baseURL + 'download (3).jpg', 'Capsule': baseURL + 'download.jpg', 'Other': baseURL + 'download.jpg'
+            'Tablet': 'https://placehold.co/100x100/10b981/ffffff?text=Tablet',
+            'Syrup': 'https://placehold.co/100x100/f59e0b/ffffff?text=Syrup',
+            'Injection': 'https://placehold.co/100x100/ef4444/ffffff?text=Injection',
+            'Capsule': 'https://placehold.co/100x100/3b82f6/ffffff?text=Capsule',
+            'Other': 'https://placehold.co/100x100/6b7280/ffffff?text=Med'
         };
 
         // --- UI & LOGIC HELPERS ---
-        
-        // FIXED MODAL CLOSING LOGIC
         function openModal(id) { 
             const m = document.getElementById(id); 
             m.classList.remove('hidden'); 
@@ -540,12 +527,10 @@
         function closeModal(id) { 
             document.getElementById(id).classList.add('hidden'); 
             document.getElementById(id).classList.remove('flex');
-            // Check if any other modal is still open
             const openModals = document.querySelectorAll('.fixed.z-50:not(.hidden)');
             if(openModals.length === 0) document.getElementById('modalOverlayLayer').classList.add('hidden');
         }
 
-        // GLOBAL CLOSE FUNCTION
         function closeAllModals() {
             const modals = document.querySelectorAll('.fixed.z-50');
             modals.forEach(m => {
@@ -555,7 +540,6 @@
             document.getElementById('modalOverlayLayer').classList.add('hidden');
         }
 
-        // Handle Clicking Outside Modal
         function handleOutsideClick(e, id) {
             if(e.target.id === id) closeModal(id);
         }
@@ -618,7 +602,7 @@
             if(count === 0) list.innerHTML = '<div class="text-center text-gray-500">No new alerts</div>';
         }
 
-        // --- INVENTORY RENDER ---
+        // --- INVENTORY RENDER (HIGH CONTRAST) ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filter = document.getElementById('searchFilter').value;
@@ -645,13 +629,14 @@
                 else if(daysLeft < 30) expColor = 'text-yellow-500 font-bold';
                 else expColor = 'text-emerald-400';
 
+                // FIXED: USING ROBUST PLACEHOLDERS
                 let img = (i.img && i.img.length < 200) ? defaultImages[i.cat] || defaultImages['Other'] : i.img || defaultImages['Other'];
 
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-4 relative group">
                     <div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition z-10">
-                        <button onclick="editMed(${i.id})" class="w-8 h-8 rounded-full bg-blue-600 text-white"><i class="fas fa-pen text-xs"></i></button>
-                        <button onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-600 text-white"><i class="fas fa-trash text-xs"></i></button>
+                        <button onclick="editMed(${i.id})" class="w-8 h-8 rounded-full bg-blue-600 text-white z-20"><i class="fas fa-pen text-xs"></i></button>
+                        <button onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-600 text-white z-20"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     <div class="flex gap-4 mb-3">
                         <img src="${img}" class="w-16 h-16 rounded-lg object-cover bg-black/30" onerror="this.src='${defaultImages['Other']}'">
@@ -666,7 +651,7 @@
                         <div class="text-gray-400">Pk: <span class="text-cyan-300 font-bold text-sm">${i.price}</span></div>
                         <div class="text-gray-400">Un: <span class="text-pink-300 font-bold text-sm">${(i.price/i.packSize).toFixed(2)}</span></div>
                     </div>
-                    <button onclick="openSaleModal(${i.id})" class="btn-jelly w-full text-sm py-2">Add to Bill</button>
+                    <button onclick="openSaleModal(${i.id})" class="btn-jelly w-full text-sm py-2 z-20 relative">Add to Bill</button>
                 </div>`;
             });
         }
@@ -761,7 +746,6 @@
             const dateStr = document.getElementById('attDateInput').value;
             const dateObj = new Date(dateStr);
             const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-            
             const rec = {
                 id: Date.now(),
                 date: dateStr,
@@ -889,7 +873,7 @@
         }
         function restoreBackup(input) {
             const r = new FileReader();
-            r.onload = e => { const d = JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_42', JSON.stringify(d.inv)); alert('Restored! Reloading...'); location.reload(); };
+            r.onload = e => { const d = JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_43', JSON.stringify(d.inv)); alert('Restored! Reloading...'); location.reload(); };
             r.readAsText(input.files[0]);
         }
 
