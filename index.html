@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical - v37.0 (No Reload + Fast)</title>
+    <title>Alazamat Medical - v38.0 (Potency Added)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -241,10 +241,13 @@
             <div class="space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="medName" placeholder="Name" class="modern-input">
-                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
+                    <input type="text" id="medName" placeholder="Name (e.g. Panadol)" class="modern-input">
+                    <input type="text" id="medPotency" placeholder="Potency (e.g. 500mg)" class="modern-input border-emerald-500/50">
                 </div>
-                <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
+                    <input type="text" id="medFormula" placeholder="Formula" class="modern-input">
+                </div>
                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
                     <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
@@ -359,13 +362,11 @@
         let lastSale = null;
 
         // *** SUPER AGGRESSIVE RELOAD BLOCKERS ***
-        // 1. Block any global submit events
         window.addEventListener('submit', function(e) {
             e.preventDefault();
             return false;
         }, true);
 
-        // 2. Block Enter Key on Inputs/Selects
         window.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const tag = e.target.nodeName;
@@ -385,10 +386,10 @@
                 
                 if (inv.length === 0) {
                     inv = [
-                        { id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 10, stock: 500, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
-                        { id: 2, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 50, cost: 120, price: 150, cat: 'Syrup', exp: '2025-08-15', img: '' },
-                        { id: 3, name: 'Risek', brand: 'Getz', formula: 'Omeprazole', packSize: 1, stock: 100, cost: 250, price: 350, cat: 'Injection', exp: '2025-10-20', img: '' },
-                        { id: 4, name: 'Amoxil', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 200, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
+                        { id: 1, name: 'Panadol', potency: '500mg', brand: 'GSK', formula: 'Paracetamol', packSize: 10, stock: 500, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
+                        { id: 2, name: 'Brufen', potency: '120ml', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 50, cost: 120, price: 150, cat: 'Syrup', exp: '2025-08-15', img: '' },
+                        { id: 3, name: 'Risek', potency: '40mg', brand: 'Getz', formula: 'Omeprazole', packSize: 1, stock: 100, cost: 250, price: 350, cat: 'Injection', exp: '2025-10-20', img: '' },
+                        { id: 4, name: 'Amoxil', potency: '500mg', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 200, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
                     ];
                     saveData();
                 }
@@ -440,23 +441,21 @@
             filtered.forEach(i => {
                 const fullPacks = Math.floor(i.stock / i.packSize);
                 const looseUnits = i.stock % i.packSize;
+                const potencyBadge = i.potency ? `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-xs border border-yellow-500/30 ml-2">${i.potency}</span>` : '';
                 
                 let packDisplay = `<b class="text-white text-lg">${fullPacks}</b> Packs`;
                 if(looseUnits > 0) {
                     packDisplay += ` <span class="text-yellow-400 text-[10px]">(+${looseUnits} loose)</span>`;
                 }
 
-                // Image Logic: Try URL, if invalid use generic fallback instantly (No external fetch)
                 let displayImg = i.img;
                 let imgHtml = '';
                 
                 if(displayImg && displayImg.length > 5) {
-                    // It has an image string
                     imgHtml = `<img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                                <div class="img-placeholder w-20 h-20 rounded-xl hidden border border-white/10"><i class="fas fa-image text-2xl"></i></div>`;
                 } else {
-                    // No image string, use fallback
                     imgHtml = `<img src="${defaultImages[i.cat] || defaultImages['Other']}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                                <div class="img-placeholder w-20 h-20 rounded-xl hidden border border-white/10"><i class="fas fa-image text-2xl"></i></div>`;
@@ -471,7 +470,10 @@
                     <div class="flex gap-4 mb-4">
                         ${imgHtml}
                         <div>
-                            <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
+                            <div class="flex items-center mb-1">
+                                <h4 class="font-bold text-xl leading-tight text-white">${i.name}</h4>
+                                ${potencyBadge}
+                            </div>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
                             <p class="text-xs text-emerald-400 italic">${i.formula || ''}</p>
                             <p class="text-[10px] text-red-400 mt-1"><i class="far fa-clock"></i> Exp: ${i.exp || 'N/A'}</p>
@@ -493,6 +495,7 @@
         // --- CRUD ---
         function openAddModal() {
             document.getElementById('medId').value = ''; document.getElementById('medName').value = '';
+            document.getElementById('medPotency').value = ''; // NEW
             document.getElementById('medBrand').value = ''; document.getElementById('medFormula').value = '';
             document.getElementById('medTotalPacks').value = ''; document.getElementById('medPackSize').value = 1;
             document.getElementById('medStock').value = ''; document.getElementById('medCost').value = '';
@@ -521,16 +524,18 @@
                 const idVal = document.getElementById('medId').value;
                 const newName = document.getElementById('medName').value.trim();
                 const newBrand = document.getElementById('medBrand').value.trim();
+                const newPotency = document.getElementById('medPotency').value.trim(); // NEW
                 const currentId = idVal ? parseInt(idVal) : null;
 
                 const duplicate = inv.find(i => 
                     i.name.toLowerCase() === newName.toLowerCase() && 
                     i.brand.toLowerCase() === newBrand.toLowerCase() &&
+                    (i.potency || '').toLowerCase() === newPotency.toLowerCase() &&
                     i.id !== currentId
                 );
 
                 if (duplicate) {
-                    alert("⚠️ ERROR: Medicine with this Name & Brand already exists!");
+                    alert("⚠️ ERROR: Medicine with this Name, Brand & Potency already exists!");
                     return; 
                 }
 
@@ -538,6 +543,7 @@
                     id: currentId || Date.now(),
                     name: newName, 
                     brand: newBrand,
+                    potency: newPotency, // NEW
                     formula: document.getElementById('medFormula').value, 
                     packSize: parseInt(document.getElementById('medPackSize').value)||1,
                     stock: parseInt(document.getElementById('medStock').value)||0, 
@@ -562,6 +568,7 @@
         function editMed(id) {
             const i = inv.find(x => x.id == id);
             document.getElementById('medId').value = i.id; document.getElementById('medName').value = i.name;
+            document.getElementById('medPotency').value = i.potency || ''; // NEW
             document.getElementById('medBrand').value = i.brand || ''; document.getElementById('medFormula').value = i.formula || '';
             document.getElementById('medPackSize').value = i.packSize; document.getElementById('medStock').value = i.stock;
             
@@ -579,7 +586,7 @@
 
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
-            document.getElementById('saleName').innerText = saleItem.name;
+            document.getElementById('saleName').innerText = `${saleItem.name} ${saleItem.potency ? saleItem.potency : ''}`;
             document.getElementById('saleQty').value = 1;
             setSaleType('Unit');
             openModal('saleModal');
@@ -608,8 +615,11 @@
             const unitPrice = isPackSale ? saleItem.price : (saleItem.price / saleItem.packSize);
             const total = Math.ceil(unitPrice * q);
             const profit = total - ((saleItem.cost / saleItem.packSize) * deduct);
+            
+            // Added Potency to cart name
+            const itemName = `${saleItem.name} ${saleItem.potency ? saleItem.potency : ''}`;
 
-            cart.push({ id: Date.now(), medId: saleItem.id, name: saleItem.name, type: isPackSale?'Pack':'Unit', qty: q, deduct: deduct, price: total, profit: profit });
+            cart.push({ id: Date.now(), medId: saleItem.id, name: itemName, type: isPackSale?'Pack':'Unit', qty: q, deduct: deduct, price: total, profit: profit });
             closeModal('saleModal'); updateCartUI();
         }
         function updateCartUI() { document.getElementById('cartCount').innerText = `${cart.length} Items`; }
