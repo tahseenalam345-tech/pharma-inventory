@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v36.0 (Logic Fixed)</title>
+    <title>Alazamat Medical Store - v37.0 (Reload Fixed & Smart Packs)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -99,6 +99,8 @@
     </style>
 </head>
 <body>
+
+    <form onsubmit="return false;" style="display: contents;">
 
     <div class="train-bar" id="topBar">
         <div class="train-text">
@@ -345,6 +347,8 @@
             </div>
         </div>
     </div>
+    
+    </form>
 
     <script>
         // ==========================================
@@ -356,12 +360,21 @@
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
 
         // ==========================================
-        // PREVENT PAGE RELOAD ON ENTER KEY
-        document.addEventListener('keydown', function(event) {
+        //  🚨 FIX: GLOBAL RELOAD PREVENTION & SEARCH FIX 🚨
+        // ==========================================
+        window.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
-                event.preventDefault();
+                event.preventDefault(); // STOP FORM SUBMIT
+                
+                // If in search box, run search
+                if(document.activeElement.id === 'search') {
+                    renderGrid();
+                    document.activeElement.blur(); // Close keyboard on mobile
+                }
+                return false;
             }
         });
+
         // ==========================================
         
         let inv = [], sales = [], purch = [];
@@ -371,16 +384,17 @@
         // --- LOAD DATA & DEFAULTS ---
         function initData() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_36')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_36')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_36')) || [];
+                // CHANGED TO _37 TO ENSURE FRESH CLEAN START FOR LOGIC FIX
+                inv = JSON.parse(localStorage.getItem('az_inv_37')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_37')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_37')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
-                        { id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 500, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
+                        { id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 502, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
                         { id: 2, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', potency: '400mg', packSize: 1, stock: 50, cost: 120, price: 150, cat: 'Syrup', exp: '2025-08-15', img: '' },
                         { id: 3, name: 'Risek', brand: 'Getz', formula: 'Omeprazole', potency: '40mg', packSize: 1, stock: 100, cost: 250, price: 350, cat: 'Injection', exp: '2025-10-20', img: '' },
-                        { id: 4, name: 'Amoxil', brand: 'GSK', formula: 'Amoxicillin', potency: '500mg', packSize: 10, stock: 200, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
+                        { id: 4, name: 'Amoxil', brand: 'GSK', formula: 'Amoxicillin', potency: '500mg', packSize: 10, stock: 205, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
                     ];
                     saveData();
                 }
@@ -440,7 +454,7 @@
                 if(i.cat === 'Syrup' || i.packSize === 1) {
                     stockDisplay = `<b class="text-white">${i.stock}</b> Units`;
                 } else {
-                    stockDisplay = `<b class="text-white">${wholePacks}</b> Pk <span class="text-gray-500">|</span> <b class="text-yellow-400">${looseUnits}</b> Loose`;
+                    stockDisplay = `<b class="text-white">${wholePacks}</b> Pk + <b class="text-yellow-400">${looseUnits}</b> Loose`;
                 }
                 
                 let displayImg = i.img;
@@ -471,7 +485,7 @@
                         </div>
                     </div>
                     <div class="bg-black/20 p-3 rounded-xl grid grid-cols-2 gap-y-1 text-xs mb-4 border border-white/5">
-                        <div class="col-span-2 text-gray-400 border-b border-white/10 pb-1 mb-1">Stock: ${stockDisplay}</div>
+                        <div class="col-span-2 text-gray-400 border-b border-white/10 pb-1 mb-1 text-center">Stock: ${stockDisplay}</div>
                         <div class="text-gray-400">Price (Pk): <span class="text-emerald-400">${i.price}</span></div>
                         <div class="text-gray-400">Price (Un): <span class="text-emerald-400">${(i.price/i.packSize).toFixed(2)}</span></div>
                     </div>
@@ -493,6 +507,7 @@
         function calcUnits() {
             const p = parseFloat(document.getElementById('medTotalPacks').value) || 0;
             const s = parseFloat(document.getElementById('medPackSize').value) || 1;
+            // Round up to integer units
             document.getElementById('medStock').value = Math.ceil(p * s);
         }
         function resizeImage(file, cb) {
@@ -560,8 +575,10 @@
             document.getElementById('medBrand').value = i.brand || ''; document.getElementById('medFormula').value = i.formula || '';
             document.getElementById('medPotency').value = i.potency || ''; 
             document.getElementById('medPackSize').value = i.packSize; document.getElementById('medStock').value = i.stock;
-            // Show packs in edit mode for ease of calculation (input only)
+            
+            // Show packs in edit mode for ease of calculation (approx)
             document.getElementById('medTotalPacks').value = (i.stock / i.packSize); 
+            
             document.getElementById('medCost').value = i.cost; document.getElementById('medPrice').value = i.price;
             document.getElementById('medCat').value = i.cat; document.getElementById('medExp').value = i.exp;
             editTempImg = i.img; openModal('medModal');
@@ -690,9 +707,9 @@
 
         // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_36', JSON.stringify(inv));
-            localStorage.setItem('az_sales_36', JSON.stringify(sales));
-            localStorage.setItem('az_purch_36', JSON.stringify(purch));
+            localStorage.setItem('az_inv_37', JSON.stringify(inv));
+            localStorage.setItem('az_sales_37', JSON.stringify(sales));
+            localStorage.setItem('az_purch_37', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -707,9 +724,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_36', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_36', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_36', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_37', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_37', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_37', JSON.stringify(d.purch));
                 alert('Restored! Reloading...');
                 location.reload();
             };
