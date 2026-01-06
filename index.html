@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical - v38.0 (Potency Added)</title>
+    <title>Alazamat Medical Store - v35.0 (Potency Update)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -93,12 +93,6 @@
             background: #10b981; border-color: #10b981; color: black; font-weight: bold;
         }
         .radio-input { display: none; }
-        
-        /* FALLBACK IMAGE STYLE */
-        .img-placeholder {
-            width: 5rem; height: 5rem; border-radius: 0.75rem; background: #334155; 
-            display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.7rem;
-        }
     </style>
 </head>
 <body>
@@ -149,7 +143,7 @@
         
         <section id="hero" class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover bg-slate-800" onerror="this.style.display='none'">
+                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=ALAZAMAT'">
             </div>
             <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-2">ALAZAMAT</h1>
             <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] mb-10">MEDICAL STORE SYSTEM</h2>
@@ -161,16 +155,16 @@
         <section id="inventory" class="max-w-7xl mx-auto px-6 py-10">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                 <div><h2 class="text-4xl font-bold text-white">Inventory</h2><p class="text-gray-400 text-sm">Manage medicines & stock</p></div>
-                <form onsubmit="event.preventDefault(); return false;" class="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+                <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
                     <select id="searchFilter" class="modern-input w-full md:w-32 bg-slate-800" onchange="renderGrid()">
                         <option value="all">All</option>
                         <option value="name">Name</option>
                         <option value="formula">Formula</option>
                         <option value="brand">Brand</option>
                     </select>
-                    <input type="text" id="search" placeholder="Search..." class="modern-input pl-10 w-full md:w-64">
+                    <input type="text" id="search" placeholder="Search (Name or Potency)..." class="modern-input pl-10 w-full md:w-64">
                     <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
-                </form>
+                </div>
             </div>
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </section>
@@ -226,8 +220,8 @@
             <h3 class="text-2xl font-bold text-white mb-2">Sale Completed!</h3>
             <p class="text-gray-400 mb-6">Bill Saved Successfully.</p>
             <div class="flex flex-col gap-3">
-                <button type="button" onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
-                <button type="button" onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
+                <button onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
+                <button onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
             </div>
         </div>
     </div>
@@ -241,13 +235,15 @@
             <div class="space-y-4 overflow-y-auto">
                 <input type="hidden" id="medId">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="medName" placeholder="Name (e.g. Panadol)" class="modern-input">
-                    <input type="text" id="medPotency" placeholder="Potency (e.g. 500mg)" class="modern-input border-emerald-500/50">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="medName" placeholder="Name" class="modern-input">
                     <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
-                    <input type="text" id="medFormula" placeholder="Formula" class="modern-input">
                 </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input">
+                    <input type="text" id="medPotency" placeholder="Potency (e.g. 500mg, 50mg)" class="modern-input border-emerald-500/50">
+                </div>
+
                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
                     <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
@@ -272,8 +268,9 @@
 
     <div id="saleModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-6 rounded-2xl text-center">
-            <h3 class="text-2xl font-bold mb-2" id="saleName">Item</h3>
-            <p class="text-emerald-400 text-sm mb-6" id="saleInfo">Price Info</p>
+            <h3 class="text-2xl font-bold mb-1" id="saleName">Item</h3>
+            <p class="text-emerald-300 font-bold mb-2 text-lg" id="salePotency">500mg</p>
+            <p class="text-gray-400 text-sm mb-6" id="saleInfo">Price Info</p>
             
             <div class="radio-group">
                 <input type="radio" id="sellUnit" name="saleType" class="radio-input" checked onchange="calcTotal()">
@@ -361,35 +358,19 @@
         let cart = [];
         let lastSale = null;
 
-        // *** SUPER AGGRESSIVE RELOAD BLOCKERS ***
-        window.addEventListener('submit', function(e) {
-            e.preventDefault();
-            return false;
-        }, true);
-
-        window.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const tag = e.target.nodeName;
-                if (tag === 'INPUT' || tag === 'SELECT') {
-                    e.preventDefault();
-                    return false;
-                }
-            }
-        }, true);
-
         // --- LOAD DATA & DEFAULTS ---
         function initData() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_34')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_34')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_34')) || [];
+                inv = JSON.parse(localStorage.getItem('az_inv_35')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_35')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_35')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
-                        { id: 1, name: 'Panadol', potency: '500mg', brand: 'GSK', formula: 'Paracetamol', packSize: 10, stock: 500, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
-                        { id: 2, name: 'Brufen', potency: '120ml', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 50, cost: 120, price: 150, cat: 'Syrup', exp: '2025-08-15', img: '' },
-                        { id: 3, name: 'Risek', potency: '40mg', brand: 'Getz', formula: 'Omeprazole', packSize: 1, stock: 100, cost: 250, price: 350, cat: 'Injection', exp: '2025-10-20', img: '' },
-                        { id: 4, name: 'Amoxil', potency: '500mg', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 200, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
+                        { id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 500, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
+                        { id: 2, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', potency: '400mg', packSize: 1, stock: 50, cost: 120, price: 150, cat: 'Syrup', exp: '2025-08-15', img: '' },
+                        { id: 3, name: 'Risek', brand: 'Getz', formula: 'Omeprazole', potency: '40mg', packSize: 1, stock: 100, cost: 250, price: 350, cat: 'Injection', exp: '2025-10-20', img: '' },
+                        { id: 4, name: 'Amoxil', brand: 'GSK', formula: 'Amoxicillin', potency: '500mg', packSize: 10, stock: 200, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
                     ];
                     saveData();
                 }
@@ -403,7 +384,7 @@
             'Tablet': baseURL + 'download (1).jpg',  
             'Syrup': baseURL + 'download (2).jpg',   
             'Injection': baseURL + 'download (3).jpg', 
-            'Capsule': baseURL + 'download.jpg',       
+            'Capsule': baseURL + 'download.jpg',     
             'Other': baseURL + 'download.jpg'
         };
 
@@ -421,7 +402,7 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function closeSuccess() { document.getElementById('successModal').classList.add('hidden'); }
 
-        // --- INVENTORY RENDER (FIXED) ---
+        // --- INVENTORY RENDER ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filterType = document.getElementById('searchFilter').value;
@@ -431,35 +412,25 @@
                 const nameMatch = i.name.toLowerCase().includes(term);
                 const formulaMatch = i.formula && i.formula.toLowerCase().includes(term);
                 const brandMatch = i.brand && i.brand.toLowerCase().includes(term);
+                const potMatch = i.potency && i.potency.toLowerCase().includes(term); // Search by Potency
+
                 if (term === '') return true;
-                if (filterType === 'all') return nameMatch || formulaMatch || brandMatch;
+                if (filterType === 'all') return nameMatch || formulaMatch || brandMatch || potMatch;
                 if (filterType === 'name') return nameMatch;
                 if (filterType === 'formula') return formulaMatch;
                 if (filterType === 'brand') return brandMatch;
             });
             
             filtered.forEach(i => {
-                const fullPacks = Math.floor(i.stock / i.packSize);
-                const looseUnits = i.stock % i.packSize;
-                const potencyBadge = i.potency ? `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-xs border border-yellow-500/30 ml-2">${i.potency}</span>` : '';
-                
-                let packDisplay = `<b class="text-white text-lg">${fullPacks}</b> Packs`;
-                if(looseUnits > 0) {
-                    packDisplay += ` <span class="text-yellow-400 text-[10px]">(+${looseUnits} loose)</span>`;
-                }
-
+                const packs = (i.stock / i.packSize).toFixed(1);
                 let displayImg = i.img;
-                let imgHtml = '';
-                
-                if(displayImg && displayImg.length > 5) {
-                    imgHtml = `<img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
-                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                               <div class="img-placeholder w-20 h-20 rounded-xl hidden border border-white/10"><i class="fas fa-image text-2xl"></i></div>`;
-                } else {
-                    imgHtml = `<img src="${defaultImages[i.cat] || defaultImages['Other']}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
-                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                               <div class="img-placeholder w-20 h-20 rounded-xl hidden border border-white/10"><i class="fas fa-image text-2xl"></i></div>`;
+                if(displayImg && displayImg.length < 200 && !displayImg.startsWith('http') && !displayImg.startsWith('data:')) {
+                     displayImg = defaultImages[i.cat] || defaultImages['Other'];
                 }
+                if(!displayImg) displayImg = defaultImages[i.cat] || defaultImages['Other'];
+
+                // RENDER POTENCY BADGE
+                const potencyBadge = i.potency ? `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-xs ml-2 border border-yellow-500/30">${i.potency}</span>` : '';
 
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-5 flex flex-col relative group">
@@ -468,9 +439,10 @@
                         <button type="button" onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     <div class="flex gap-4 mb-4">
-                        ${imgHtml}
+                        <img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
+                             onerror="this.onerror=null; this.src='${defaultImages['Other']}'">
                         <div>
-                            <div class="flex items-center mb-1">
+                            <div class="flex items-center flex-wrap gap-1 mb-1">
                                 <h4 class="font-bold text-xl leading-tight text-white">${i.name}</h4>
                                 ${potencyBadge}
                             </div>
@@ -480,9 +452,8 @@
                         </div>
                     </div>
                     <div class="bg-black/20 p-3 rounded-xl grid grid-cols-2 gap-y-1 text-xs mb-4 border border-white/5">
-                        <div class="text-gray-400 col-span-2 text-center pb-2 border-b border-white/5 mb-2">${packDisplay}</div>
-                        <div class="text-gray-400">Total Units: <b class="text-white">${i.stock}</b></div>
-                        <div class="text-gray-400">Pack Size: <b class="text-white">${i.packSize}</b></div>
+                        <div class="text-gray-400">Packs: <b class="text-white">${packs}</b></div>
+                        <div class="text-gray-400">Units: <b class="text-white">${i.stock}</b></div>
                         <div class="text-gray-400">Price (Pk): <span class="text-emerald-400">${i.price}</span></div>
                         <div class="text-gray-400">Price (Un): <span class="text-emerald-400">${(i.price/i.packSize).toFixed(2)}</span></div>
                     </div>
@@ -495,8 +466,8 @@
         // --- CRUD ---
         function openAddModal() {
             document.getElementById('medId').value = ''; document.getElementById('medName').value = '';
-            document.getElementById('medPotency').value = ''; // NEW
             document.getElementById('medBrand').value = ''; document.getElementById('medFormula').value = '';
+            document.getElementById('medPotency').value = ''; // RESET POTENCY
             document.getElementById('medTotalPacks').value = ''; document.getElementById('medPackSize').value = 1;
             document.getElementById('medStock').value = ''; document.getElementById('medCost').value = '';
             document.getElementById('medPrice').value = ''; editTempImg = null; openModal('medModal');
@@ -504,7 +475,7 @@
         function calcUnits() {
             const p = parseFloat(document.getElementById('medTotalPacks').value) || 0;
             const s = parseFloat(document.getElementById('medPackSize').value) || 1;
-            document.getElementById('medStock').value = Math.round(p * s);
+            document.getElementById('medStock').value = Math.ceil(p * s);
         }
         function resizeImage(file, cb) {
             const r = new FileReader(); r.onload = (e) => {
@@ -524,13 +495,13 @@
                 const idVal = document.getElementById('medId').value;
                 const newName = document.getElementById('medName').value.trim();
                 const newBrand = document.getElementById('medBrand').value.trim();
-                const newPotency = document.getElementById('medPotency').value.trim(); // NEW
+                const newPotency = document.getElementById('medPotency').value.trim(); // GET POTENCY
                 const currentId = idVal ? parseInt(idVal) : null;
 
                 const duplicate = inv.find(i => 
                     i.name.toLowerCase() === newName.toLowerCase() && 
                     i.brand.toLowerCase() === newBrand.toLowerCase() &&
-                    (i.potency || '').toLowerCase() === newPotency.toLowerCase() &&
+                    (i.potency || '').toLowerCase() === newPotency.toLowerCase() && // Check Potency in duplicates
                     i.id !== currentId
                 );
 
@@ -543,8 +514,8 @@
                     id: currentId || Date.now(),
                     name: newName, 
                     brand: newBrand,
-                    potency: newPotency, // NEW
                     formula: document.getElementById('medFormula').value, 
+                    potency: newPotency, // SAVE POTENCY
                     packSize: parseInt(document.getElementById('medPackSize').value)||1,
                     stock: parseInt(document.getElementById('medStock').value)||0, 
                     cost: parseFloat(document.getElementById('medCost').value)||0,
@@ -568,12 +539,10 @@
         function editMed(id) {
             const i = inv.find(x => x.id == id);
             document.getElementById('medId').value = i.id; document.getElementById('medName').value = i.name;
-            document.getElementById('medPotency').value = i.potency || ''; // NEW
             document.getElementById('medBrand').value = i.brand || ''; document.getElementById('medFormula').value = i.formula || '';
+            document.getElementById('medPotency').value = i.potency || ''; // EDIT POTENCY
             document.getElementById('medPackSize').value = i.packSize; document.getElementById('medStock').value = i.stock;
-            
-            const packs = i.stock / i.packSize;
-            document.getElementById('medTotalPacks').value = Number.isInteger(packs) ? packs : packs.toFixed(2);
+            document.getElementById('medTotalPacks').value = (i.stock / i.packSize).toFixed(1);
             document.getElementById('medCost').value = i.cost; document.getElementById('medPrice').value = i.price;
             document.getElementById('medCat').value = i.cat; document.getElementById('medExp').value = i.exp;
             editTempImg = i.img; openModal('medModal');
@@ -586,7 +555,8 @@
 
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
-            document.getElementById('saleName').innerText = `${saleItem.name} ${saleItem.potency ? saleItem.potency : ''}`;
+            document.getElementById('saleName').innerText = saleItem.name;
+            document.getElementById('salePotency').innerText = saleItem.potency || ''; // SHOW POTENCY IN MODAL
             document.getElementById('saleQty').value = 1;
             setSaleType('Unit');
             openModal('saleModal');
@@ -615,15 +585,16 @@
             const unitPrice = isPackSale ? saleItem.price : (saleItem.price / saleItem.packSize);
             const total = Math.ceil(unitPrice * q);
             const profit = total - ((saleItem.cost / saleItem.packSize) * deduct);
-            
-            // Added Potency to cart name
-            const itemName = `${saleItem.name} ${saleItem.potency ? saleItem.potency : ''}`;
 
-            cart.push({ id: Date.now(), medId: saleItem.id, name: itemName, type: isPackSale?'Pack':'Unit', qty: q, deduct: deduct, price: total, profit: profit });
+            // SAVE POTENCY IN CART NAME
+            const displayName = saleItem.name + (saleItem.potency ? ` ${saleItem.potency}` : '');
+
+            cart.push({ id: Date.now(), medId: saleItem.id, name: displayName, type: isPackSale?'Pack':'Unit', qty: q, deduct: deduct, price: total, profit: profit });
             closeModal('saleModal'); updateCartUI();
         }
         function updateCartUI() { document.getElementById('cartCount').innerText = `${cart.length} Items`; }
         
+        // --- RENDER BILL ---
         function renderBill() {
             const t = document.getElementById('billTable'); t.innerHTML = '';
             let sub = 0;
@@ -632,7 +603,6 @@
                 t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             
-            // Discount Logic
             const discType = document.getElementById('discType').value;
             const discInput = parseFloat(document.getElementById('billDisc').value) || 0;
             let finalDisc = 0;
@@ -702,9 +672,9 @@
 
         // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_34', JSON.stringify(inv));
-            localStorage.setItem('az_sales_34', JSON.stringify(sales));
-            localStorage.setItem('az_purch_34', JSON.stringify(purch));
+            localStorage.setItem('az_inv_35', JSON.stringify(inv));
+            localStorage.setItem('az_sales_35', JSON.stringify(sales));
+            localStorage.setItem('az_purch_35', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -719,9 +689,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_34', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_34', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_34', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_35', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_35', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_35', JSON.stringify(d.purch));
                 alert('Restored! Reloading...');
                 location.reload();
             };
