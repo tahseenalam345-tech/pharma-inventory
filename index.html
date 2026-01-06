@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v28.0</title>
+    <title>Alazamat Medical Store - v29.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -70,6 +70,25 @@
             animation: trainMove 25s linear infinite; padding-left: 100vw;
         }
         @keyframes trainMove { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
+
+        /* SECTION DIVIDER (WAVE LAYER) */
+        .section-divider {
+            position: relative;
+            height: 100px;
+            width: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(16, 185, 129, 0.05), transparent);
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+        }
+        .section-divider::before {
+            content: '';
+            width: 100%;
+            height: 1px;
+            background: radial-gradient(circle, rgba(16,185,129,1) 0%, rgba(0,0,0,0) 100%);
+        }
 
         /* RADIO BUTTONS */
         .radio-group { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -138,25 +157,29 @@
         
         <section id="hero" class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="1.jpg" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=Logo+Missing'">
+                <img id="storeLogo" src="1.jpg" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=ALAZAMAT'">
             </div>
             <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-2">ALAZAMAT</h1>
             <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] mb-10">MEDICAL STORE SYSTEM</h2>
             <button type="button" onclick="scrollToSection('inventory')" class="btn-jelly text-lg">Start Billing</button>
         </section>
 
+        <div class="section-divider"><i class="fas fa-pills text-emerald-500/20 text-4xl"></i></div>
+
         <section id="inventory" class="max-w-7xl mx-auto px-6 py-10">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                 <div><h2 class="text-4xl font-bold text-white">Inventory</h2><p class="text-gray-400 text-sm">Manage medicines & stock</p></div>
                 <div class="flex gap-4 w-full md:w-auto">
-                    <input type="text" id="search" placeholder="Search medicine..." class="modern-input pl-10">
+                    <input type="text" id="search" placeholder="Search by Name or Formula..." class="modern-input pl-10 w-full md:w-80">
                     <button type="button" onclick="openAddModal()" class="btn-jelly whitespace-nowrap"><i class="fas fa-plus"></i> Add</button>
                 </div>
             </div>
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </section>
 
-        <section id="history" class="max-w-7xl mx-auto px-6 py-10 border-t border-white/5">
+        <div class="section-divider"><i class="fas fa-history text-yellow-500/20 text-4xl"></i></div>
+
+        <section id="history" class="max-w-7xl mx-auto px-6 py-10">
             <h2 class="text-4xl font-bold text-white mb-6">Sales History</h2>
             <div class="glass-card rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
@@ -170,7 +193,9 @@
             </div>
         </section>
 
-        <section id="purchases" class="max-w-7xl mx-auto px-6 py-10 border-t border-white/5">
+        <div class="section-divider"><i class="fas fa-truck text-purple-500/20 text-4xl"></i></div>
+
+        <section id="purchases" class="max-w-7xl mx-auto px-6 py-10">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-white">Buying Records</h2>
                 <button type="button" onclick="openModal('purchaseModal')" class="px-4 py-2 border border-purple-500 text-purple-400 rounded-full hover:bg-purple-500 hover:text-white transition">Add Record</button>
@@ -178,7 +203,9 @@
             <div id="purchaseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
-        <section id="reports" class="max-w-7xl mx-auto px-6 py-10 border-t border-white/5 pb-32">
+        <div class="section-divider"><i class="fas fa-chart-line text-red-500/20 text-4xl"></i></div>
+
+        <section id="reports" class="max-w-7xl mx-auto px-6 py-10 pb-32">
             <h2 class="text-3xl font-bold text-white mb-6 text-center">Profit Report</h2>
             <div class="grid grid-cols-3 gap-4 text-center">
                 <div class="glass-card p-6 rounded-2xl"><p class="text-xs text-blue-400 uppercase">Revenue</p><p class="text-3xl font-bold" id="repRev">0</p></div>
@@ -205,7 +232,7 @@
                     <input type="text" id="medName" placeholder="Name" class="modern-input">
                     <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
                 </div>
-                <input type="text" id="medFormula" placeholder="Formula" class="modern-input">
+                <input type="text" id="medFormula" placeholder="Formula (e.g. Paracetamol)" class="modern-input">
                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
                     <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
@@ -219,7 +246,7 @@
                     <input type="number" id="medPrice" placeholder="Sell Price (Pack)" class="modern-input">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <select id="medCat" class="modern-input bg-slate-900"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Other</option></select>
+                    <select id="medCat" class="modern-input bg-slate-900"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
                     <input type="date" id="medExp" class="modern-input text-gray-400">
                 </div>
                 <input type="file" id="medImg" accept="image/*" class="modern-input text-sm text-gray-400">
@@ -300,23 +327,23 @@
 
     <script>
         // DATA
-        let inv = [], sales = [], purch = [], config = {};
+        let inv = [], sales = [], purch = [];
         let cart = [];
 
         try {
             inv = JSON.parse(localStorage.getItem('az_inv_28')) || [];
             sales = JSON.parse(localStorage.getItem('az_sales_28')) || [];
             purch = JSON.parse(localStorage.getItem('az_purch_28')) || [];
-            config = JSON.parse(localStorage.getItem('az_config_28')) || { logo: '1.jpg', user: { name: 'Muhammad Yaseen Alam', contact: '+923107377846' } };
         } catch(e) {}
 
-        // DEFAULT IMAGES (Auto-Selected if no upload)
+        // --- UPDATED DEFAULT IMAGES MAPPING ---
+        // Maps the uploaded file names to categories
         const defaultImages = {
-            'Tablet': 'https://img.freepik.com/free-vector/realistic-pills-blister-pack_52683-59691.jpg?w=200',
-            'Capsule': 'https://img.freepik.com/free-vector/realistic-pills-background_52683-65239.jpg?w=200',
-            'Syrup': 'https://img.freepik.com/free-vector/realistic-cough-syrup_23-2147545938.jpg?w=200',
-            'Injection': 'https://img.freepik.com/free-vector/realistic-vaccine-illustration_23-2148753857.jpg?w=200',
-            'Other': 'https://via.placeholder.com/150/10b981/FFFFFF?text=Rx'
+            'Tablet': 'download (1).jpg',  // The blue bottle/pills
+            'Syrup': 'download (2).jpg',   // The syrup spoon
+            'Injection': 'download (3).jpg', // The vials
+            'Capsule': 'download.jpg',     // The blue/white capsule
+            'Other': 'download.jpg'
         };
 
         window.addEventListener('scroll', () => {
@@ -325,9 +352,9 @@
         });
 
         // --- UI FUNCS ---
-        function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.remove('hidden'); }
-        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.add('hidden'); }
-        function toggleSidebar() { const sb = document.getElementById('sidebar'); if(sb.classList.contains('open')) closeSidebar(); else openSidebar(); }
+        function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.remove('hidden'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.add('hidden'); }
+        function toggleSidebar() { const sb = document.getElementById('sidebar'); if(sb.classList.contains('active')) closeSidebar(); else openSidebar(); }
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior: 'smooth'}); closeSidebar(); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -336,10 +363,19 @@
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
-            const filtered = inv.filter(i => i.name.toLowerCase().includes(term));
+            
+            // UPDATED SEARCH LOGIC: NAME OR FORMULA
+            const filtered = inv.filter(i => {
+                const nameMatch = i.name.toLowerCase().includes(term);
+                const formulaMatch = i.formula && i.formula.toLowerCase().includes(term);
+                return nameMatch || formulaMatch;
+            });
             
             filtered.forEach(i => {
                 const packs = (i.stock / i.packSize).toFixed(1);
+                // FIXED INFINITE LOOP ON IMAGE ERROR
+                const fallback = defaultImages[i.cat] || defaultImages['Other'];
+                
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-5 flex flex-col relative group">
                     <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition z-10">
@@ -347,7 +383,8 @@
                         <button type="button" onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     <div class="flex gap-4 mb-4">
-                        <img src="${i.img}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" onerror="this.src='${defaultImages[i.cat] || defaultImages['Other']}'">
+                        <img src="${i.img}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
+                             onerror="this.onerror=null; this.src='${fallback}'">
                         <div>
                             <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
@@ -405,7 +442,10 @@
                 if(idx > -1) inv[idx] = item; else inv.push(item);
                 saveData(); closeModal('medModal'); renderGrid();
             };
-            if(f) resizeImage(f, proc); else if(editTempImg) proc(editTempImg); else proc(defaultImages[cat] || defaultImages['Other']);
+            // Use specific uploaded default images if no file selected
+            if(f) resizeImage(f, proc); 
+            else if(editTempImg) proc(editTempImg); 
+            else proc(defaultImages[cat] || defaultImages['Other']);
         }
         let editTempImg = null;
         function editMed(id) {
@@ -488,7 +528,9 @@
             let h = ''; s.items.forEach(i => h += `<tr><td align="left">${i.name} (${i.type})</td><td align="center">${i.qty}</td><td align="right">${i.price}</td></tr>`);
             const w = window.open('', '', 'width=300,height=600');
             w.document.write(`<html><head><style>body{font-family:monospace;text-align:center;padding:10px}hr{border:0;border-top:1px dashed #000}table{width:100%;font-size:10px}</style></head><body><img src="1.jpg" width="50" style="border-radius:50%" onerror="this.style.display='none'"><br><b>ALAZAMAT MEDICAL</b><br>+923107377846<hr>Date: ${s.date}<br>Inv: ${s.id}<hr><table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>${h}</table><hr><div style="text-align:right">Disc: ${s.disc}<br><b>NET: ${s.total}</b></div><hr>Thank You!</body></html>`);
-            w.document.close(); w.focus(); setTimeout(() => { w.print(); w.close(); }, 800);
+            w.document.close(); 
+            w.focus(); 
+            setTimeout(() => { w.print(); w.close(); }, 800);
         }
 
         // --- STORAGE & INIT ---
