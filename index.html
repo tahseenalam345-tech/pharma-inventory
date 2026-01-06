@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v32.0 (Filters & Validation)</title>
+    <title>Alazamat Medical Store - v33.0 (Defaults & Date Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -38,6 +38,7 @@
         .modern-input {
             width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1);
             color: white; padding: 12px 16px; border-radius: 12px; outline: none; transition: 0.3s;
+            color-scheme: dark; /* Fixes Date Picker Icon Color */
         }
         .modern-input:focus { border-color: #10b981; background: rgba(0, 0, 0, 0.5); }
 
@@ -255,7 +256,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <select id="medCat" class="modern-input bg-slate-900"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
-                    <input type="date" id="medExp" class="modern-input text-gray-400">
+                    <input type="date" id="medExp" class="modern-input text-white">
                 </div>
                 <input type="file" id="medImg" accept="image/*" class="modern-input text-sm text-gray-400">
                 <button type="button" onclick="saveMedicine()" class="btn-jelly w-full">Save Changes</button>
@@ -344,15 +345,29 @@
 
         // ==========================================
         
-        // DATA
         let inv = [], sales = [], purch = [];
         let cart = [];
 
-        try {
-            inv = JSON.parse(localStorage.getItem('az_inv_32')) || [];
-            sales = JSON.parse(localStorage.getItem('az_sales_32')) || [];
-            purch = JSON.parse(localStorage.getItem('az_purch_32')) || [];
-        } catch(e) {}
+        // --- LOAD DATA & DEFAULTS ---
+        function initData() {
+            try {
+                inv = JSON.parse(localStorage.getItem('az_inv_33')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_33')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_33')) || [];
+                
+                // --- ADD DEFAULT DATA IF EMPTY ---
+                if (inv.length === 0) {
+                    inv = [
+                        { id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', packSize: 10, stock: 500, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' },
+                        { id: 2, name: 'Brufen', brand: 'Abbott', formula: 'Ibuprofen', packSize: 1, stock: 50, cost: 120, price: 150, cat: 'Syrup', exp: '2025-08-15', img: '' },
+                        { id: 3, name: 'Risek', brand: 'Getz', formula: 'Omeprazole', packSize: 1, stock: 100, cost: 250, price: 350, cat: 'Injection', exp: '2025-10-20', img: '' },
+                        { id: 4, name: 'Amoxil', brand: 'GSK', formula: 'Amoxicillin', packSize: 10, stock: 200, cost: 500, price: 700, cat: 'Capsule', exp: '2027-01-01', img: '' }
+                    ];
+                    saveData();
+                }
+            } catch(e) {}
+        }
+        initData();
 
         // Set Main Logo
         document.getElementById('storeLogo').src = baseURL + "1.jpg";
@@ -378,13 +393,12 @@
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // --- INVENTORY RENDER (WITH FILTERS) ---
+        // --- INVENTORY RENDER ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filterType = document.getElementById('searchFilter').value;
             const term = document.getElementById('search').value.toLowerCase();
             
-            // --- NEW: FILTER LOGIC ---
             const filtered = inv.filter(i => {
                 const nameMatch = i.name.toLowerCase().includes(term);
                 const formulaMatch = i.formula && i.formula.toLowerCase().includes(term);
@@ -406,6 +420,7 @@
                 }
                 if(!displayImg) displayImg = defaultImages[i.cat] || defaultImages['Other'];
 
+                // ADDED EXPIRY DATE TO DISPLAY
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-5 flex flex-col relative group">
                     <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition z-10">
@@ -419,6 +434,7 @@
                             <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
                             <p class="text-xs text-emerald-400 italic">${i.formula || ''}</p>
+                            <p class="text-[10px] text-red-400 mt-1"><i class="far fa-clock"></i> Exp: ${i.exp || 'N/A'}</p>
                         </div>
                     </div>
                     <div class="bg-black/20 p-3 rounded-xl grid grid-cols-2 gap-y-1 text-xs mb-4 border border-white/5">
@@ -466,9 +482,6 @@
                 const newBrand = document.getElementById('medBrand').value.trim();
                 const currentId = idVal ? parseInt(idVal) : null;
 
-                // --- NEW: DUPLICATE PREVENTION LOGIC ---
-                // We check if (Name AND Brand) matches any EXISTING item
-                // We exclude currentId so we can still edit the item itself without error
                 const duplicate = inv.find(i => 
                     i.name.toLowerCase() === newName.toLowerCase() && 
                     i.brand.toLowerCase() === newBrand.toLowerCase() &&
@@ -477,7 +490,7 @@
 
                 if (duplicate) {
                     alert("⚠️ ERROR: Medicine with this Name & Brand already exists!");
-                    return; // Stop saving
+                    return; 
                 }
 
                 const item = {
@@ -592,9 +605,9 @@
 
         // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_32', JSON.stringify(inv));
-            localStorage.setItem('az_sales_32', JSON.stringify(sales));
-            localStorage.setItem('az_purch_32', JSON.stringify(purch));
+            localStorage.setItem('az_inv_33', JSON.stringify(inv));
+            localStorage.setItem('az_sales_33', JSON.stringify(sales));
+            localStorage.setItem('az_purch_33', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -609,9 +622,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_32', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_32', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_32', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_33', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_33', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_33', JSON.stringify(d.purch));
                 alert('Restored! Reloading...');
                 location.reload();
             };
