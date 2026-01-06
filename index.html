@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v35.0 (Logic Fixed)</title>
+    <title>Alazamat Medical Store - v36.0 (Stability Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -102,6 +102,8 @@
             👋 Welcome Boss! Alazamat Medical Store System Online. User: Muhammad Yaseen Alam. Contact: +923107377846 💊
         </div>
     </div>
+
+    <form onsubmit="event.preventDefault();" class="contents">
 
     <button type="button" onclick="toggleSidebar()" class="fixed top-12 left-4 z-50 bg-black/50 backdrop-blur-md text-white p-4 rounded-full border border-white/10 hover:border-emerald-500 hover:text-emerald-400 transition-all shadow-2xl">
         <i class="fas fa-bars text-xl"></i>
@@ -210,7 +212,8 @@
             <div style="font-family: 'Great Vibes', cursive; font-size: 2rem; color: #10b981;">M Tahseen Alam</div>
             <p>Developed for Alazamat Medical Store</p>
         </footer>
-    </main>
+
+    </form>
 
     <div id="successModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4">
         <div class="glass-card p-8 rounded-2xl text-center max-w-sm w-full">
@@ -220,8 +223,8 @@
             <h3 class="text-2xl font-bold text-white mb-2">Sale Completed!</h3>
             <p class="text-gray-400 mb-6">Bill Saved Successfully.</p>
             <div class="flex flex-col gap-3">
-                <button onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
-                <button onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
+                <button type="button" onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
+                <button type="button" onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
             </div>
         </div>
     </div>
@@ -349,9 +352,9 @@
 
         function initData() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_35')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_35')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_35')) || [];
+                inv = JSON.parse(localStorage.getItem('az_inv_36')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_36')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_36')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -390,7 +393,13 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function closeSuccess() { document.getElementById('successModal').classList.add('hidden'); }
 
-        // RENDER GRID WITH WHOLE PACKS LOGIC
+        // RENDER GRID WITH DEBOUNCE
+        let searchTimeout = null;
+        document.getElementById('search').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(renderGrid, 300);
+        });
+
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filterType = document.getElementById('searchFilter').value;
@@ -408,7 +417,6 @@
             });
             
             filtered.forEach(i => {
-                // FIXED PACK DISPLAY LOGIC
                 const wholePacks = Math.floor(i.stock / i.packSize);
                 const looseUnits = i.stock % i.packSize;
                 const packsDisplay = `Packs: ${wholePacks} | Loose: ${looseUnits}`;
@@ -427,7 +435,7 @@
                     </div>
                     <div class="flex gap-4 mb-4">
                         <img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
-                             onerror="this.onerror=null; this.src='${defaultImages['Other']}'">
+                             onerror="this.removeAttribute('onerror'); this.src='${defaultImages['Other']}';">
                         <div>
                             <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
@@ -446,7 +454,6 @@
                 </div>`;
             });
         }
-        document.getElementById('search').addEventListener('input', renderGrid);
 
         // CRUD
         function openAddModal() {
@@ -540,7 +547,7 @@
             const t = document.getElementById('billTable'); t.innerHTML = ''; let sub = 0;
             cart.forEach((c, i) => {
                 sub += c.price;
-                t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+                t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button type="button" onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             const discType = document.getElementById('discType').value;
             const discInput = parseFloat(document.getElementById('billDisc').value) || 0;
@@ -569,9 +576,9 @@
             w.document.close(); w.focus(); setTimeout(() => { w.print(); w.close(); }, 800);
         }
         function saveData() {
-            localStorage.setItem('az_inv_35', JSON.stringify(inv));
-            localStorage.setItem('az_sales_35', JSON.stringify(sales));
-            localStorage.setItem('az_purch_35', JSON.stringify(purch));
+            localStorage.setItem('az_inv_36', JSON.stringify(inv));
+            localStorage.setItem('az_sales_36', JSON.stringify(sales));
+            localStorage.setItem('az_purch_36', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -585,10 +592,12 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_35', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_35', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_35', JSON.stringify(d.purch));
-                alert('Restored! Reloading...'); location.reload();
+                if(d.inv) localStorage.setItem('az_inv_36', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_36', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_36', JSON.stringify(d.purch));
+                alert('Data Restored! The page will updated.');
+                inv = d.inv || []; sales = d.sales || []; purch = d.purch || [];
+                renderAll(); // RENDER WITHOUT RELOAD
             }; r.readAsText(input.files[0]);
         }
         function renderAll() {
