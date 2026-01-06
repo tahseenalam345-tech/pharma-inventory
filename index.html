@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v41.0 (Production)</title>
+    <title>Alazamat Medical Store - v42.0 (Final Fix)</title>
     <meta name="description" content="Inventory and Billing System for Alazamat Medical Store">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,7 +30,7 @@
 
         /* GLASS CARD */
         .glass-card {
-            background: rgba(17, 24, 39, 0.9);
+            background: rgba(17, 24, 39, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
@@ -302,7 +302,7 @@
         </div>
     </div>
 
-    <div id="medModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div id="medModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'medModal')">
         <div class="glass-card w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl p-6" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold">Medicine Details</h3>
@@ -340,7 +340,7 @@
         </div>
     </div>
 
-    <div id="saleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div id="saleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'saleModal')">
         <div class="glass-card w-full max-w-md p-6 rounded-2xl text-center" onclick="event.stopPropagation()">
             <h3 class="text-2xl font-bold mb-1" id="saleName">Item</h3>
             <p class="text-emerald-300 font-bold mb-2 text-lg" id="salePotency">500mg</p>
@@ -370,7 +370,7 @@
         </div>
     </div>
 
-    <div id="billModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div id="billModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'billModal')">
         <div class="glass-card w-full max-w-lg h-[85vh] flex flex-col rounded-2xl" onclick="event.stopPropagation()">
             <div class="p-6 border-b border-white/10 flex justify-between items-center">
                 <h3 class="text-2xl font-bold text-white">Current Bill</h3>
@@ -408,7 +408,7 @@
         </div>
     </div>
 
-    <div id="purchaseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div id="purchaseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'purchaseModal')">
         <div class="glass-card w-full max-w-md p-8 rounded-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Buying Record</h3><button type="button" onclick="closeModal('purchaseModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
@@ -423,7 +423,7 @@
         </div>
     </div>
 
-    <div id="expModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div id="expModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'expModal')">
         <div class="glass-card w-full max-w-md p-8 rounded-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Add Expense</h3><button type="button" onclick="closeModal('expModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
@@ -443,7 +443,7 @@
         </div>
     </div>
 
-    <div id="attModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div id="attModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" onclick="handleOutsideClick(event, 'attModal')">
         <div class="glass-card w-full max-w-md p-8 rounded-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between mb-6"><h3 class="font-bold text-2xl">Mark Attendance</h3><button type="button" onclick="closeModal('attModal')"><i class="fas fa-times text-xl"></i></button></div>
             <div class="space-y-4">
@@ -486,12 +486,12 @@
         // INIT
         function initData() {
             try {
-                // v41 KEYS
-                inv = JSON.parse(localStorage.getItem('az_inv_41')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_41')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_41')) || [];
-                expenses = JSON.parse(localStorage.getItem('az_exp_41')) || [];
-                attendance = JSON.parse(localStorage.getItem('az_att_41')) || [];
+                // v42 KEYS
+                inv = JSON.parse(localStorage.getItem('az_inv_42')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_42')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_42')) || [];
+                expenses = JSON.parse(localStorage.getItem('az_exp_42')) || [];
+                attendance = JSON.parse(localStorage.getItem('az_att_42')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -514,11 +514,11 @@
         }
         
         function saveData() {
-            localStorage.setItem('az_inv_41', JSON.stringify(inv));
-            localStorage.setItem('az_sales_41', JSON.stringify(sales));
-            localStorage.setItem('az_purch_41', JSON.stringify(purch));
-            localStorage.setItem('az_exp_41', JSON.stringify(expenses));
-            localStorage.setItem('az_att_41', JSON.stringify(attendance));
+            localStorage.setItem('az_inv_42', JSON.stringify(inv));
+            localStorage.setItem('az_sales_42', JSON.stringify(sales));
+            localStorage.setItem('az_purch_42', JSON.stringify(purch));
+            localStorage.setItem('az_exp_42', JSON.stringify(expenses));
+            localStorage.setItem('az_att_42', JSON.stringify(attendance));
             updateTopStats();
         }
 
@@ -528,7 +528,8 @@
         };
 
         // --- UI & LOGIC HELPERS ---
-        // NEW FIXED CLOSE MODAL LOGIC
+        
+        // FIXED MODAL CLOSING LOGIC
         function openModal(id) { 
             const m = document.getElementById(id); 
             m.classList.remove('hidden'); 
@@ -544,7 +545,7 @@
             if(openModals.length === 0) document.getElementById('modalOverlayLayer').classList.add('hidden');
         }
 
-        // GLOBAL CLOSE FUNCTION FOR OVERLAY CLICK
+        // GLOBAL CLOSE FUNCTION
         function closeAllModals() {
             const modals = document.querySelectorAll('.fixed.z-50');
             modals.forEach(m => {
@@ -552,6 +553,11 @@
                 m.classList.remove('flex');
             });
             document.getElementById('modalOverlayLayer').classList.add('hidden');
+        }
+
+        // Handle Clicking Outside Modal
+        function handleOutsideClick(e, id) {
+            if(e.target.id === id) closeModal(id);
         }
 
         function toggleSidebar(e) {
@@ -612,7 +618,7 @@
             if(count === 0) list.innerHTML = '<div class="text-center text-gray-500">No new alerts</div>';
         }
 
-        // --- INVENTORY RENDER (HIGH CONTRAST) ---
+        // --- INVENTORY RENDER ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filter = document.getElementById('searchFilter').value;
@@ -729,7 +735,7 @@
             sales.unshift(s); lastSale = s; cart = []; saveData(); updateCartUI(); closeModal('billModal'); renderAll(); openModal('successModal');
         }
 
-        // --- EXPENSES (FIXED CUSTOM) ---
+        // --- EXPENSES ---
         function checkExpCustom(sel) {
             const input = document.getElementById('expCustom');
             if(sel.value === 'Other') { input.classList.remove('hidden'); input.focus(); }
@@ -883,7 +889,7 @@
         }
         function restoreBackup(input) {
             const r = new FileReader();
-            r.onload = e => { const d = JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_41', JSON.stringify(d.inv)); alert('Restored! Reloading...'); location.reload(); };
+            r.onload = e => { const d = JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_42', JSON.stringify(d.inv)); alert('Restored! Reloading...'); location.reload(); };
             r.readAsText(input.files[0]);
         }
 
@@ -902,7 +908,7 @@
     </script>
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js");
+        navigator.serviceWorker.register("./sw.js");
       }
     </script>
 </body>
