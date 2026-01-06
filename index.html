@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v45.0 (Master Fix)</title>
+    <title>Alazamat Medical Store - v46.0 (Complete)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -78,6 +78,16 @@
             <span class="text-gray-400 block">MONTH</span>
             <span class="font-bold text-blue-400 text-xs" id="topMonthSale">0</span>
         </div>
+    </div>
+
+    <button onclick="toggleNotif(event)" class="fixed top-3 right-4 z-50 bg-gray-800 text-white p-2 w-9 h-9 rounded-full border border-gray-600 shadow-lg flex items-center justify-center">
+        <i class="fas fa-bell"></i>
+        <div id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full text-[10px] flex items-center justify-center hidden">0</div>
+    </button>
+
+    <div id="notifPanel" class="fixed top-14 right-4 w-72 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-4 hidden">
+        <h4 class="font-bold border-b border-gray-700 pb-2 mb-2 text-white">Alerts</h4>
+        <div id="notifList" class="max-h-60 overflow-y-auto space-y-2 text-sm text-gray-300"></div>
     </div>
 
     <button onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded-full border border-gray-600 shadow-lg">
@@ -216,13 +226,14 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="medCost" placeholder="Cost (Pack)" class="modern-input">
-                    <input type="number" id="medPrice" placeholder="Sell (Pack)" class="modern-input">
+                    <input type="number" id="medCost" placeholder="Cost (Pk)" class="modern-input">
+                    <input type="number" id="medPrice" placeholder="Sell (Pk)" class="modern-input">
                 </div>
                 <select id="medCat" class="modern-input">
                     <option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option>
                 </select>
                 <input type="date" id="medExp" class="modern-input">
+                <input type="file" id="medImg" class="modern-input text-xs">
             </div>
             <div class="mt-4 flex gap-2">
                 <button onclick="closeModal('medModal')" class="flex-1 bg-gray-700 py-2 rounded text-sm">Cancel</button>
@@ -237,8 +248,8 @@
             <p class="text-emerald-400 text-sm mb-4" id="salePotency"></p>
             
             <div class="flex gap-2 mb-4 bg-gray-800 p-1 rounded-lg">
-                <button id="btnUnit" onclick="setSaleType(false)" class="flex-1 py-1 rounded bg-emerald-600 text-xs">Unit</button>
-                <button id="btnPack" onclick="setSaleType(true)" class="flex-1 py-1 rounded text-gray-400 text-xs">Pack</button>
+                <button id="btnUnit" onclick="setSaleType(false)" class="flex-1 py-1 rounded bg-emerald-600 text-white text-xs">Unit</button>
+                <button id="btnPack" onclick="setSaleType(true)" class="flex-1 py-1 rounded text-gray-400 bg-gray-800 text-xs">Pack</button>
             </div>
 
             <div class="flex justify-center items-center gap-4 mb-4">
@@ -253,7 +264,7 @@
     </div>
 
     <div id="billModal" class="modal-overlay" onclick="closeModal('billModal')">
-        <div class="bg-gray-900 w-full max-w-md h-[80vh] flex flex-col rounded-xl border border-gray-700" onclick="event.stopPropagation()">
+        <div class="bg-gray-900 w-full max-w-md h-[80vh] flex flex-col rounded-xl border border-gray-700 m-4" onclick="event.stopPropagation()">
             <div class="p-4 border-b border-gray-800 flex justify-between">
                 <h3 class="font-bold">Bill</h3>
                 <button onclick="closeModal('billModal')"><i class="fas fa-times"></i></button>
@@ -317,8 +328,6 @@
         </div>
     </div>
 
-    </form>
-
     <script>
         // === CONFIGURATION ===
         const ghUser = "tahseenalam345-tech"; 
@@ -333,11 +342,12 @@
         // === INIT ===
         function init() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_45')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_45')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_45')) || [];
-                expenses = JSON.parse(localStorage.getItem('az_exp_45')) || [];
-                attendance = JSON.parse(localStorage.getItem('az_att_45')) || [];
+                // v46 KEYS (New Version)
+                inv = JSON.parse(localStorage.getItem('az_inv_46')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_46')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_46')) || [];
+                expenses = JSON.parse(localStorage.getItem('az_exp_46')) || [];
+                attendance = JSON.parse(localStorage.getItem('az_att_46')) || [];
                 
                 if(inv.length===0) {
                     inv = [{ id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 100, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' }];
@@ -354,14 +364,15 @@
             document.getElementById('storeLogo').src = `${baseURL}1.jpg`;
 
             renderAll();
+            checkNotifications();
         }
 
         function saveData() {
-            localStorage.setItem('az_inv_45', JSON.stringify(inv));
-            localStorage.setItem('az_sales_45', JSON.stringify(sales));
-            localStorage.setItem('az_purch_45', JSON.stringify(purch));
-            localStorage.setItem('az_exp_45', JSON.stringify(expenses));
-            localStorage.setItem('az_att_45', JSON.stringify(attendance));
+            localStorage.setItem('az_inv_46', JSON.stringify(inv));
+            localStorage.setItem('az_sales_46', JSON.stringify(sales));
+            localStorage.setItem('az_purch_46', JSON.stringify(purch));
+            localStorage.setItem('az_exp_46', JSON.stringify(expenses));
+            localStorage.setItem('az_att_46', JSON.stringify(attendance));
             updateStats();
         }
 
@@ -390,17 +401,56 @@
             renderGrid();
         }
 
+        function toggleNotif(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('notifPanel').classList.toggle('hidden');
+        }
+
+        // Close panels when clicking outside
+        window.onclick = function(e) {
+            if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-3.right-4')) {
+                document.getElementById('notifPanel').classList.add('hidden');
+            }
+        };
+
+        // === NOTIFICATIONS LOGIC ===
+        function checkNotifications() {
+            const list = document.getElementById('notifList');
+            const badge = document.getElementById('notifBadge');
+            list.innerHTML = ''; let count = 0;
+            const now = new Date();
+            const hour = now.getHours();
+            const date = now.getDate();
+
+            // Time Alerts
+            if(hour >= 9 && hour < 11) { count++; list.innerHTML += `<div class="p-2 bg-emerald-900/50 rounded border border-emerald-500/30 text-emerald-200">🏥 Store Opening Time</div>`; }
+            if(hour >= 17 && hour < 19) { count++; list.innerHTML += `<div class="p-2 bg-orange-900/50 rounded border border-orange-500/30 text-orange-200">🌇 Closing Time Soon</div>`; }
+            
+            // Rent Alert
+            if(date >= 28) { count++; list.innerHTML += `<div class="p-2 bg-red-900/50 rounded border border-red-500/30 text-red-200">💸 Rent Due Soon</div>`; }
+
+            // Stock & Expiry
+            inv.forEach(i => {
+                if(i.stock === 0) { count++; list.innerHTML += `<div class="p-2 bg-red-900/30 rounded text-red-300 text-xs">❌ <b>${i.name}</b> Out of Stock</div>`; }
+                else if(i.stock < 10) { count++; list.innerHTML += `<div class="p-2 bg-yellow-900/30 rounded text-yellow-300 text-xs">⚠️ <b>${i.name}</b> Low Stock</div>`; }
+                
+                if(i.exp) {
+                    const days = (new Date(i.exp) - now) / (1000 * 60 * 60 * 24);
+                    if(days < 7 && days > 0) { count++; list.innerHTML += `<div class="p-2 bg-red-900/30 rounded text-red-300 text-xs">📅 <b>${i.name}</b> Expires in ${Math.ceil(days)} days</div>`; }
+                }
+            });
+
+            if(count > 0) { badge.innerText = count; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); list.innerHTML = '<div class="text-center text-gray-500 text-xs">No new alerts</div>'; }
+        }
+
         // === INVENTORY ===
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
             
-            // Set Grid Class based on mode
-            if(gridMode === 'small') {
-                g.className = "grid grid-cols-2 md:grid-cols-4 gap-3";
-            } else {
-                g.className = "grid grid-cols-1 gap-3";
-            }
+            if(gridMode === 'small') { g.className = "grid grid-cols-2 md:grid-cols-4 gap-3"; } 
+            else { g.className = "grid grid-cols-1 gap-3"; }
 
             const filtered = inv.filter(i => {
                 if(activeFilter !== 'all' && i.cat !== activeFilter) return false;
@@ -459,7 +509,7 @@
             };
             const idx = inv.findIndex(i=>i.id==item.id);
             if(idx>-1) inv[idx]=item; else inv.unshift(item);
-            saveData(); closeModal('medModal'); renderGrid();
+            saveData(); closeModal('medModal'); renderGrid(); checkNotifications();
         }
 
         function editMed(id) {
@@ -586,6 +636,7 @@
             document.getElementById('expId').value=e.id; document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note;
             openModal('expModal');
         }
+        function checkExpCustom(el) { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
 
         // --- PURCHASES ---
         function resetPurchForm() { document.getElementById('pId').value=''; document.getElementById('pDealer').value=''; document.getElementById('pAmount').value=''; }
@@ -643,11 +694,11 @@
         }
         function restoreBackup(input) {
             const r = new FileReader();
-            r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_45', JSON.stringify(d.inv)); location.reload(); };
+            r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_46', JSON.stringify(d.inv)); location.reload(); };
             r.readAsText(input.files[0]);
         }
         function updateCartUI() { document.getElementById('cartCount').innerText = cart.length; }
-        function checkExpCustom(el) { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
+        
         function printBill(s) {
             let h = ''; s.items.forEach(i => h += `<tr><td align="left">${i.name}</td><td align="center">${i.qty}</td><td align="right">${i.price}</td></tr>`);
             const w = window.open('','','width=300,height=600');
