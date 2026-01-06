@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v29.0</title>
+    <title>Alazamat Medical Store - v31.0 (Fixed Paths)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -157,7 +157,7 @@
         
         <section id="hero" class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative">
             <div class="relative group mb-8">
-                <img id="storeLogo" src="1.jpg" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=ALAZAMAT'">
+                <img id="storeLogo" src="" class="w-40 h-40 rounded-full border-4 border-emerald-500 shadow-2xl object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/10b981/FFFFFF?text=ALAZAMAT'">
             </div>
             <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-2">ALAZAMAT</h1>
             <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] mb-10">MEDICAL STORE SYSTEM</h2>
@@ -326,25 +326,45 @@
     </div>
 
     <script>
+        // ==========================================
+        //  ⚠️ CONFIGURATION - AUTOMATICALLY SET FROM SCREENSHOTS ⚠️
+        // ==========================================
+        
+        // 1. GitHub Username
+        const ghUser = "tahseenalam345-tech"; 
+
+        // 2. Repo Name (From your screenshot)
+        const ghRepo = "pharma-inventory"; 
+        
+        // 3. Branch Name
+        const branch = "main"; 
+
+        // 4. Base URL pointing to the "images" folder
+        const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
+
+        // ==========================================
+        
         // DATA
         let inv = [], sales = [], purch = [];
         let cart = [];
 
         try {
-            inv = JSON.parse(localStorage.getItem('az_inv_28')) || [];
-            sales = JSON.parse(localStorage.getItem('az_sales_28')) || [];
-            purch = JSON.parse(localStorage.getItem('az_purch_28')) || [];
+            inv = JSON.parse(localStorage.getItem('az_inv_31')) || [];
+            sales = JSON.parse(localStorage.getItem('az_sales_31')) || [];
+            purch = JSON.parse(localStorage.getItem('az_purch_31')) || [];
         } catch(e) {}
 
-        // --- UPDATED DEFAULT IMAGES MAPPING ---
-        // Maps the uploaded file names to categories
-       const defaultImages = {
-  'Tablet': 'download-1.jpg',
-  'Syrup': 'download-2.jpg',
-  'Injection': 'download-3.jpg',
-  'Capsule': 'download.jpg',
-  'Other': 'download.jpg'
-};
+        // Set Main Logo from GitHub
+        document.getElementById('storeLogo').src = baseURL + "1.jpg";
+
+        // --- UPDATED DEFAULT IMAGES (Using GitHub Links) ---
+        const defaultImages = {
+            'Tablet': baseURL + 'download (1).jpg',  
+            'Syrup': baseURL + 'download (2).jpg',   
+            'Injection': baseURL + 'download (3).jpg', 
+            'Capsule': baseURL + 'download.jpg',     
+            'Other': baseURL + 'download.jpg'
+        };
 
         window.addEventListener('scroll', () => {
             const bar = document.getElementById('topBar');
@@ -373,9 +393,20 @@
             
             filtered.forEach(i => {
                 const packs = (i.stock / i.packSize).toFixed(1);
-                // FIXED INFINITE LOOP ON IMAGE ERROR
-                const fallback = defaultImages[i.cat] || defaultImages['Other'];
                 
+                // If user uploaded a custom image (Base64), use it. 
+                // Otherwise use the GitHub link based on category.
+                let displayImg = i.img;
+                
+                // If the saved image string is short (meaning it was a local filename like "1.jpg"), 
+                // replace it with the GitHub link. Base64 strings are very long.
+                if(displayImg && displayImg.length < 200 && !displayImg.startsWith('http') && !displayImg.startsWith('data:')) {
+                     displayImg = defaultImages[i.cat] || defaultImages['Other'];
+                }
+                
+                // Fallback if no image
+                if(!displayImg) displayImg = defaultImages[i.cat] || defaultImages['Other'];
+
                 g.innerHTML += `
                 <div class="glass-card rounded-2xl p-5 flex flex-col relative group">
                     <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition z-10">
@@ -383,8 +414,8 @@
                         <button type="button" onclick="delMed(${i.id})" class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     <div class="flex gap-4 mb-4">
-                        <img src="${i.img}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
-                             onerror="this.onerror=null; this.src='${fallback}'">
+                        <img src="${displayImg}" class="w-20 h-20 rounded-xl object-cover bg-black/30 border border-white/10" 
+                             onerror="this.onerror=null; this.src='${defaultImages['Other']}'">
                         <div>
                             <h4 class="font-bold text-xl leading-tight text-white mb-1">${i.name}</h4>
                             <p class="text-xs text-gray-400 uppercase tracking-wide">${i.brand}</p>
@@ -527,7 +558,7 @@
         function printBill(s) {
             let h = ''; s.items.forEach(i => h += `<tr><td align="left">${i.name} (${i.type})</td><td align="center">${i.qty}</td><td align="right">${i.price}</td></tr>`);
             const w = window.open('', '', 'width=300,height=600');
-            w.document.write(`<html><head><style>body{font-family:monospace;text-align:center;padding:10px}hr{border:0;border-top:1px dashed #000}table{width:100%;font-size:10px}</style></head><body><img src="1.jpg" width="50" style="border-radius:50%" onerror="this.style.display='none'"><br><b>ALAZAMAT MEDICAL</b><br>+923107377846<hr>Date: ${s.date}<br>Inv: ${s.id}<hr><table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>${h}</table><hr><div style="text-align:right">Disc: ${s.disc}<br><b>NET: ${s.total}</b></div><hr>Thank You!</body></html>`);
+            w.document.write(`<html><head><style>body{font-family:monospace;text-align:center;padding:10px}hr{border:0;border-top:1px dashed #000}table{width:100%;font-size:10px}</style></head><body><img src="${baseURL + '1.jpg'}" width="50" style="border-radius:50%" onerror="this.style.display='none'"><br><b>ALAZAMAT MEDICAL</b><br>+923107377846<hr>Date: ${s.date}<br>Inv: ${s.id}<hr><table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>${h}</table><hr><div style="text-align:right">Disc: ${s.disc}<br><b>NET: ${s.total}</b></div><hr>Thank You!</body></html>`);
             w.document.close(); 
             w.focus(); 
             setTimeout(() => { w.print(); w.close(); }, 800);
@@ -535,9 +566,9 @@
 
         // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_28', JSON.stringify(inv));
-            localStorage.setItem('az_sales_28', JSON.stringify(sales));
-            localStorage.setItem('az_purch_28', JSON.stringify(purch));
+            localStorage.setItem('az_inv_31', JSON.stringify(inv));
+            localStorage.setItem('az_sales_31', JSON.stringify(sales));
+            localStorage.setItem('az_purch_31', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -552,9 +583,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_28', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_28', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_28', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_31', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_31', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_31', JSON.stringify(d.purch));
                 alert('Restored! Reloading...');
                 location.reload();
             };
