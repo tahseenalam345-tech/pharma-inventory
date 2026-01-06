@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v38.0 (Real Inventory Logic)</title>
+    <title>Alazamat Medical Store - v39.0 (Price Logic Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -384,10 +384,10 @@
         // --- LOAD DATA & DEFAULTS ---
         function initData() {
             try {
-                // CHANGED TO _38 TO ENSURE FRESH CLEAN START FOR LOGIC FIX
-                inv = JSON.parse(localStorage.getItem('az_inv_38')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_38')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_38')) || [];
+                // CHANGED TO _39 TO ENSURE FRESH CLEAN START FOR LOGIC FIX
+                inv = JSON.parse(localStorage.getItem('az_inv_39')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_39')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_39')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -594,24 +594,39 @@
             document.getElementById('saleName').innerText = saleItem.name;
             document.getElementById('salePotency').innerText = saleItem.potency || ''; 
             document.getElementById('saleQty').value = 1;
-            setSaleType('Unit');
+            
+            // Force reset to Unit sale initially to prevent stuck state
+            document.getElementById('sellUnit').checked = true;
+            calcTotal();
+            
             openModal('saleModal');
         }
-        function setSaleType(type) {
-            isPackSale = (type === 'Pack');
-            document.getElementById('sellUnit').checked = !isPackSale;
-            document.getElementById('sellPack').checked = isPackSale;
-            calcTotal();
-        }
+
         function adjQty(n) {
             let q = parseInt(document.getElementById('saleQty').value) + n;
             if(q < 1) q = 1; document.getElementById('saleQty').value = q; calcTotal();
         }
+        
+        // *** 🔴 FIXED PRICE CALCULATION LOGIC ***
         function calcTotal() {
+            // 1. CHECK THE ACTUAL DOM STATE OF THE RADIO BUTTON
+            isPackSale = document.getElementById('sellPack').checked; 
+            
             const q = parseInt(document.getElementById('saleQty').value);
-            const unitPrice = isPackSale ? saleItem.price : (saleItem.price / saleItem.packSize);
-            document.getElementById('saleInfo').innerText = isPackSale ? `Pack Price: ${unitPrice}` : `Unit Price: ${unitPrice.toFixed(2)}`;
-            document.getElementById('saleTotal').innerText = Math.ceil(unitPrice * q);
+            
+            // 2. CALCULATE BASED ON STATE
+            let finalPrice = 0;
+            if (isPackSale) {
+                // If Pack Sale -> Use Full Pack Price
+                finalPrice = saleItem.price; 
+                document.getElementById('saleInfo').innerText = `Pack Price: ${finalPrice}`;
+            } else {
+                // If Unit Sale -> Use (Pack Price / Pack Size)
+                finalPrice = saleItem.price / saleItem.packSize;
+                document.getElementById('saleInfo').innerText = `Unit Price: ${finalPrice.toFixed(2)}`;
+            }
+
+            document.getElementById('saleTotal').innerText = Math.ceil(finalPrice * q);
         }
         
         // --- ADD TO BILL (STRICT INVENTORY CHECK) ---
@@ -727,9 +742,9 @@
 
         // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_38', JSON.stringify(inv));
-            localStorage.setItem('az_sales_38', JSON.stringify(sales));
-            localStorage.setItem('az_purch_38', JSON.stringify(purch));
+            localStorage.setItem('az_inv_39', JSON.stringify(inv));
+            localStorage.setItem('az_sales_39', JSON.stringify(sales));
+            localStorage.setItem('az_purch_39', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -744,9 +759,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_38', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_38', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_38', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_39', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_39', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_39', JSON.stringify(d.purch));
                 alert('Restored! Reloading...');
                 location.reload();
             };
