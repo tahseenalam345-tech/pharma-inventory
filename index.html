@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v35.0 (Potency Update)</title>
+    <title>Alazamat Medical Store - v36.0 (Logic Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -93,6 +93,9 @@
             background: #10b981; border-color: #10b981; color: black; font-weight: bold;
         }
         .radio-input { display: none; }
+        
+        /* FIX: PREVENT BLUE HIGHLIGHT ON TAP */
+        * { -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body>
@@ -220,8 +223,8 @@
             <h3 class="text-2xl font-bold text-white mb-2">Sale Completed!</h3>
             <p class="text-gray-400 mb-6">Bill Saved Successfully.</p>
             <div class="flex flex-col gap-3">
-                <button onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
-                <button onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
+                <button type="button" onclick="printLastBill()" class="btn-jelly bg-blue-600 w-full"><i class="fas fa-print mr-2"></i> Print / Save PDF</button>
+                <button type="button" onclick="closeSuccess()" class="w-full py-3 border border-white/20 rounded-xl hover:bg-white/10 text-gray-300">Close</button>
             </div>
         </div>
     </div>
@@ -245,11 +248,11 @@
                 </div>
 
                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
-                    <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Logic</p>
+                    <p class="text-xs text-emerald-400 uppercase font-bold mb-2">Stock Entry</p>
                     <div class="grid grid-cols-3 gap-2">
                         <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-sm" oninput="calcUnits()">
                         <input type="number" id="medPackSize" value="1" placeholder="Items/Pack" class="modern-input text-sm" oninput="calcUnits()">
-                        <input type="number" id="medStock" placeholder="Total Units" readonly class="modern-input text-sm bg-black/40 text-gray-500">
+                        <input type="number" id="medStock" placeholder="Total Units (Auto)" readonly class="modern-input text-sm bg-black/40 text-gray-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -353,6 +356,13 @@
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
 
         // ==========================================
+        // PREVENT PAGE RELOAD ON ENTER KEY
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+        // ==========================================
         
         let inv = [], sales = [], purch = [];
         let cart = [];
@@ -361,9 +371,9 @@
         // --- LOAD DATA & DEFAULTS ---
         function initData() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_35')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_35')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_35')) || [];
+                inv = JSON.parse(localStorage.getItem('az_inv_36')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_36')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_36')) || [];
                 
                 if (inv.length === 0) {
                     inv = [
@@ -402,7 +412,7 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function closeSuccess() { document.getElementById('successModal').classList.add('hidden'); }
 
-        // --- INVENTORY RENDER ---
+        // --- INVENTORY RENDER (FIXED PACK LOGIC) ---
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const filterType = document.getElementById('searchFilter').value;
@@ -412,7 +422,7 @@
                 const nameMatch = i.name.toLowerCase().includes(term);
                 const formulaMatch = i.formula && i.formula.toLowerCase().includes(term);
                 const brandMatch = i.brand && i.brand.toLowerCase().includes(term);
-                const potMatch = i.potency && i.potency.toLowerCase().includes(term); // Search by Potency
+                const potMatch = i.potency && i.potency.toLowerCase().includes(term); 
 
                 if (term === '') return true;
                 if (filterType === 'all') return nameMatch || formulaMatch || brandMatch || potMatch;
@@ -422,14 +432,23 @@
             });
             
             filtered.forEach(i => {
-                const packs = (i.stock / i.packSize).toFixed(1);
+                // *** FIXED LOGIC: Show Whole Packs + Loose Units ***
+                const wholePacks = Math.floor(i.stock / i.packSize);
+                const looseUnits = i.stock % i.packSize;
+                
+                let stockDisplay = '';
+                if(i.cat === 'Syrup' || i.packSize === 1) {
+                    stockDisplay = `<b class="text-white">${i.stock}</b> Units`;
+                } else {
+                    stockDisplay = `<b class="text-white">${wholePacks}</b> Pk <span class="text-gray-500">|</span> <b class="text-yellow-400">${looseUnits}</b> Loose`;
+                }
+                
                 let displayImg = i.img;
                 if(displayImg && displayImg.length < 200 && !displayImg.startsWith('http') && !displayImg.startsWith('data:')) {
                      displayImg = defaultImages[i.cat] || defaultImages['Other'];
                 }
                 if(!displayImg) displayImg = defaultImages[i.cat] || defaultImages['Other'];
 
-                // RENDER POTENCY BADGE
                 const potencyBadge = i.potency ? `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-xs ml-2 border border-yellow-500/30">${i.potency}</span>` : '';
 
                 g.innerHTML += `
@@ -452,8 +471,7 @@
                         </div>
                     </div>
                     <div class="bg-black/20 p-3 rounded-xl grid grid-cols-2 gap-y-1 text-xs mb-4 border border-white/5">
-                        <div class="text-gray-400">Packs: <b class="text-white">${packs}</b></div>
-                        <div class="text-gray-400">Units: <b class="text-white">${i.stock}</b></div>
+                        <div class="col-span-2 text-gray-400 border-b border-white/10 pb-1 mb-1">Stock: ${stockDisplay}</div>
                         <div class="text-gray-400">Price (Pk): <span class="text-emerald-400">${i.price}</span></div>
                         <div class="text-gray-400">Price (Un): <span class="text-emerald-400">${(i.price/i.packSize).toFixed(2)}</span></div>
                     </div>
@@ -467,7 +485,7 @@
         function openAddModal() {
             document.getElementById('medId').value = ''; document.getElementById('medName').value = '';
             document.getElementById('medBrand').value = ''; document.getElementById('medFormula').value = '';
-            document.getElementById('medPotency').value = ''; // RESET POTENCY
+            document.getElementById('medPotency').value = ''; 
             document.getElementById('medTotalPacks').value = ''; document.getElementById('medPackSize').value = 1;
             document.getElementById('medStock').value = ''; document.getElementById('medCost').value = '';
             document.getElementById('medPrice').value = ''; editTempImg = null; openModal('medModal');
@@ -495,13 +513,13 @@
                 const idVal = document.getElementById('medId').value;
                 const newName = document.getElementById('medName').value.trim();
                 const newBrand = document.getElementById('medBrand').value.trim();
-                const newPotency = document.getElementById('medPotency').value.trim(); // GET POTENCY
+                const newPotency = document.getElementById('medPotency').value.trim(); 
                 const currentId = idVal ? parseInt(idVal) : null;
 
                 const duplicate = inv.find(i => 
                     i.name.toLowerCase() === newName.toLowerCase() && 
                     i.brand.toLowerCase() === newBrand.toLowerCase() &&
-                    (i.potency || '').toLowerCase() === newPotency.toLowerCase() && // Check Potency in duplicates
+                    (i.potency || '').toLowerCase() === newPotency.toLowerCase() && 
                     i.id !== currentId
                 );
 
@@ -515,7 +533,7 @@
                     name: newName, 
                     brand: newBrand,
                     formula: document.getElementById('medFormula').value, 
-                    potency: newPotency, // SAVE POTENCY
+                    potency: newPotency, 
                     packSize: parseInt(document.getElementById('medPackSize').value)||1,
                     stock: parseInt(document.getElementById('medStock').value)||0, 
                     cost: parseFloat(document.getElementById('medCost').value)||0,
@@ -540,9 +558,10 @@
             const i = inv.find(x => x.id == id);
             document.getElementById('medId').value = i.id; document.getElementById('medName').value = i.name;
             document.getElementById('medBrand').value = i.brand || ''; document.getElementById('medFormula').value = i.formula || '';
-            document.getElementById('medPotency').value = i.potency || ''; // EDIT POTENCY
+            document.getElementById('medPotency').value = i.potency || ''; 
             document.getElementById('medPackSize').value = i.packSize; document.getElementById('medStock').value = i.stock;
-            document.getElementById('medTotalPacks').value = (i.stock / i.packSize).toFixed(1);
+            // Show packs in edit mode for ease of calculation (input only)
+            document.getElementById('medTotalPacks').value = (i.stock / i.packSize); 
             document.getElementById('medCost').value = i.cost; document.getElementById('medPrice').value = i.price;
             document.getElementById('medCat').value = i.cat; document.getElementById('medExp').value = i.exp;
             editTempImg = i.img; openModal('medModal');
@@ -556,7 +575,7 @@
         function openSaleModal(id) {
             saleItem = inv.find(i => i.id == id);
             document.getElementById('saleName').innerText = saleItem.name;
-            document.getElementById('salePotency').innerText = saleItem.potency || ''; // SHOW POTENCY IN MODAL
+            document.getElementById('salePotency').innerText = saleItem.potency || ''; 
             document.getElementById('saleQty').value = 1;
             setSaleType('Unit');
             openModal('saleModal');
@@ -586,7 +605,6 @@
             const total = Math.ceil(unitPrice * q);
             const profit = total - ((saleItem.cost / saleItem.packSize) * deduct);
 
-            // SAVE POTENCY IN CART NAME
             const displayName = saleItem.name + (saleItem.potency ? ` ${saleItem.potency}` : '');
 
             cart.push({ id: Date.now(), medId: saleItem.id, name: displayName, type: isPackSale?'Pack':'Unit', qty: q, deduct: deduct, price: total, profit: profit });
@@ -600,7 +618,7 @@
             let sub = 0;
             cart.forEach((c, i) => {
                 sub += c.price;
-                t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+                t.innerHTML += `<tr><td class="py-2">${c.name} <span class="text-xs text-gray-500">(${c.type})</span></td><td class="py-2">${c.qty}</td><td class="py-2 text-right">${c.price}</td><td class="py-2 text-right"><button type="button" onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             
             const discType = document.getElementById('discType').value;
@@ -672,9 +690,9 @@
 
         // --- STORAGE & INIT ---
         function saveData() {
-            localStorage.setItem('az_inv_35', JSON.stringify(inv));
-            localStorage.setItem('az_sales_35', JSON.stringify(sales));
-            localStorage.setItem('az_purch_35', JSON.stringify(purch));
+            localStorage.setItem('az_inv_36', JSON.stringify(inv));
+            localStorage.setItem('az_sales_36', JSON.stringify(sales));
+            localStorage.setItem('az_purch_36', JSON.stringify(purch));
         }
         function savePurchase() {
             purch.unshift({ dealer: document.getElementById('pDealer').value, comp: document.getElementById('pCompany').value, items: document.getElementById('pItems').value, amt: document.getElementById('pAmount').value, date: document.getElementById('pDate').value });
@@ -689,9 +707,9 @@
             const r = new FileReader();
             r.onload = (e) => {
                 const d = JSON.parse(e.target.result);
-                if(d.inv) localStorage.setItem('az_inv_35', JSON.stringify(d.inv));
-                if(d.sales) localStorage.setItem('az_sales_35', JSON.stringify(d.sales));
-                if(d.purch) localStorage.setItem('az_purch_35', JSON.stringify(d.purch));
+                if(d.inv) localStorage.setItem('az_inv_36', JSON.stringify(d.inv));
+                if(d.sales) localStorage.setItem('az_sales_36', JSON.stringify(d.sales));
+                if(d.purch) localStorage.setItem('az_purch_36', JSON.stringify(d.purch));
                 alert('Restored! Reloading...');
                 location.reload();
             };
