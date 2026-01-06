@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v44.0 (Performance & Edit Fix)</title>
-    <meta name="description" content="Inventory and Billing System">
+    <title>Alazamat Medical Store - v45.0 (Master Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -23,116 +22,86 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
 
-        /* GLASS CARD (Removed heavy blur for performance) */
         .glass-card {
-            background: #111827;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #111827; border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        /* INPUTS */
         .modern-input {
             width: 100%; background: #1f2937; border: 1px solid #374151;
-            color: white; padding: 12px 16px; border-radius: 12px; outline: none; transition: 0.2s;
-            color-scheme: dark;
+            color: white; padding: 10px 14px; border-radius: 10px; outline: none; transition: 0.2s;
+            color-scheme: dark; font-size: 14px;
         }
         .modern-input:focus { border-color: #10b981; background: #374151; }
 
-        /* BUTTONS */
         .btn-jelly {
-            background: #10b981;
-            color: white; border: none; padding: 10px 20px; font-weight: 600; border-radius: 12px;
-            transition: all 0.1s; cursor: pointer;
+            background: #10b981; color: white; border: none; padding: 8px 16px; font-weight: 600; 
+            border-radius: 10px; transition: all 0.1s; cursor: pointer; user-select: none;
         }
         .btn-jelly:active { transform: scale(0.95); }
 
         /* SIDEBAR */
         .sidebar {
-            position: fixed; top: 0; left: 0; height: 100%; width: 280px;
+            position: fixed; top: 0; left: 0; height: 100%; width: 260px;
             background: #0f172a; border-right: 1px solid #1e293b;
-            z-index: 50; transform: translateX(-100%); transition: transform 0.2s;
+            z-index: 100; transform: translateX(-100%); transition: transform 0.2s;
         }
         .sidebar.active { transform: translateX(0); }
 
-        /* MODAL OVERLAY */
+        /* MODAL (FIXED) */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 40;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: none; /* Removed blur to fix lag */
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 90;
+            display: none; justify-content: center; align-items: center; padding: 20px;
         }
         .modal-overlay.active { display: flex; }
 
-        /* FLOATING ACTION BUTTONS */
         .fab-cart {
-            position: fixed; bottom: 20px; right: 20px; z-index: 30;
-            background: #eab308; color: black; padding: 15px 25px;
-            border-radius: 50px; font-weight: bold; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            cursor: pointer; display: flex; align-items: center; gap: 10px;
-        }
-
-        .notif-btn {
-            position: fixed; top: 20px; right: 20px; z-index: 30;
-            width: 45px; height: 45px; background: #1f2937; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; border: 1px solid #374151;
-            cursor: pointer;
-        }
-        .notif-badge {
-            position: absolute; top: 0; right: 0; width: 12px; height: 12px;
-            background: red; border-radius: 50%;
+            position: fixed; bottom: 20px; right: 20px; z-index: 80;
+            background: #eab308; color: black; padding: 12px 20px;
+            border-radius: 50px; font-weight: bold; box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
         }
     </style>
 </head>
 <body>
 
-    <form onsubmit="return false;" style="display: contents;">
-
-    <div class="fixed top-4 right-20 z-20 flex gap-2 text-xs">
-        <div class="bg-gray-900 border border-emerald-500/30 px-3 py-1 rounded text-right">
-            <span class="text-gray-400 block text-[10px]">TODAY</span>
-            <span class="font-bold text-emerald-400" id="topTodaySale">0</span>
+    <div class="fixed top-3 right-16 z-30 flex gap-2 text-[10px]">
+        <div class="bg-gray-900 border border-emerald-500/30 px-2 py-1 rounded text-right min-w-[70px]">
+            <span class="text-gray-400 block">TODAY</span>
+            <span class="font-bold text-emerald-400 text-xs" id="topTodaySale">0</span>
         </div>
-        <div class="bg-gray-900 border border-blue-500/30 px-3 py-1 rounded text-right">
-            <span class="text-gray-400 block text-[10px]">MONTH</span>
-            <span class="font-bold text-blue-400" id="topMonthSale">0</span>
+        <div class="bg-gray-900 border border-blue-500/30 px-2 py-1 rounded text-right min-w-[70px]">
+            <span class="text-gray-400 block">MONTH</span>
+            <span class="font-bold text-blue-400 text-xs" id="topMonthSale">0</span>
         </div>
     </div>
 
-    <div class="notif-btn" onclick="toggleNotif()">
-        <i class="fas fa-bell text-white"></i>
-        <div id="notifBadge" class="notif-badge hidden"></div>
-    </div>
-    <div id="notifPanel" class="fixed top-20 right-5 w-72 bg-gray-900 border border-gray-700 rounded-xl shadow-xl z-50 p-4 hidden">
-        <h4 class="font-bold border-b border-gray-700 pb-2 mb-2">Alerts</h4>
-        <div id="notifList" class="max-h-60 overflow-y-auto text-sm space-y-2 text-gray-300"></div>
-    </div>
-
-    <button type="button" onclick="toggleSidebar()" class="fixed top-5 left-4 z-50 bg-gray-900 text-white p-3 rounded-full border border-gray-700 shadow-lg">
-        <i class="fas fa-bars"></i>
+    <button onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded-full border border-gray-600 shadow-lg">
+        <i class="fas fa-bars text-lg"></i>
     </button>
 
     <aside id="sidebar" class="sidebar flex flex-col">
-        <div class="p-6 border-b border-gray-800 flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-emerald-400">ALAZAMAT</h2>
+        <div class="p-5 border-b border-gray-800 flex justify-between items-center">
+            <h2 class="text-xl font-bold text-emerald-400">ALAZAMAT</h2>
             <button onclick="toggleSidebar()"><i class="fas fa-times text-gray-400"></i></button>
         </div>
-        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <button onclick="nav('hero')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3"><i class="fas fa-home"></i> Home</button>
-            <button onclick="nav('inventory')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3"><i class="fas fa-pills"></i> Inventory</button>
-            <button onclick="nav('history')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3"><i class="fas fa-history text-yellow-400"></i> History</button>
-            <button onclick="nav('expenses')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3"><i class="fas fa-receipt text-orange-400"></i> Expenses</button>
-            <button onclick="nav('purchases')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3"><i class="fas fa-truck text-purple-400"></i> Purchases</button>
-            <button onclick="nav('reports')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3"><i class="fas fa-chart-pie text-blue-400"></i> Reports</button>
-            <button onclick="nav('attendance')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 mt-4 border-t border-gray-800"><i class="fas fa-calendar-check text-pink-400"></i> Attendance</button>
+        <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+            <button onclick="nav('hero')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-home"></i> Home</button>
+            <button onclick="nav('inventory')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-pills"></i> Inventory</button>
+            <button onclick="nav('history')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-history text-yellow-400"></i> History</button>
+            <button onclick="nav('expenses')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-receipt text-orange-400"></i> Expenses</button>
+            <button onclick="nav('purchases')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-truck text-purple-400"></i> Purchases</button>
+            <button onclick="nav('reports')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-chart-pie text-blue-400"></i> Reports</button>
+            <button onclick="nav('attendance')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3 border-t border-gray-800 mt-2"><i class="fas fa-calendar-check text-pink-400"></i> Attendance</button>
             
             <div class="mt-4 pt-4 border-t border-gray-800">
-                <button onclick="downloadBackup()" class="w-full text-left p-2 text-sm text-gray-400"><i class="fas fa-download"></i> Backup</button>
-                <label class="w-full text-left p-2 text-sm text-gray-400 cursor-pointer block">
-                    <i class="fas fa-upload"></i> Restore
+                <button onclick="downloadBackup()" class="w-full text-left p-2 text-xs text-gray-400"><i class="fas fa-download"></i> Backup Data</button>
+                <label class="w-full text-left p-2 text-xs text-gray-400 cursor-pointer block">
+                    <i class="fas fa-upload"></i> Restore Data
                     <input type="file" class="hidden" onchange="restoreBackup(this)">
                 </label>
             </div>
@@ -143,79 +112,82 @@
         <i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span>
     </div>
 
-    <main class="relative w-full min-h-screen pb-24 pt-20 px-4">
+    <main class="relative w-full min-h-screen pb-24 pt-16 px-4">
         
-        <section id="hero" class="text-center mb-12">
-            <img id="storeLogo" src="" class="w-24 h-24 rounded-full border-2 border-emerald-500 mx-auto mb-4 object-cover bg-gray-800">
-            <h1 class="text-4xl font-bold text-white mb-2">ALAZAMAT</h1>
-            <p class="text-gray-400 tracking-widest mb-6">MEDICAL STORE SYSTEM</p>
-            <button onclick="nav('inventory')" class="btn-jelly px-8 py-3 text-lg">Start Billing</button>
+        <section id="hero" class="text-center mb-10 pt-4">
+            <img id="storeLogo" src="" class="w-20 h-20 rounded-full border-2 border-emerald-500 mx-auto mb-3 bg-gray-800">
+            <h1 class="text-3xl font-bold text-white">ALAZAMAT</h1>
+            <p class="text-gray-500 text-sm tracking-widest mb-6">MEDICAL STORE</p>
+            <button onclick="nav('inventory')" class="btn-jelly px-6 py-2 text-base">Start Billing</button>
         </section>
 
-        <section id="inventory" class="mb-12">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-3">
-                <h2 class="text-2xl font-bold text-white">Inventory</h2>
-                <div class="flex gap-2 w-full md:w-auto relative z-10">
-                    <input type="text" id="search" placeholder="Search..." class="modern-input flex-1">
-                    <button type="button" onclick="openAddModal()" class="btn-jelly flex-none z-20"><i class="fas fa-plus"></i> Add</button>
+        <section id="inventory" class="mb-10">
+            <div class="flex flex-col gap-3 mb-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-white">Inventory</h2>
+                    <button onclick="toggleGridSize()" class="bg-gray-800 p-2 rounded text-gray-400"><i class="fas fa-th-large"></i></button>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="search" placeholder="Search..." class="modern-input flex-1" oninput="renderGrid()">
+                    <button onclick="openAddModal()" class="btn-jelly flex-none"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                    <button onclick="filterGrid('all')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">All</button>
+                    <button onclick="filterGrid('Tablet')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Tablets</button>
+                    <button onclick="filterGrid('Syrup')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Syrups</button>
+                    <button onclick="filterGrid('Injection')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Injections</button>
                 </div>
             </div>
-            <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            <div id="grid" class="grid grid-cols-1 gap-3 transition-all"></div>
         </section>
 
-        <section id="history" class="mb-12">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-white">Sales History</h2>
-                <input type="date" id="salesDateFilter" class="modern-input w-40" onchange="renderHistory()">
+        <section id="history" class="mb-10">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-white">Sales</h2>
+                <input type="date" id="salesDateFilter" class="modern-input w-36 py-1" onchange="renderHistory()">
             </div>
-            <div class="bg-gray-900 rounded-xl overflow-x-auto border border-gray-800">
-                <table class="w-full text-left min-w-[700px] text-sm">
-                    <thead class="bg-gray-800 text-gray-400"><tr><th class="p-3">Date</th><th class="p-3">Bill #</th><th class="p-3">Total</th><th class="p-3 text-center">Action</th></tr></thead>
-                    <tbody id="historyTable" class="divide-y divide-gray-800"></tbody>
-                </table>
+            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                <div id="historyList" class="divide-y divide-gray-800"></div>
             </div>
         </section>
 
-        <section id="expenses" class="mb-12">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-white">Expenses</h2>
-                <button onclick="openModal('expModal'); resetExpForm()" class="btn-jelly bg-orange-600">Add</button>
+        <section id="expenses" class="mb-10">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-white">Expenses</h2>
+                <button onclick="openModal('expModal'); resetExpForm()" class="btn-jelly bg-orange-600 text-xs">Add New</button>
             </div>
-            <div class="bg-gray-900 rounded-xl overflow-x-auto border border-gray-800">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-800 text-gray-400"><tr><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Amount</th><th class="p-3 text-center">Action</th></tr></thead>
-                    <tbody id="expTable" class="divide-y divide-gray-800"></tbody>
-                </table>
+            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                <div id="expList" class="divide-y divide-gray-800"></div>
             </div>
         </section>
 
-        <section id="purchases" class="mb-12">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-white">Purchases</h2>
-                <button onclick="openModal('purchaseModal'); resetPurchForm()" class="btn-jelly bg-purple-600">Add</button>
+        <section id="purchases" class="mb-10">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-white">Purchases</h2>
+                <button onclick="openModal('purchaseModal'); resetPurchForm()" class="btn-jelly bg-purple-600 text-xs">Add New</button>
             </div>
-            <div id="purchaseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="purchaseList" class="space-y-3"></div>
         </section>
 
-        <section id="reports" class="mb-12 text-center">
-            <h2 class="text-2xl font-bold text-white mb-6">Financials</h2>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-gray-900 p-4 rounded-xl border border-blue-900/50"><p class="text-xs text-blue-400">SALES</p><p class="text-xl font-bold" id="repRev">0</p></div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-purple-900/50"><p class="text-xs text-purple-400">PURCHASE</p><p class="text-xl font-bold" id="repPurch">0</p></div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-orange-900/50"><p class="text-xs text-orange-400">EXPENSE</p><p class="text-xl font-bold" id="repExp">0</p></div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-emerald-900/50"><p class="text-xs text-emerald-400">NET PROFIT</p><p class="text-2xl font-bold text-emerald-400" id="repNet">0</p></div>
+        <section id="reports" class="mb-10">
+            <h2 class="text-xl font-bold text-white mb-4 text-center">Profit Report</h2>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-900 p-3 rounded-lg border border-blue-900/30 text-center"><span class="text-xs text-blue-400 block">SALES</span><span class="text-lg font-bold" id="repRev">0</span></div>
+                <div class="bg-gray-900 p-3 rounded-lg border border-purple-900/30 text-center"><span class="text-xs text-purple-400 block">PURCHASE</span><span class="text-lg font-bold" id="repPurch">0</span></div>
+                <div class="bg-gray-900 p-3 rounded-lg border border-orange-900/30 text-center"><span class="text-xs text-orange-400 block">EXPENSE</span><span class="text-lg font-bold" id="repExp">0</span></div>
+                <div class="bg-gray-900 p-3 rounded-lg border border-emerald-900/30 text-center"><span class="text-xs text-emerald-400 block">NET PROFIT</span><span class="text-xl font-bold text-emerald-400" id="repNet">0</span></div>
             </div>
         </section>
 
         <section id="attendance" class="mb-20">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-white">Attendance</h2>
-                <button onclick="openModal('attModal')" class="btn-jelly bg-pink-600">Mark</button>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-white">Attendance</h2>
+                <button onclick="openModal('attModal')" class="btn-jelly bg-pink-600 text-xs">Mark</button>
             </div>
-            <div class="bg-gray-900 rounded-xl overflow-x-auto border border-gray-800">
-                <table class="w-full text-left min-w-[600px] text-sm">
-                    <thead class="bg-gray-800 text-gray-400"><tr><th class="p-3">Date</th><th class="p-3">In</th><th class="p-3">Out</th><th class="p-3">Status</th><th class="p-3"></th></tr></thead>
-                    <tbody id="attTable" class="divide-y divide-gray-800"></tbody>
+            <div class="bg-gray-900 rounded-lg overflow-x-auto border border-gray-800">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-gray-800 text-gray-400"><tr><th class="p-3">Date</th><th class="p-3">Status</th><th class="p-3">Time</th><th class="p-3">Action</th></tr></thead>
+                    <tbody id="attList" class="divide-y divide-gray-800"></tbody>
                 </table>
             </div>
         </section>
@@ -223,84 +195,86 @@
     </main>
 
     <div id="medModal" class="modal-overlay" onclick="closeModal('medModal')">
-        <div class="bg-gray-900 w-full max-w-md p-6 rounded-2xl border border-gray-700 m-4" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-bold mb-4">Medicine Details</h3>
-            <div class="space-y-3 max-h-[70vh] overflow-y-auto">
+        <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
+            <h3 class="text-lg font-bold mb-4">Add/Edit Medicine</h3>
+            <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                 <input type="hidden" id="medId">
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="medName" placeholder="Name" class="modern-input">
                     <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="medFormula" placeholder="Formula" class="modern-input">
-                    <input type="text" id="medPotency" placeholder="Potency" class="modern-input">
+                    <input type="text" id="medPotency" placeholder="Potency (500mg)" class="modern-input">
                 </div>
-                <div class="p-3 bg-gray-800 rounded-lg">
+                <div class="bg-gray-800 p-2 rounded">
+                    <p class="text-[10px] text-gray-400 mb-1">Stock Logic</p>
                     <div class="grid grid-cols-3 gap-2">
                         <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-xs" oninput="calcUnits()">
                         <input type="number" id="medPackSize" value="1" placeholder="Size" class="modern-input text-xs" oninput="calcUnits()">
-                        <input type="number" id="medStock" placeholder="Units" readonly class="modern-input text-xs bg-gray-700">
+                        <input type="number" id="medStock" placeholder="Total" readonly class="modern-input text-xs bg-gray-700">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="medCost" placeholder="Cost (Pk)" class="modern-input">
-                    <input type="number" id="medPrice" placeholder="Sell (Pk)" class="modern-input">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" id="medCost" placeholder="Cost (Pack)" class="modern-input">
+                    <input type="number" id="medPrice" placeholder="Sell (Pack)" class="modern-input">
                 </div>
-                <select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
+                <select id="medCat" class="modern-input">
+                    <option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option>
+                </select>
                 <input type="date" id="medExp" class="modern-input">
-                <input type="file" id="medImg" class="modern-input text-xs">
             </div>
-            <div class="mt-4 flex gap-3">
-                <button onclick="closeModal('medModal')" class="flex-1 bg-gray-700 p-3 rounded-lg">Cancel</button>
-                <button onclick="saveMedicine()" class="flex-1 btn-jelly">Save</button>
+            <div class="mt-4 flex gap-2">
+                <button onclick="closeModal('medModal')" class="flex-1 bg-gray-700 py-2 rounded text-sm">Cancel</button>
+                <button onclick="saveMedicine()" class="flex-1 btn-jelly py-2 text-sm">Save</button>
             </div>
         </div>
     </div>
 
     <div id="saleModal" class="modal-overlay" onclick="closeModal('saleModal')">
-        <div class="bg-gray-900 w-full max-w-sm p-6 rounded-2xl border border-gray-700 m-4 text-center" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-bold" id="saleName">Item</h3>
-            <p class="text-emerald-400 mb-4" id="salePotency"></p>
+        <div class="bg-gray-900 w-full max-w-xs p-5 rounded-xl border border-gray-700 text-center" onclick="event.stopPropagation()">
+            <h3 class="font-bold text-lg" id="saleName">Item</h3>
+            <p class="text-emerald-400 text-sm mb-4" id="salePotency"></p>
             
             <div class="flex gap-2 mb-4 bg-gray-800 p-1 rounded-lg">
-                <button type="button" id="btnSellUnit" onclick="setSaleType(false)" class="flex-1 py-2 rounded bg-emerald-600 text-white transition">Unit</button>
-                <button type="button" id="btnSellPack" onclick="setSaleType(true)" class="flex-1 py-2 rounded text-gray-400 transition">Pack</button>
+                <button id="btnUnit" onclick="setSaleType(false)" class="flex-1 py-1 rounded bg-emerald-600 text-xs">Unit</button>
+                <button id="btnPack" onclick="setSaleType(true)" class="flex-1 py-1 rounded text-gray-400 text-xs">Pack</button>
             </div>
 
             <div class="flex justify-center items-center gap-4 mb-4">
-                <button onclick="adjQty(-1)" class="w-10 h-10 bg-gray-800 rounded-full text-xl">-</button>
-                <input type="number" id="saleQty" value="1" class="w-20 bg-transparent text-center text-3xl font-bold outline-none" oninput="calcTotal()">
-                <button onclick="adjQty(1)" class="w-10 h-10 bg-gray-800 rounded-full text-xl">+</button>
+                <button onclick="adjQty(-1)" class="w-8 h-8 bg-gray-800 rounded-full">-</button>
+                <input type="number" id="saleQty" value="1" class="w-16 bg-transparent text-center text-2xl font-bold outline-none" oninput="calcTotal()">
+                <button onclick="adjQty(1)" class="w-8 h-8 bg-gray-800 rounded-full">+</button>
             </div>
             
-            <div class="mb-6"><span class="text-gray-400 text-sm block">Total</span><span id="saleTotal" class="text-3xl font-bold text-white">0</span></div>
-            <button onclick="addToBill()" class="btn-jelly w-full py-3">ADD TO BILL</button>
+            <div class="mb-4"><span id="saleTotal" class="text-2xl font-bold text-white">0</span></div>
+            <button onclick="addToBill()" class="btn-jelly w-full py-2">Add to Bill</button>
         </div>
     </div>
 
     <div id="billModal" class="modal-overlay" onclick="closeModal('billModal')">
-        <div class="bg-gray-900 w-full max-w-md h-[90vh] flex flex-col rounded-2xl border border-gray-700 m-4" onclick="event.stopPropagation()">
+        <div class="bg-gray-900 w-full max-w-md h-[80vh] flex flex-col rounded-xl border border-gray-700" onclick="event.stopPropagation()">
             <div class="p-4 border-b border-gray-800 flex justify-between">
-                <h3 class="font-bold text-lg">Current Bill</h3>
+                <h3 class="font-bold">Bill</h3>
                 <button onclick="closeModal('billModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto p-4 space-y-2" id="billList"></div>
             <div class="p-4 bg-gray-800">
-                <div class="flex gap-2 mb-3">
-                    <select id="payMethod" class="modern-input text-sm"><option>Cash</option><option>Online</option></select>
-                    <input type="number" id="billDisc" placeholder="Disc" class="modern-input text-sm w-24" oninput="renderBill()">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sm text-gray-400">Discount</span>
+                    <input type="number" id="billDisc" value="0" class="modern-input w-20 text-right py-1" oninput="renderBill()">
                 </div>
                 <div class="flex justify-between text-xl font-bold mb-4"><span>Total</span><span id="billGrandTotal" class="text-emerald-400">0</span></div>
-                <button onclick="checkout()" class="btn-jelly w-full py-3">CHECKOUT</button>
+                <button onclick="checkout()" class="btn-jelly w-full py-3">Checkout</button>
             </div>
         </div>
     </div>
 
     <div id="expModal" class="modal-overlay" onclick="closeModal('expModal')">
-        <div class="bg-gray-900 w-full max-w-sm p-6 rounded-2xl border border-gray-700 m-4" onclick="event.stopPropagation()">
-            <h3 class="font-bold text-lg mb-4">Expense</h3>
+        <div class="bg-gray-900 w-full max-w-xs p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
+            <h3 class="font-bold mb-4">Expense</h3>
             <input type="hidden" id="expId">
-            <div class="space-y-3">
+            <div class="space-y-2">
                 <input type="date" id="expDate" class="modern-input">
                 <select id="expCat" class="modern-input" onchange="checkExpCustom(this)">
                     <option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option>
@@ -308,38 +282,37 @@
                 <input type="text" id="expCustom" placeholder="Type Category..." class="modern-input hidden">
                 <input type="text" id="expNote" placeholder="Description" class="modern-input">
                 <input type="number" id="expAmt" placeholder="Amount" class="modern-input">
-                <button onclick="saveExpense()" class="btn-jelly w-full bg-orange-600">Save</button>
+                <button onclick="saveExpense()" class="btn-jelly w-full bg-orange-600 mt-2">Save</button>
             </div>
         </div>
     </div>
 
     <div id="purchaseModal" class="modal-overlay" onclick="closeModal('purchaseModal')">
-        <div class="bg-gray-900 w-full max-w-sm p-6 rounded-2xl border border-gray-700 m-4" onclick="event.stopPropagation()">
-            <h3 class="font-bold text-lg mb-4">Purchase Record</h3>
+        <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
+            <h3 class="font-bold mb-4">Purchase</h3>
             <input type="hidden" id="pId">
-            <div class="space-y-3">
+            <div class="space-y-2">
                 <input type="text" id="pDealer" placeholder="Dealer" class="modern-input">
                 <input type="text" id="pCompany" placeholder="Company" class="modern-input">
-                <textarea id="pItems" placeholder="Items" class="modern-input h-20"></textarea>
+                <textarea id="pItems" placeholder="Items" class="modern-input h-16"></textarea>
                 <input type="number" id="pAmount" placeholder="Amount" class="modern-input">
                 <input type="date" id="pDate" class="modern-input">
-                <button onclick="savePurchase()" class="btn-jelly w-full bg-purple-600">Save</button>
+                <button onclick="savePurchase()" class="btn-jelly w-full bg-purple-600 mt-2">Save</button>
             </div>
         </div>
     </div>
 
     <div id="attModal" class="modal-overlay" onclick="closeModal('attModal')">
-        <div class="bg-gray-900 w-full max-w-sm p-6 rounded-2xl border border-gray-700 m-4" onclick="event.stopPropagation()">
-            <h3 class="font-bold text-lg mb-4">Attendance</h3>
-            <div class="space-y-3">
+        <div class="bg-gray-900 w-full max-w-xs p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
+            <h3 class="font-bold mb-4">Mark Attendance</h3>
+            <div class="space-y-2">
                 <input type="date" id="attDateInput" class="modern-input">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="time" id="attIn" class="modern-input">
                     <input type="time" id="attOut" class="modern-input">
                 </div>
                 <select id="attStatus" class="modern-input"><option>Present</option><option>Absent</option></select>
-                <input type="text" id="attReason" placeholder="Reason" class="modern-input">
-                <button onclick="saveAttendance()" class="btn-jelly w-full bg-pink-600">Save</button>
+                <button onclick="saveAttendance()" class="btn-jelly w-full bg-pink-600 mt-2">Save</button>
             </div>
         </div>
     </div>
@@ -347,22 +320,24 @@
     </form>
 
     <script>
-        // CONFIG & INIT
+        // === CONFIGURATION ===
         const ghUser = "tahseenalam345-tech"; 
         const ghRepo = "pharma-inventory"; 
         const branch = "main"; 
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
-        
-        let inv=[], sales=[], purch=[], expenses=[], attendance=[], cart=[], lastSale=null;
-        let isPackSale = false, saleItem = null;
 
+        // === GLOBAL VARIABLES ===
+        let inv=[], sales=[], purch=[], expenses=[], attendance=[], cart=[];
+        let saleItem=null, isPackSale=false, activeFilter='all', gridMode='small';
+
+        // === INIT ===
         function init() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_44')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_44')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_44')) || [];
-                expenses = JSON.parse(localStorage.getItem('az_exp_44')) || [];
-                attendance = JSON.parse(localStorage.getItem('az_att_44')) || [];
+                inv = JSON.parse(localStorage.getItem('az_inv_45')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_45')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_45')) || [];
+                expenses = JSON.parse(localStorage.getItem('az_exp_45')) || [];
+                attendance = JSON.parse(localStorage.getItem('az_att_45')) || [];
                 
                 if(inv.length===0) {
                     inv = [{ id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 100, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' }];
@@ -370,181 +345,102 @@
                 }
             } catch(e){}
 
-            document.getElementById('storeLogo').src = baseURL + "1.jpg";
+            // Set Dates
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('expDate').value = today;
             document.getElementById('pDate').value = today;
             document.getElementById('attDateInput').value = today;
             document.getElementById('salesDateFilter').value = today;
-            
+            document.getElementById('storeLogo').src = `${baseURL}1.jpg`;
+
             renderAll();
         }
 
         function saveData() {
-            localStorage.setItem('az_inv_44', JSON.stringify(inv));
-            localStorage.setItem('az_sales_44', JSON.stringify(sales));
-            localStorage.setItem('az_purch_44', JSON.stringify(purch));
-            localStorage.setItem('az_exp_44', JSON.stringify(expenses));
-            localStorage.setItem('az_att_44', JSON.stringify(attendance));
+            localStorage.setItem('az_inv_45', JSON.stringify(inv));
+            localStorage.setItem('az_sales_45', JSON.stringify(sales));
+            localStorage.setItem('az_purch_45', JSON.stringify(purch));
+            localStorage.setItem('az_exp_45', JSON.stringify(expenses));
+            localStorage.setItem('az_att_45', JSON.stringify(attendance));
             updateStats();
         }
 
-        const defaultImages = {
-            'Tablet': baseURL + 'download (1).jpg', 'Syrup': baseURL + 'download (2).jpg',
-            'Injection': baseURL + 'download (3).jpg', 'Capsule': baseURL + 'download.jpg', 'Other': baseURL + 'download.jpg'
+        const imgMap = {
+            'Tablet': `${baseURL}download (1).jpg`,
+            'Syrup': `${baseURL}download (2).jpg`,
+            'Injection': `${baseURL}download (3).jpg`,
+            'Capsule': `${baseURL}download.jpg`,
+            'Other': `${baseURL}download.jpg`
         };
 
-        // --- UI CORE ---
+        // === UI FUNCTIONS ===
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('active'); }
         function nav(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); closeSidebar(); }
-        
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
-        function toggleNotif() { document.getElementById('notifPanel').classList.toggle('hidden'); }
+        function toggleGridSize() {
+            gridMode = gridMode === 'small' ? 'large' : 'small';
+            renderGrid();
+        }
 
-        // --- INVENTORY ---
+        function filterGrid(cat) {
+            activeFilter = cat;
+            renderGrid();
+        }
+
+        // === INVENTORY ===
         function renderGrid() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
-            const filter = document.getElementById('searchFilter').value;
+            
+            // Set Grid Class based on mode
+            if(gridMode === 'small') {
+                g.className = "grid grid-cols-2 md:grid-cols-4 gap-3";
+            } else {
+                g.className = "grid grid-cols-1 gap-3";
+            }
 
-            inv.filter(i => {
-                if(term==='') return true;
-                return i.name.toLowerCase().includes(term) || (i.formula||'').toLowerCase().includes(term);
-            }).forEach(i => {
+            const filtered = inv.filter(i => {
+                if(activeFilter !== 'all' && i.cat !== activeFilter) return false;
+                return i.name.toLowerCase().includes(term);
+            });
+
+            filtered.forEach(i => {
                 const w = Math.floor(i.stock/i.packSize), l = i.stock%i.packSize;
                 const stockStr = (i.cat==='Syrup'||i.packSize===1) ? `${i.stock} Units` : `${w} Pk | ${l} Loose`;
-                let img = (i.img && i.img.length<200) ? defaultImages[i.cat] || defaultImages['Other'] : i.img || defaultImages['Other'];
+                const img = imgMap[i.cat] || imgMap['Other'];
 
                 g.innerHTML += `
-                <div class="glass-card p-4 rounded-xl relative group">
-                    <div class="absolute top-2 right-2 flex gap-2 z-10">
-                        <button onclick="editMed(${i.id})" class="text-blue-400 bg-gray-800 p-2 rounded-full"><i class="fas fa-pen"></i></button>
-                        <button onclick="delMed(${i.id})" class="text-red-400 bg-gray-800 p-2 rounded-full"><i class="fas fa-trash"></i></button>
+                <div class="glass-card p-3 rounded-xl relative group flex ${gridMode==='large' ? 'flex-row items-center gap-4' : 'flex-col'}">
+                    <div class="absolute top-2 right-2 flex gap-1 z-10">
+                        <button onclick="editMed(${i.id})" class="text-blue-400 bg-gray-900 p-1.5 rounded"><i class="fas fa-pen text-xs"></i></button>
+                        <button onclick="delMed(${i.id})" class="text-red-400 bg-gray-900 p-1.5 rounded"><i class="fas fa-trash text-xs"></i></button>
                     </div>
-                    <div class="flex gap-3 mb-3">
-                        <img src="${img}" class="w-16 h-16 rounded-lg object-cover bg-gray-800" onerror="this.src='${defaultImages['Other']}'">
-                        <div>
-                            <h4 class="font-bold text-white leading-tight">${i.name} <span class="text-xs bg-gray-700 px-1 rounded text-emerald-300">${i.potency||''}</span></h4>
-                            <p class="text-xs text-gray-400 uppercase">${i.brand}</p>
+                    <img src="${img}" class="${gridMode==='large'?'w-16 h-16':'w-full h-24'} object-cover rounded-lg bg-gray-800">
+                    <div class="flex-1 mt-2">
+                        <h4 class="font-bold text-white text-sm leading-tight">${i.name} <span class="text-[10px] bg-gray-700 px-1 rounded text-emerald-300">${i.potency||''}</span></h4>
+                        <div class="flex justify-between items-end mt-2">
+                            <div class="text-xs text-gray-400">
+                                <div class="text-emerald-300 font-bold">${stockStr}</div>
+                                <div>Pk: ${i.price}</div>
+                            </div>
+                            <button onclick="openSaleModal(${i.id})" class="btn-jelly text-xs py-1 px-3">Add</button>
                         </div>
                     </div>
-                    <div class="bg-gray-800 p-2 rounded-lg text-xs grid grid-cols-2 gap-y-1 mb-3 text-center">
-                        <div class="col-span-2 border-b border-gray-700 pb-1 text-emerald-300 font-bold">${stockStr}</div>
-                        <div class="text-gray-400">Pk: <span class="text-white">${i.price}</span></div>
-                        <div class="text-gray-400">Un: <span class="text-white">${(i.price/i.packSize).toFixed(2)}</span></div>
-                    </div>
-                    <button onclick="openSaleModal(${i.id})" class="btn-jelly w-full text-sm">Add to Bill</button>
                 </div>`;
             });
         }
-        document.getElementById('search').addEventListener('input', renderGrid);
 
-        // --- SALES ---
-        function openSaleModal(id) {
-            saleItem = inv.find(i=>i.id===id);
-            document.getElementById('saleName').innerText = saleItem.name;
-            document.getElementById('salePotency').innerText = saleItem.potency||'';
-            document.getElementById('saleQty').value = 1;
-            setSaleType(false); // Default Unit
-            openModal('saleModal');
-        }
-        
-        function setSaleType(isPack) {
-            isPackSale = isPack;
-            document.getElementById('btnSellUnit').className = isPack ? 'flex-1 py-2 rounded text-gray-400 transition' : 'flex-1 py-2 rounded bg-emerald-600 text-white transition';
-            document.getElementById('btnSellPack').className = isPack ? 'flex-1 py-2 rounded bg-emerald-600 text-white transition' : 'flex-1 py-2 rounded text-gray-400 transition';
-            calcTotal();
-        }
-
-        function adjQty(n) {
-            let q = parseInt(document.getElementById('saleQty').value)+n;
-            if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal();
-        }
-
-        function calcTotal() {
-            const q = parseInt(document.getElementById('saleQty').value);
-            const price = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize);
-            document.getElementById('saleTotal').innerText = Math.ceil(price*q);
-        }
-
-        function addToBill() {
-            const q = parseInt(document.getElementById('saleQty').value);
-            const deduct = isPackSale ? (q*saleItem.packSize) : q;
-            
-            if(isPackSale) {
-                if(q > Math.floor(saleItem.stock/saleItem.packSize)) return alert("Not enough Full Packs!");
-            } else {
-                if(q > saleItem.stock) return alert("Low Stock!");
-            }
-
-            const unitPrice = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize);
-            const total = Math.ceil(unitPrice*q);
-            const profit = total - ((saleItem.cost/saleItem.packSize)*deduct);
-            const name = `${saleItem.name} ${saleItem.potency||''}`;
-
-            cart.push({ id:Date.now(), medId:saleItem.id, name:name, type:isPackSale?'Pk':'Un', qty:q, deduct:deduct, price:total, profit:profit });
-            closeModal('saleModal'); updateCartUI();
-        }
-
-        function renderBill() {
-            const list = document.getElementById('billList'); list.innerHTML = '';
-            let sub = 0;
-            cart.forEach((c,i) => {
-                sub+=c.price;
-                list.innerHTML += `<div class="flex justify-between items-center bg-gray-800 p-2 rounded"><div><p class="font-bold">${c.name}</p><p class="text-xs text-gray-400">${c.qty} ${c.type}</p></div><div class="flex items-center gap-3"><span class="font-bold">${c.price}</span><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`;
-            });
-            const disc = parseFloat(document.getElementById('billDisc').value)||0;
-            document.getElementById('billGrandTotal').innerText = Math.ceil(sub-disc);
-        }
-
-        function checkout() {
-            if(cart.length===0) return;
-            let sub=0, prof=0; cart.forEach(c=>{sub+=c.price; prof+=c.profit});
-            const disc = parseFloat(document.getElementById('billDisc').value)||0;
-            
-            // Stock Deduct
-            cart.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock-=c.deduct; });
-            
-            const s = { 
-                id: Date.now().toString().slice(-6), 
-                date: new Date().toLocaleDateString(), 
-                dateISO: new Date().toISOString(),
-                total: sub-disc, 
-                profit: prof-disc, 
-                items: cart,
-                method: document.getElementById('payMethod').value
-            };
-            sales.unshift(s); lastSale=s; cart=[];
-            saveData(); updateCartUI(); closeModal('billModal'); renderAll(); 
-            // Simple Alert instead of heavy modal
-            if(confirm("Sale Done! Print Receipt?")) printBill(s);
-        }
-
-        // --- EDIT SALE (RESTORE STOCK) ---
-        function editSale(id) {
-            const s = sales.find(x=>x.id==id);
-            if(!s) return;
-            if(confirm("Edit this bill? (Items will return to cart, old bill deleted)")) {
-                // Restore Stock
-                s.items.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock+=c.deduct; });
-                // Move items to cart
-                cart = [...s.items];
-                // Remove from sales
-                sales = sales.filter(x=>x.id!=id);
-                saveData(); renderAll(); updateCartUI(); openModal('billModal'); renderBill();
-            }
-        }
-
-        // --- CORE CRUD ---
+        // === CRUD MEDICINE ===
         function openAddModal() {
             document.getElementById('medId').value=''; document.getElementById('medName').value='';
             document.getElementById('medBrand').value=''; document.getElementById('medTotalPacks').value='';
             document.getElementById('medStock').value=''; document.getElementById('medPrice').value='';
             openModal('medModal');
         }
+        
         function saveMedicine() {
             const idVal = document.getElementById('medId').value;
             const item = {
@@ -559,12 +455,13 @@
                 price: parseFloat(document.getElementById('medPrice').value)||0,
                 cat: document.getElementById('medCat').value,
                 exp: document.getElementById('medExp').value,
-                img: '' // Simple for now
+                img: '' 
             };
             const idx = inv.findIndex(i=>i.id==item.id);
-            if(idx>-1) inv[idx]=item; else inv.push(item);
+            if(idx>-1) inv[idx]=item; else inv.unshift(item);
             saveData(); closeModal('medModal'); renderGrid();
         }
+
         function editMed(id) {
             const i = inv.find(x=>x.id==id);
             document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name;
@@ -582,71 +479,137 @@
             document.getElementById('medStock').value = Math.ceil(p*s);
         }
 
+        // === SALES & BILLING ===
+        function openSaleModal(id) {
+            saleItem = inv.find(i=>i.id===id);
+            document.getElementById('saleName').innerText = saleItem.name;
+            document.getElementById('salePotency').innerText = saleItem.potency||'';
+            document.getElementById('saleQty').value = 1;
+            setSaleType(false); 
+            openModal('saleModal');
+        }
+        function setSaleType(isPack) {
+            isPackSale = isPack;
+            document.getElementById('btnUnit').className = isPack ? 'flex-1 py-1 rounded text-gray-400 bg-gray-800' : 'flex-1 py-1 rounded bg-emerald-600 text-white';
+            document.getElementById('btnPack').className = isPack ? 'flex-1 py-1 rounded bg-emerald-600 text-white' : 'flex-1 py-1 rounded text-gray-400 bg-gray-800';
+            calcTotal();
+        }
+        function adjQty(n) {
+            let q = parseInt(document.getElementById('saleQty').value)+n;
+            if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal();
+        }
+        function calcTotal() {
+            const q = parseInt(document.getElementById('saleQty').value);
+            const price = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize);
+            document.getElementById('saleTotal').innerText = Math.ceil(price*q);
+        }
+        function addToBill() {
+            const q = parseInt(document.getElementById('saleQty').value);
+            const deduct = isPackSale ? (q*saleItem.packSize) : q;
+            if(deduct > saleItem.stock) return alert("Not enough stock!");
+            
+            const unitPrice = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize);
+            const total = Math.ceil(unitPrice*q);
+            const profit = total - ((saleItem.cost/saleItem.packSize)*deduct);
+            const name = `${saleItem.name} ${saleItem.potency||''}`;
+
+            cart.push({ id:Date.now(), medId:saleItem.id, name:name, type:isPackSale?'Pk':'Un', qty:q, deduct:deduct, price:total, profit:profit });
+            closeModal('saleModal'); updateCartUI();
+        }
+        function renderBill() {
+            const list = document.getElementById('billList'); list.innerHTML = '';
+            let sub = 0;
+            cart.forEach((c,i) => {
+                sub+=c.price;
+                list.innerHTML += `<div class="flex justify-between items-center bg-gray-800 p-2 rounded"><div><p class="font-bold text-sm">${c.name}</p><p class="text-xs text-gray-400">${c.qty} ${c.type}</p></div><div class="flex items-center gap-3"><span class="font-bold">${c.price}</span><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`;
+            });
+            const disc = parseFloat(document.getElementById('billDisc').value)||0;
+            document.getElementById('billGrandTotal').innerText = Math.ceil(sub-disc);
+        }
+        function checkout() {
+            if(cart.length===0) return;
+            let sub=0, prof=0; cart.forEach(c=>{sub+=c.price; prof+=c.profit});
+            const disc = parseFloat(document.getElementById('billDisc').value)||0;
+            
+            cart.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock-=c.deduct; });
+            
+            const s = { 
+                id: Date.now().toString().slice(-6), 
+                date: new Date().toLocaleDateString(), 
+                dateISO: new Date().toISOString(),
+                total: sub-disc, 
+                profit: prof-disc, 
+                items: cart
+            };
+            sales.unshift(s); cart=[];
+            saveData(); updateCartUI(); closeModal('billModal'); renderAll(); 
+            if(confirm("Done! Print?")) printBill(s);
+        }
+
+        // --- HISTORY EDIT ---
+        function renderHistory() {
+            const d = document.getElementById('salesDateFilter').value;
+            const h = sales.filter(s => new Date(s.dateISO).toISOString().split('T')[0] === d);
+            document.getElementById('historyList').innerHTML = h.map(s => `
+                <div class="p-3 flex justify-between items-center">
+                    <div><div class="text-gray-400 text-xs">${s.date}</div><div class="font-bold text-white">#${s.id}</div></div>
+                    <div class="text-emerald-400 font-bold">${s.total}</div>
+                    <div class="flex gap-2">
+                        <button onclick="editSale('${s.id}')" class="text-blue-400"><i class="fas fa-pen"></i></button>
+                        <button onclick="printBill(${JSON.stringify(s).replace(/"/g, '&quot;')})" class="text-gray-400"><i class="fas fa-print"></i></button>
+                        <button onclick="delSale('${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+        function editSale(id) {
+            const s = sales.find(x=>x.id==id);
+            if(confirm("Edit Bill? (Items return to cart)")) {
+                s.items.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock+=c.deduct; });
+                cart = [...s.items]; sales = sales.filter(x=>x.id!=id);
+                saveData(); renderAll(); updateCartUI(); openModal('billModal'); renderBill();
+            }
+        }
+        function delSale(id) { if(confirm("Delete Record?")) { sales = sales.filter(x=>x.id!=id); saveData(); renderAll(); } }
+
         // --- EXPENSES ---
         function resetExpForm() { document.getElementById('expId').value=''; document.getElementById('expAmt').value=''; document.getElementById('expNote').value=''; }
         function saveExpense() {
-            const idVal = document.getElementById('expId').value;
-            const cat = document.getElementById('expCat').value;
-            const exp = {
-                id: idVal ? parseInt(idVal) : Date.now(),
-                date: document.getElementById('expDate').value,
-                cat: cat==='Other' ? document.getElementById('expCustom').value : cat,
-                note: document.getElementById('expNote').value,
-                amt: parseFloat(document.getElementById('expAmt').value)||0
-            };
-            if(!exp.cat) return alert("Category required");
-            const idx = expenses.findIndex(e=>e.id==exp.id);
-            if(idx>-1) expenses[idx]=exp; else expenses.unshift(exp);
+            const id = document.getElementById('expId').value || Date.now();
+            const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value };
+            const idx = expenses.findIndex(x=>x.id==id);
+            if(idx>-1) expenses[idx]=e; else expenses.unshift(e);
             saveData(); closeModal('expModal'); renderAll();
         }
+        function delExp(id) { if(confirm("Delete?")) { expenses=expenses.filter(x=>x.id!=id); saveData(); renderAll(); } }
         function editExp(id) {
             const e = expenses.find(x=>x.id==id);
-            document.getElementById('expId').value=e.id; document.getElementById('expDate').value=e.date;
-            document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note;
+            document.getElementById('expId').value=e.id; document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note;
             openModal('expModal');
         }
-        function delExp(id) { if(confirm("Delete?")) { expenses=expenses.filter(x=>x.id!=id); saveData(); renderAll(); } }
-        function checkExpCustom(el) { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
 
         // --- PURCHASES ---
         function resetPurchForm() { document.getElementById('pId').value=''; document.getElementById('pDealer').value=''; document.getElementById('pAmount').value=''; }
         function savePurchase() {
-            const idVal = document.getElementById('pId').value;
-            const p = {
-                id: idVal ? parseInt(idVal) : Date.now(),
-                dealer: document.getElementById('pDealer').value,
-                comp: document.getElementById('pCompany').value,
-                items: document.getElementById('pItems').value,
-                amt: document.getElementById('pAmount').value,
-                date: document.getElementById('pDate').value
-            };
-            const idx = purch.findIndex(x=>x.id==p.id);
+            const id = document.getElementById('pId').value || Date.now();
+            const p = { id, dealer:document.getElementById('pDealer').value, comp:document.getElementById('pCompany').value, items:document.getElementById('pItems').value, amt:document.getElementById('pAmount').value, date:document.getElementById('pDate').value };
+            const idx = purch.findIndex(x=>x.id==id);
             if(idx>-1) purch[idx]=p; else purch.unshift(p);
             saveData(); closeModal('purchaseModal'); renderAll();
         }
         function editPurch(id) {
             const p = purch.find(x=>x.id==id);
-            document.getElementById('pId').value=p.id; document.getElementById('pDealer').value=p.dealer;
-            document.getElementById('pCompany').value=p.comp; document.getElementById('pItems').value=p.items;
-            document.getElementById('pAmount').value=p.amt; document.getElementById('pDate').value=p.date;
+            document.getElementById('pId').value=p.id; document.getElementById('pDealer').value=p.dealer; document.getElementById('pAmount').value=p.amt;
             openModal('purchaseModal');
         }
         function delPurch(id) { if(confirm("Delete?")) { purch=purch.filter(x=>x.id!=id); saveData(); renderAll(); } }
 
-        // --- RENDER ALL & STATS ---
+        // --- RENDER HELPERS ---
         function renderAll() {
-            renderGrid();
-            // History
-            const histDate = document.getElementById('salesDateFilter').value;
-            const hist = sales.filter(s => new Date(s.dateISO).toISOString().split('T')[0] === histDate);
-            document.getElementById('historyTable').innerHTML = hist.map(s => `<tr><td class="p-3 text-gray-400">${s.date}</td><td class="p-3">#${s.id}</td><td class="p-3 text-emerald-400 font-bold">${s.total}</td><td class="p-3 text-center"><button onclick="editSale('${s.id}')" class="text-blue-400 mr-3"><i class="fas fa-pen"></i></button><button onclick="printBill(${JSON.stringify(s).replace(/"/g, '&quot;')})" class="text-gray-400"><i class="fas fa-print"></i></button></td></tr>`).join('');
+            renderGrid(); renderHistory();
+            document.getElementById('expList').innerHTML = expenses.map(e => `<div class="p-3 flex justify-between"><div><div class="text-xs text-gray-400">${e.date}</div><div>${e.cat}</div></div><div class="flex gap-3 items-center"><span class="font-bold">${e.amt}</span><button onclick="editExp(${e.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delExp(${e.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
+            document.getElementById('purchaseList').innerHTML = purch.map(p => `<div class="bg-gray-900 p-3 rounded-lg border border-gray-800 flex justify-between"><div><div class="font-bold text-white">${p.dealer}</div><div class="text-xs text-gray-400">${p.comp}</div></div><div class="flex gap-2 items-center"><span class="text-purple-400 font-bold">${p.amt}</span><button onclick="editPurch(${p.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delPurch(${p.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
             
-            // Expenses
-            document.getElementById('expTable').innerHTML = expenses.map(e => `<tr><td class="p-3 text-gray-400">${e.date}</td><td class="p-3">${e.cat}</td><td class="p-3 text-right">${e.amt}</td><td class="p-3 text-center"><button onclick="editExp(${e.id})" class="text-blue-400 mr-2"><i class="fas fa-pen"></i></button><button onclick="delExp(${e.id})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
-            
-            // Purchases
-            document.getElementById('purchaseGrid').innerHTML = purch.map(p => `<div class="bg-gray-900 p-4 rounded-xl border border-gray-800 relative group"><div class="absolute top-2 right-2 flex gap-2"><button onclick="editPurch(${p.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delPurch(${p.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div><h4 class="font-bold text-white">${p.dealer}</h4><p class="text-xs text-gray-400">${p.comp}</p><p class="text-xs my-2 bg-gray-800 p-2 rounded text-gray-300 h-10 overflow-hidden">${p.items}</p><div class="flex justify-between items-center text-sm"><span class="text-gray-500">${p.date}</span><span class="font-bold text-purple-400">Rs ${p.amt}</span></div></div>`).join('');
-
+            document.getElementById('attList').innerHTML = attendance.map(a => `<tr><td class="p-3">${a.date}</td><td class="p-3 text-emerald-400">${a.status}</td><td class="p-3">${a.in||'-'}</td><td class="p-3"><button onclick="delAtt(${a.id})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
             updateStats();
         }
 
@@ -657,16 +620,19 @@
             const pur = purch.reduce((a,b)=>a+parseFloat(b.amt||0),0);
             const net = sales.reduce((a,b)=>a+b.profit,0) - exp;
             
-            document.getElementById('repRev').innerText = rev;
-            document.getElementById('repExp').innerText = exp;
-            document.getElementById('repPurch').innerText = pur;
-            document.getElementById('repNet').innerText = net.toFixed(0);
+            document.getElementById('repRev').innerText = rev; document.getElementById('repExp').innerText = exp;
+            document.getElementById('repPurch').innerText = pur; document.getElementById('repNet').innerText = net.toFixed(0);
             
-            // Top Stats
             const today = new Date().toLocaleDateString();
-            const tSales = sales.filter(s=>new Date(s.dateISO).toLocaleDateString()===today).reduce((a,b)=>a+b.total,0);
-            document.getElementById('topTodaySale').innerText = tSales;
+            document.getElementById('topTodaySale').innerText = sales.filter(s=>new Date(s.dateISO).toLocaleDateString()===today).reduce((a,b)=>a+b.total,0);
         }
+
+        // --- ATTENDANCE ---
+        function saveAttendance() {
+            const a = { id:Date.now(), date:document.getElementById('attDateInput').value, in:document.getElementById('attIn').value, out:document.getElementById('attOut').value, status:document.getElementById('attStatus').value };
+            attendance.unshift(a); saveData(); closeModal('attModal'); renderAll();
+        }
+        function delAtt(id) { attendance=attendance.filter(x=>x.id!=id); saveData(); renderAll(); }
 
         // --- BACKUP ---
         function downloadBackup() {
@@ -677,10 +643,11 @@
         }
         function restoreBackup(input) {
             const r = new FileReader();
-            r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_44', JSON.stringify(d.inv)); location.reload(); };
+            r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_45', JSON.stringify(d.inv)); location.reload(); };
             r.readAsText(input.files[0]);
         }
-
+        function updateCartUI() { document.getElementById('cartCount').innerText = cart.length; }
+        function checkExpCustom(el) { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
         function printBill(s) {
             let h = ''; s.items.forEach(i => h += `<tr><td align="left">${i.name}</td><td align="center">${i.qty}</td><td align="right">${i.price}</td></tr>`);
             const w = window.open('','','width=300,height=600');
@@ -689,6 +656,11 @@
         }
 
         init();
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js");
+      }
     </script>
 </body>
 </html>
