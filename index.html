@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v47.0 (Notifications Fixed)</title>
+    <title>Alazamat Medical Store - v48.0 (Smart AI Update)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -22,7 +22,13 @@
         .sidebar.active { transform: translateX(0); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 90; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
+        
         .fab-cart { position: fixed; bottom: 20px; right: 20px; z-index: 80; background: #eab308; color: black; padding: 12px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 10px 15px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* NEW AI ROBOT BUTTON */
+        .fab-ai { position: fixed; bottom: 20px; left: 20px; z-index: 80; background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 15px rgba(0,0,0,0.5); cursor: pointer; font-size: 24px; border: 2px solid #60a5fa; transition: transform 0.2s; }
+        .fab-ai:hover { transform: scale(1.1); }
+        .ai-result-box { background: #1f2937; padding: 15px; border-radius: 10px; border: 1px solid #374151; margin-top: 10px; font-size: 13px; line-height: 1.5; color: #d1d5db; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -72,6 +78,10 @@
         </nav>
     </aside>
 
+    <div class="fab-ai" onclick="openModal('aiModal')">
+        <i class="fas fa-robot"></i>
+    </div>
+
     <div class="fab-cart" onclick="openModal('billModal'); renderBill()">
         <i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span>
     </div>
@@ -109,9 +119,7 @@
                 <h2 class="text-xl font-bold text-white">Sales</h2>
                 <input type="date" id="salesDateFilter" class="modern-input w-36 py-1" onchange="renderHistory()">
             </div>
-            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
-                <div id="historyList" class="divide-y divide-gray-800"></div>
-            </div>
+            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800"><div id="historyList" class="divide-y divide-gray-800"></div></div>
         </section>
 
         <section id="expenses" class="mb-10">
@@ -119,9 +127,7 @@
                 <h2 class="text-xl font-bold text-white">Expenses</h2>
                 <button onclick="openModal('expModal'); resetExpForm()" class="btn-jelly bg-orange-600 text-xs">Add New</button>
             </div>
-            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
-                <div id="expList" class="divide-y divide-gray-800"></div>
-            </div>
+            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800"><div id="expList" class="divide-y divide-gray-800"></div></div>
         </section>
 
         <section id="purchases" class="mb-10">
@@ -156,6 +162,32 @@
         </section>
     </main>
 
+    <div id="aiModal" class="modal-overlay" onclick="closeModal('aiModal')">
+        <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-blue-500 m-4 shadow-blue-500/20 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-robot text-blue-400"></i> Smart Info</h3>
+                <button onclick="closeModal('aiModal')" class="text-gray-400"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-xs text-gray-400 mb-3">Enter formula or medicine name to get details from the web.</p>
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="aiSearchInput" placeholder="e.g. Amoxicillin, Panadol..." class="modern-input flex-1">
+                <button onclick="searchDrug()" class="btn-jelly bg-blue-600"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div id="aiResult" class="ai-result-box hidden">
+                <h4 id="aiTitle" class="font-bold text-white text-lg mb-1"></h4>
+                <p id="aiDesc" class="text-gray-300 text-sm mb-3"></p>
+                <div class="grid grid-cols-2 gap-2 mt-3">
+                    <button onclick="deepSearch('uses')" class="bg-emerald-900/50 text-emerald-300 text-xs py-2 rounded border border-emerald-500/30">🔎 Uses & Disease</button>
+                    <button onclick="deepSearch('side effects')" class="bg-red-900/50 text-red-300 text-xs py-2 rounded border border-red-500/30">⚠️ Side Effects</button>
+                    <button onclick="deepSearch('dosage')" class="bg-yellow-900/50 text-yellow-300 text-xs py-2 rounded border border-yellow-500/30">💊 Dosage Info</button>
+                    <button onclick="deepSearch('ingredients')" class="bg-blue-900/50 text-blue-300 text-xs py-2 rounded border border-blue-500/30">🧪 Ingredients</button>
+                </div>
+            </div>
+            <div id="aiLoading" class="text-center py-4 hidden"><i class="fas fa-circle-notch fa-spin text-blue-400 text-2xl"></i></div>
+        </div>
+    </div>
+
     <div id="medModal" class="modal-overlay" onclick="closeModal('medModal')">
         <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
             <h3 class="text-lg font-bold mb-4">Add/Edit Medicine</h3>
@@ -169,11 +201,7 @@
                     <input type="text" id="medFormula" placeholder="Formula" class="modern-input">
                     <div class="flex gap-1">
                         <input type="text" id="medPotency" placeholder="500" class="modern-input w-2/3">
-                        <select id="medUnit" class="modern-input w-1/3 text-xs px-1">
-                            <option value="mg">mg</option>
-                            <option value="ml">ml</option>
-                            <option value="gm">gm</option>
-                        </select>
+                        <select id="medUnit" class="modern-input w-1/3 text-xs px-1"><option>mg</option><option>ml</option><option>gm</option></select>
                     </div>
                 </div>
                 <div class="bg-gray-800 p-2 rounded">
@@ -188,9 +216,7 @@
                     <input type="number" id="medCost" placeholder="Cost (Pk)" class="modern-input">
                     <input type="number" id="medPrice" placeholder="Sell (Pk)" class="modern-input">
                 </div>
-                <select id="medCat" class="modern-input">
-                    <option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option>
-                </select>
+                <select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
                 <input type="date" id="medExp" class="modern-input">
             </div>
             <div class="mt-4 flex gap-2">
@@ -242,9 +268,7 @@
             <input type="hidden" id="expId">
             <div class="space-y-2">
                 <input type="date" id="expDate" class="modern-input">
-                <select id="expCat" class="modern-input" onchange="checkExpCustom(this)">
-                    <option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option>
-                </select>
+                <select id="expCat" class="modern-input" onchange="checkExpCustom(this)"><option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option></select>
                 <input type="text" id="expCustom" placeholder="Type Category..." class="modern-input hidden">
                 <input type="text" id="expNote" placeholder="Description" class="modern-input">
                 <input type="number" id="expAmt" placeholder="Amount" class="modern-input">
@@ -284,15 +308,15 @@
     </div>
 
     <script>
-        const ghUser = "tahseenalam345-tech"; 
-        const ghRepo = "pharma-inventory"; 
-        const branch = "main"; 
+        const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; 
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
 
         window.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault(); 
                 if(document.activeElement.id === 'search') { renderGrid(); document.activeElement.blur(); }
+                // Smart Enter for AI
+                if(document.activeElement.id === 'aiSearchInput') { searchDrug(); document.activeElement.blur(); }
                 return false;
             }
         });
@@ -302,16 +326,12 @@
 
         function init() {
             try {
-                inv = JSON.parse(localStorage.getItem('az_inv_47')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_47')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_47')) || [];
-                expenses = JSON.parse(localStorage.getItem('az_exp_47')) || [];
-                attendance = JSON.parse(localStorage.getItem('az_att_47')) || [];
-                
-                if(inv.length===0) {
-                    inv = [{ id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 100, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' }];
-                    saveData();
-                }
+                inv = JSON.parse(localStorage.getItem('az_inv_48')) || [];
+                sales = JSON.parse(localStorage.getItem('az_sales_48')) || [];
+                purch = JSON.parse(localStorage.getItem('az_purch_48')) || [];
+                expenses = JSON.parse(localStorage.getItem('az_exp_48')) || [];
+                attendance = JSON.parse(localStorage.getItem('az_att_48')) || [];
+                if(inv.length===0) { inv = [{ id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 100, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' }]; saveData(); }
             } catch(e){}
 
             const today = new Date().toISOString().split('T')[0];
@@ -321,26 +341,19 @@
             document.getElementById('salesDateFilter').value = today;
             document.getElementById('storeLogo').src = `${baseURL}1.jpg`;
 
-            renderAll();
-            checkNotifications();
+            renderAll(); checkNotifications();
         }
 
         function saveData() {
-            localStorage.setItem('az_inv_47', JSON.stringify(inv));
-            localStorage.setItem('az_sales_47', JSON.stringify(sales));
-            localStorage.setItem('az_purch_47', JSON.stringify(purch));
-            localStorage.setItem('az_exp_47', JSON.stringify(expenses));
-            localStorage.setItem('az_att_47', JSON.stringify(attendance));
+            localStorage.setItem('az_inv_48', JSON.stringify(inv));
+            localStorage.setItem('az_sales_48', JSON.stringify(sales));
+            localStorage.setItem('az_purch_48', JSON.stringify(purch));
+            localStorage.setItem('az_exp_48', JSON.stringify(expenses));
+            localStorage.setItem('az_att_48', JSON.stringify(attendance));
             updateStats();
         }
 
-        const imgMap = {
-            'Tablet': `${baseURL}download (1).jpg`,
-            'Syrup': `${baseURL}download (2).jpg`,
-            'Injection': `${baseURL}download (3).jpg`,
-            'Capsule': `${baseURL}download.jpg`,
-            'Other': `${baseURL}download.jpg`
-        };
+        const imgMap = { 'Tablet': `${baseURL}download (1).jpg`, 'Syrup': `${baseURL}download (2).jpg`, 'Injection': `${baseURL}download (3).jpg`, 'Capsule': `${baseURL}download.jpg`, 'Other': `${baseURL}download.jpg` };
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('active'); }
@@ -351,18 +364,51 @@
         function filterGrid(cat) { activeFilter = cat; renderGrid(); }
         function toggleNotif(e) { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
         
-        window.onclick = function(e) {
-            if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-3.right-4')) {
-                document.getElementById('notifPanel').classList.add('hidden');
-            }
-        };
+        window.onclick = function(e) { if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-3.right-4')) { document.getElementById('notifPanel').classList.add('hidden'); } };
 
+        // === SMART AI SEARCH FUNCTION ===
+        async function searchDrug() {
+            const query = document.getElementById('aiSearchInput').value.trim();
+            if(!query) return;
+            
+            document.getElementById('aiLoading').classList.remove('hidden');
+            document.getElementById('aiResult').classList.add('hidden');
+
+            try {
+                // Fetch from Wikipedia API
+                const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${query}`);
+                const data = await res.json();
+
+                document.getElementById('aiLoading').classList.add('hidden');
+                document.getElementById('aiResult').classList.remove('hidden');
+
+                if (data.type === 'standard') {
+                    document.getElementById('aiTitle').innerText = data.title;
+                    document.getElementById('aiDesc').innerText = data.extract;
+                } else {
+                    document.getElementById('aiTitle').innerText = "Detailed Info Not Found";
+                    document.getElementById('aiDesc').innerText = "Use the buttons below to search specifically for this medicine on Google.";
+                }
+            } catch (err) {
+                document.getElementById('aiLoading').classList.add('hidden');
+                document.getElementById('aiResult').classList.remove('hidden');
+                document.getElementById('aiTitle').innerText = "Error";
+                document.getElementById('aiDesc').innerText = "Could not fetch auto-summary. Use the direct links below.";
+            }
+        }
+
+        function deepSearch(type) {
+            const query = document.getElementById('aiSearchInput').value.trim();
+            if(!query) return alert("Enter medicine name first");
+            window.open(`https://www.google.com/search?q=${query} medicine ${type}`, '_blank');
+        }
+
+        // === NOTIFICATIONS LOGIC ===
         function checkNotifications() {
             const list = document.getElementById('notifList');
             const badge = document.getElementById('notifBadge');
             list.innerHTML = ''; let count = 0;
-            const now = new Date();
-            const hour = now.getHours(); const date = now.getDate();
+            const now = new Date(); const hour = now.getHours(); const date = now.getDate();
 
             if(hour >= 9 && hour < 11) { count++; list.innerHTML += `<div class="p-2 bg-emerald-900/50 rounded border border-emerald-500/30 text-emerald-200">🏥 Store Opening Time</div>`; }
             if(hour >= 17 && hour < 19) { count++; list.innerHTML += `<div class="p-2 bg-orange-900/50 rounded border border-orange-500/30 text-orange-200">🌇 Closing Time Soon</div>`; }
@@ -371,14 +417,9 @@
             inv.forEach(i => {
                 if(i.stock === 0) { count++; list.innerHTML += `<div class="p-2 bg-red-900/30 rounded text-red-300 text-xs">❌ <b>${i.name}</b> Out of Stock</div>`; }
                 else if(i.stock < 10) { count++; list.innerHTML += `<div class="p-2 bg-yellow-900/30 rounded text-yellow-300 text-xs">⚠️ <b>${i.name}</b> Low Stock</div>`; }
-                
                 if(i.exp) {
                     const days = (new Date(i.exp) - now) / (1000 * 60 * 60 * 24);
-                    if(days < 30 && days > 0) { 
-                        count++; 
-                        const color = days < 7 ? 'text-red-300 bg-red-900/30' : 'text-yellow-300 bg-yellow-900/30';
-                        list.innerHTML += `<div class="p-2 rounded text-xs ${color}">📅 <b>${i.name}</b> Expires in ${Math.ceil(days)} days</div>`; 
-                    }
+                    if(days < 30 && days > 0) { count++; const color = days < 7 ? 'text-red-300 bg-red-900/30' : 'text-yellow-300 bg-yellow-900/30'; list.innerHTML += `<div class="p-2 rounded text-xs ${color}">📅 <b>${i.name}</b> Expires in ${Math.ceil(days)} days</div>`; }
                 }
             });
 
@@ -398,13 +439,9 @@
                 const w = Math.floor(i.stock/i.packSize), l = i.stock%i.packSize;
                 const stockStr = (i.cat==='Syrup'||i.packSize===1) ? `${i.stock} Units` : `${w} Pk | ${l} Loose`;
                 const img = imgMap[i.cat] || imgMap['Other'];
-                
-                // Expiry Logic for Card
                 const days = (new Date(i.exp) - new Date()) / (1000*60*60*24);
                 let expClass = 'text-gray-400';
-                if(days < 0) expClass = 'text-red-500 font-bold';
-                else if(days < 30) expClass = 'text-yellow-500 font-bold';
-                else expClass = 'text-emerald-400';
+                if(days < 0) expClass = 'text-red-500 font-bold'; else if(days < 30) expClass = 'text-yellow-500 font-bold'; else expClass = 'text-emerald-400';
 
                 g.innerHTML += `
                 <div class="glass-card p-3 rounded-xl relative group flex ${gridMode==='large' ? 'flex-row items-center gap-4' : 'flex-col'}">
@@ -435,167 +472,62 @@
             document.getElementById('medPotency').value=''; document.getElementById('medUnit').value='mg';
             openModal('medModal');
         }
-        
         function saveMedicine() {
             const idVal = document.getElementById('medId').value;
             const fullPotency = document.getElementById('medPotency').value + document.getElementById('medUnit').value;
             const item = {
                 id: idVal ? parseInt(idVal) : Date.now(),
-                name: document.getElementById('medName').value,
-                brand: document.getElementById('medBrand').value,
-                formula: document.getElementById('medFormula').value,
-                potency: fullPotency,
-                packSize: parseInt(document.getElementById('medPackSize').value)||1,
-                stock: parseInt(document.getElementById('medStock').value)||0,
-                cost: parseFloat(document.getElementById('medCost').value)||0,
-                price: parseFloat(document.getElementById('medPrice').value)||0,
-                cat: document.getElementById('medCat').value,
-                exp: document.getElementById('medExp').value,
-                img: '' 
+                name: document.getElementById('medName').value, brand: document.getElementById('medBrand').value, formula: document.getElementById('medFormula').value, potency: fullPotency, packSize: parseInt(document.getElementById('medPackSize').value)||1, stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0, price: parseFloat(document.getElementById('medPrice').value)||0, cat: document.getElementById('medCat').value, exp: document.getElementById('medExp').value, img: '' 
             };
-            const idx = inv.findIndex(i=>i.id==item.id);
-            if(idx>-1) inv[idx]=item; else inv.unshift(item);
+            const idx = inv.findIndex(i=>i.id==item.id); if(idx>-1) inv[idx]=item; else inv.unshift(item);
             saveData(); closeModal('medModal'); renderGrid(); checkNotifications();
         }
-
         function editMed(id) {
             const i = inv.find(x=>x.id==id);
             document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name;
             document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula;
-            
-            // Split Potency back if possible
             const match = (i.potency||'').match(/(\d+)(.*)/);
-            if(match) {
-                document.getElementById('medPotency').value=match[1];
-                document.getElementById('medUnit').value=match[2]||'mg';
-            } else {
-                document.getElementById('medPotency').value=i.potency;
-            }
-
-            document.getElementById('medPackSize').value=i.packSize;
-            document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize;
-            document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price;
-            document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp;
+            if(match) { document.getElementById('medPotency').value=match[1]; document.getElementById('medUnit').value=match[2]||'mg'; } else { document.getElementById('medPotency').value=i.potency; }
+            document.getElementById('medPackSize').value=i.packSize; document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize; document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price; document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp;
             openModal('medModal');
         }
         function delMed(id) { if(confirm("Delete?")) { inv=inv.filter(x=>x.id!=id); saveData(); renderGrid(); checkNotifications(); } }
-        function calcUnits() { 
-            const p = parseFloat(document.getElementById('medTotalPacks').value)||0;
-            const s = parseFloat(document.getElementById('medPackSize').value)||1;
-            document.getElementById('medStock').value = Math.ceil(p*s);
-        }
+        function calcUnits() { document.getElementById('medStock').value = Math.ceil((parseFloat(document.getElementById('medTotalPacks').value)||0) * (parseFloat(document.getElementById('medPackSize').value)||1)); }
 
-        function openSaleModal(id) {
-            saleItem = inv.find(i=>i.id===id);
-            document.getElementById('saleName').innerText = saleItem.name;
-            document.getElementById('salePotency').innerText = saleItem.potency||'';
-            document.getElementById('saleQty').value = 1;
-            setSaleType(false); 
-            openModal('saleModal');
-        }
-        function setSaleType(isPack) {
-            isPackSale = isPack;
-            document.getElementById('btnUnit').className = isPack ? 'flex-1 py-1 rounded text-gray-400 bg-gray-800' : 'flex-1 py-1 rounded bg-emerald-600 text-white';
-            document.getElementById('btnPack').className = isPack ? 'flex-1 py-1 rounded bg-emerald-600 text-white' : 'flex-1 py-1 rounded text-gray-400 bg-gray-800';
-            calcTotal();
-        }
-        function adjQty(n) {
-            let q = parseInt(document.getElementById('saleQty').value)+n;
-            if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal();
-        }
-        function calcTotal() {
-            const q = parseInt(document.getElementById('saleQty').value);
-            const price = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize);
-            document.getElementById('saleTotal').innerText = Math.ceil(price*q);
-        }
+        function openSaleModal(id) { saleItem = inv.find(i=>i.id===id); document.getElementById('saleName').innerText = saleItem.name; document.getElementById('salePotency').innerText = saleItem.potency||''; document.getElementById('saleQty').value = 1; setSaleType(false); openModal('saleModal'); }
+        function setSaleType(isPack) { isPackSale = isPack; document.getElementById('btnUnit').className = isPack ? 'flex-1 py-1 rounded text-gray-400 bg-gray-800' : 'flex-1 py-1 rounded bg-emerald-600 text-white'; document.getElementById('btnPack').className = isPack ? 'flex-1 py-1 rounded bg-emerald-600 text-white' : 'flex-1 py-1 rounded text-gray-400 bg-gray-800'; calcTotal(); }
+        function adjQty(n) { let q = parseInt(document.getElementById('saleQty').value)+n; if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal(); }
+        function calcTotal() { const q = parseInt(document.getElementById('saleQty').value); const price = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize); document.getElementById('saleTotal').innerText = Math.ceil(price*q); }
         function addToBill() {
-            const q = parseInt(document.getElementById('saleQty').value);
-            const deduct = isPackSale ? (q*saleItem.packSize) : q;
+            const q = parseInt(document.getElementById('saleQty').value); const deduct = isPackSale ? (q*saleItem.packSize) : q;
             if(deduct > saleItem.stock) return alert("Not enough stock!");
-            
-            const unitPrice = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize);
-            const total = Math.ceil(unitPrice*q);
-            const profit = total - ((saleItem.cost/saleItem.packSize)*deduct);
-            const name = `${saleItem.name} ${saleItem.potency||''}`;
-
-            cart.push({ id:Date.now(), medId:saleItem.id, name:name, type:isPackSale?'Pk':'Un', qty:q, deduct:deduct, price:total, profit:profit });
-            closeModal('saleModal'); updateCartUI();
+            const unitPrice = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize); const total = Math.ceil(unitPrice*q); const profit = total - ((saleItem.cost/saleItem.packSize)*deduct); const name = `${saleItem.name} ${saleItem.potency||''}`;
+            cart.push({ id:Date.now(), medId:saleItem.id, name:name, type:isPackSale?'Pk':'Un', qty:q, deduct:deduct, price:total, profit:profit }); closeModal('saleModal'); updateCartUI();
         }
-        function renderBill() {
-            const list = document.getElementById('billList'); list.innerHTML = '';
-            let sub = 0;
-            cart.forEach((c,i) => {
-                sub+=c.price;
-                list.innerHTML += `<div class="flex justify-between items-center bg-gray-800 p-2 rounded"><div><p class="font-bold text-sm">${c.name}</p><p class="text-xs text-gray-400">${c.qty} ${c.type}</p></div><div class="flex items-center gap-3"><span class="font-bold">${c.price}</span><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`;
-            });
-            const disc = parseFloat(document.getElementById('billDisc').value)||0;
-            document.getElementById('billGrandTotal').innerText = Math.ceil(sub-disc);
-        }
+        function renderBill() { const list = document.getElementById('billList'); list.innerHTML = ''; let sub = 0; cart.forEach((c,i) => { sub+=c.price; list.innerHTML += `<div class="flex justify-between items-center bg-gray-800 p-2 rounded"><div><p class="font-bold text-sm">${c.name}</p><p class="text-xs text-gray-400">${c.qty} ${c.type}</p></div><div class="flex items-center gap-3"><span class="font-bold">${c.price}</span><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`; }); const disc = parseFloat(document.getElementById('billDisc').value)||0; document.getElementById('billGrandTotal').innerText = Math.ceil(sub-disc); }
         function checkout() {
-            if(cart.length===0) return;
-            let sub=0, prof=0; cart.forEach(c=>{sub+=c.price; prof+=c.profit});
-            const disc = parseFloat(document.getElementById('billDisc').value)||0;
-            
+            if(cart.length===0) return; let sub=0, prof=0; cart.forEach(c=>{sub+=c.price; prof+=c.profit}); const disc = parseFloat(document.getElementById('billDisc').value)||0;
             cart.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock-=c.deduct; });
             const s = { id: Date.now().toString().slice(-6), date: new Date().toLocaleDateString(), dateISO: new Date().toISOString(), total: sub-disc, profit: prof-disc, items: cart };
-            sales.unshift(s); cart=[];
-            saveData(); updateCartUI(); closeModal('billModal'); renderAll(); checkNotifications();
-            if(confirm("Done! Print?")) printBill(s);
+            sales.unshift(s); cart=[]; saveData(); updateCartUI(); closeModal('billModal'); renderAll(); checkNotifications(); if(confirm("Done! Print?")) printBill(s);
         }
 
         function renderHistory() {
-            const d = document.getElementById('salesDateFilter').value;
-            const h = sales.filter(s => new Date(s.dateISO).toISOString().split('T')[0] === d);
-            document.getElementById('historyList').innerHTML = h.map(s => `
-                <div class="p-3 flex justify-between items-center">
-                    <div><div class="text-gray-400 text-xs">${s.date}</div><div class="font-bold text-white">#${s.id}</div></div>
-                    <div class="text-emerald-400 font-bold">${s.total}</div>
-                    <div class="flex gap-2">
-                        <button onclick="editSale('${s.id}')" class="text-blue-400"><i class="fas fa-pen"></i></button>
-                        <button onclick="printBill(${JSON.stringify(s).replace(/"/g, '&quot;')})" class="text-gray-400"><i class="fas fa-print"></i></button>
-                        <button onclick="delSale('${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>`).join('');
+            const d = document.getElementById('salesDateFilter').value; const h = sales.filter(s => new Date(s.dateISO).toISOString().split('T')[0] === d);
+            document.getElementById('historyList').innerHTML = h.map(s => `<div class="p-3 flex justify-between items-center"><div><div class="text-gray-400 text-xs">${s.date}</div><div class="font-bold text-white">#${s.id}</div></div><div class="text-emerald-400 font-bold">${s.total}</div><div class="flex gap-2"><button onclick="editSale('${s.id}')" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="printBill(${JSON.stringify(s).replace(/"/g, '&quot;')})" class="text-gray-400"><i class="fas fa-print"></i></button><button onclick="delSale('${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
         }
-        function editSale(id) {
-            const s = sales.find(x=>x.id==id);
-            if(confirm("Edit Bill? (Items return to cart)")) {
-                s.items.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock+=c.deduct; });
-                cart = [...s.items]; sales = sales.filter(x=>x.id!=id);
-                saveData(); renderAll(); updateCartUI(); openModal('billModal'); renderBill();
-            }
-        }
+        function editSale(id) { const s = sales.find(x=>x.id==id); if(confirm("Edit Bill? (Items return to cart)")) { s.items.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock+=c.deduct; }); cart = [...s.items]; sales = sales.filter(x=>x.id!=id); saveData(); renderAll(); updateCartUI(); openModal('billModal'); renderBill(); } }
         function delSale(id) { if(confirm("Delete Record?")) { sales = sales.filter(x=>x.id!=id); saveData(); renderAll(); } }
 
         function resetExpForm() { document.getElementById('expId').value=''; document.getElementById('expAmt').value=''; document.getElementById('expNote').value=''; }
-        function saveExpense() {
-            const id = document.getElementById('expId').value || Date.now();
-            const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value };
-            const idx = expenses.findIndex(x=>x.id==id);
-            if(idx>-1) expenses[idx]=e; else expenses.unshift(e);
-            saveData(); closeModal('expModal'); renderAll();
-        }
+        function saveExpense() { const id = document.getElementById('expId').value || Date.now(); const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value }; const idx = expenses.findIndex(x=>x.id==id); if(idx>-1) expenses[idx]=e; else expenses.unshift(e); saveData(); closeModal('expModal'); renderAll(); }
         function delExp(id) { if(confirm("Delete?")) { expenses=expenses.filter(x=>x.id!=id); saveData(); renderAll(); } }
-        function editExp(id) {
-            const e = expenses.find(x=>x.id==id);
-            document.getElementById('expId').value=e.id; document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note;
-            openModal('expModal');
-        }
+        function editExp(id) { const e = expenses.find(x=>x.id==id); document.getElementById('expId').value=e.id; document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note; openModal('expModal'); }
         function checkExpCustom(el) { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
 
         function resetPurchForm() { document.getElementById('pId').value=''; document.getElementById('pDealer').value=''; document.getElementById('pAmount').value=''; }
-        function savePurchase() {
-            const id = document.getElementById('pId').value || Date.now();
-            const p = { id, dealer:document.getElementById('pDealer').value, comp:document.getElementById('pCompany').value, items:document.getElementById('pItems').value, amt:document.getElementById('pAmount').value, date:document.getElementById('pDate').value };
-            const idx = purch.findIndex(x=>x.id==id);
-            if(idx>-1) purch[idx]=p; else purch.unshift(p);
-            saveData(); closeModal('purchaseModal'); renderAll();
-        }
-        function editPurch(id) {
-            const p = purch.find(x=>x.id==id);
-            document.getElementById('pId').value=p.id; document.getElementById('pDealer').value=p.dealer; document.getElementById('pAmount').value=p.amt;
-            openModal('purchaseModal');
-        }
+        function savePurchase() { const id = document.getElementById('pId').value || Date.now(); const p = { id, dealer:document.getElementById('pDealer').value, comp:document.getElementById('pCompany').value, items:document.getElementById('pItems').value, amt:document.getElementById('pAmount').value, date:document.getElementById('pDate').value }; const idx = purch.findIndex(x=>x.id==id); if(idx>-1) purch[idx]=p; else purch.unshift(p); saveData(); closeModal('purchaseModal'); renderAll(); }
+        function editPurch(id) { const p = purch.find(x=>x.id==id); document.getElementById('pId').value=p.id; document.getElementById('pDealer').value=p.dealer; document.getElementById('pAmount').value=p.amt; openModal('purchaseModal'); }
         function delPurch(id) { if(confirm("Delete?")) { purch=purch.filter(x=>x.id!=id); saveData(); renderAll(); } }
 
         function renderAll() {
@@ -608,35 +540,16 @@
 
         function updateStats() {
             document.getElementById('cartCount').innerText = cart.length;
-            const rev = sales.reduce((a,b)=>a+b.total,0);
-            const exp = expenses.reduce((a,b)=>a+parseFloat(b.amt||0),0);
-            const pur = purch.reduce((a,b)=>a+parseFloat(b.amt||0),0);
-            const net = sales.reduce((a,b)=>a+b.profit,0) - exp;
-            
-            document.getElementById('repRev').innerText = rev; document.getElementById('repExp').innerText = exp;
-            document.getElementById('repPurch').innerText = pur; document.getElementById('repNet').innerText = net.toFixed(0);
-            
-            const today = new Date().toLocaleDateString();
-            document.getElementById('topTodaySale').innerText = sales.filter(s=>new Date(s.dateISO).toLocaleDateString()===today).reduce((a,b)=>a+b.total,0);
+            const rev = sales.reduce((a,b)=>a+b.total,0); const exp = expenses.reduce((a,b)=>a+parseFloat(b.amt||0),0); const pur = purch.reduce((a,b)=>a+parseFloat(b.amt||0),0); const net = sales.reduce((a,b)=>a+b.profit,0) - exp;
+            document.getElementById('repRev').innerText = rev; document.getElementById('repExp').innerText = exp; document.getElementById('repPurch').innerText = pur; document.getElementById('repNet').innerText = net.toFixed(0);
+            const today = new Date().toLocaleDateString(); document.getElementById('topTodaySale').innerText = sales.filter(s=>new Date(s.dateISO).toLocaleDateString()===today).reduce((a,b)=>a+b.total,0);
         }
 
-        function saveAttendance() {
-            const a = { id:Date.now(), date:document.getElementById('attDateInput').value, in:document.getElementById('attIn').value, out:document.getElementById('attOut').value, status:document.getElementById('attStatus').value };
-            attendance.unshift(a); saveData(); closeModal('attModal'); renderAll();
-        }
+        function saveAttendance() { const a = { id:Date.now(), date:document.getElementById('attDateInput').value, in:document.getElementById('attIn').value, out:document.getElementById('attOut').value, status:document.getElementById('attStatus').value }; attendance.unshift(a); saveData(); closeModal('attModal'); renderAll(); }
         function delAtt(id) { attendance=attendance.filter(x=>x.id!=id); saveData(); renderAll(); }
 
-        function downloadBackup() {
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([JSON.stringify({inv,sales,purch,expenses,attendance})], {type:'application/json'}));
-            a.download = `Alazamat_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-        }
-        function restoreBackup(input) {
-            const r = new FileReader();
-            r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_47', JSON.stringify(d.inv)); location.reload(); };
-            r.readAsText(input.files[0]);
-        }
+        function downloadBackup() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({inv,sales,purch,expenses,attendance})], {type:'application/json'})); a.download = `Alazamat_Backup_${new Date().toISOString().split('T')[0]}.json`; a.click(); }
+        function restoreBackup(input) { const r = new FileReader(); r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_48', JSON.stringify(d.inv)); location.reload(); }; r.readAsText(input.files[0]); }
         function updateCartUI() { document.getElementById('cartCount').innerText = cart.length; }
         
         function printBill(s) {
@@ -646,12 +559,10 @@
             w.document.close(); setTimeout(()=> { w.print(); w.close(); }, 500);
         }
 
+        setInterval(() => { const now = new Date(); if(now.getHours() === 22 && now.getMinutes() === 0 && now.getSeconds() < 5) alert("⏰ 10 PM Backup Reminder!"); }, 10000);
+
         init();
     </script>
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js");
-      }
-    </script>
+    <script> if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); } </script>
 </body>
 </html>
