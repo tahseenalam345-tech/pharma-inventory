@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v48.0 (Smart AI Update)</title>
+    <title>Alazamat Medical Store - v51.0 (AI & Cloud)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#0ea5e9">
     
     <style>
+        /* CORE STYLES */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030712; color: white; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.15) 0px, transparent 50%); background-attachment: fixed; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0f172a; } ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
         .glass-card { background: #111827; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
@@ -22,13 +23,12 @@
         .sidebar.active { transform: translateX(0); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 90; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
-        
         .fab-cart { position: fixed; bottom: 20px; right: 20px; z-index: 80; background: #eab308; color: black; padding: 12px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 10px 15px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        
-        /* NEW AI ROBOT BUTTON */
+        /* AI BUTTON */
         .fab-ai { position: fixed; bottom: 20px; left: 20px; z-index: 80; background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 15px rgba(0,0,0,0.5); cursor: pointer; font-size: 24px; border: 2px solid #60a5fa; transition: transform 0.2s; }
         .fab-ai:hover { transform: scale(1.1); }
-        .ai-result-box { background: #1f2937; padding: 15px; border-radius: 10px; border: 1px solid #374151; margin-top: 10px; font-size: 13px; line-height: 1.5; color: #d1d5db; max-height: 200px; overflow-y: auto; }
+        /* SYNC STATUS */
+        #syncStatus { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6b7280; z-index: 50; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -71,22 +71,16 @@
             <button onclick="nav('purchases')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-truck text-purple-400"></i> Purchases</button>
             <button onclick="nav('reports')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3"><i class="fas fa-chart-pie text-blue-400"></i> Reports</button>
             <button onclick="nav('attendance')" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex gap-3 border-t border-gray-800 mt-2"><i class="fas fa-calendar-check text-pink-400"></i> Attendance</button>
-            <div class="mt-4 pt-4 border-t border-gray-800">
-                <button onclick="downloadBackup()" class="w-full text-left p-2 text-xs text-gray-400"><i class="fas fa-download"></i> Backup Data</button>
-                <label class="w-full text-left p-2 text-xs text-gray-400 cursor-pointer block"><i class="fas fa-upload"></i> Restore Data<input type="file" class="hidden" onchange="restoreBackup(this)"></label>
-            </div>
         </nav>
     </aside>
 
-    <div class="fab-ai" onclick="openModal('aiModal')">
-        <i class="fas fa-robot"></i>
-    </div>
-
-    <div class="fab-cart" onclick="openModal('billModal'); renderBill()">
-        <i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span>
-    </div>
+    <div class="fab-ai" onclick="openModal('aiModal')"><i class="fas fa-robot"></i></div>
+    <div class="fab-cart" onclick="openModal('billModal'); renderBill()"><i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span></div>
+    
+    <div id="syncStatus">☁️ Connecting...</div>
 
     <main class="relative w-full min-h-screen pb-24 pt-16 px-4">
+        
         <section id="hero" class="text-center mb-10 pt-4">
             <img id="storeLogo" src="" class="w-20 h-20 rounded-full border-2 border-emerald-500 mx-auto mb-3 bg-gray-800">
             <h1 class="text-3xl font-bold text-white">ALAZAMAT</h1>
@@ -163,28 +157,28 @@
     </main>
 
     <div id="aiModal" class="modal-overlay" onclick="closeModal('aiModal')">
-        <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-blue-500 m-4 shadow-blue-500/20 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-blue-500 m-4 shadow-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-robot text-blue-400"></i> Smart Info</h3>
+                <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-robot text-blue-400"></i> Smart AI Doctor</h3>
                 <button onclick="closeModal('aiModal')" class="text-gray-400"><i class="fas fa-times"></i></button>
             </div>
-            <p class="text-xs text-gray-400 mb-3">Enter formula or medicine name to get details from the web.</p>
+            <p class="text-xs text-gray-400 mb-3">Search any medicine to see uses, side effects & details.</p>
             <div class="flex gap-2 mb-3">
-                <input type="text" id="aiSearchInput" placeholder="e.g. Amoxicillin, Panadol..." class="modern-input flex-1">
+                <input type="text" id="aiSearchInput" placeholder="e.g. Panadol..." class="modern-input flex-1">
                 <button onclick="searchDrug()" class="btn-jelly bg-blue-600"><i class="fas fa-search"></i></button>
             </div>
-            
-            <div id="aiResult" class="ai-result-box hidden">
+            <div id="aiLoading" class="text-center py-4 hidden"><i class="fas fa-circle-notch fa-spin text-blue-400 text-2xl"></i></div>
+            <div id="aiResult" class="hidden">
                 <h4 id="aiTitle" class="font-bold text-white text-lg mb-1"></h4>
-                <p id="aiDesc" class="text-gray-300 text-sm mb-3"></p>
-                <div class="grid grid-cols-2 gap-2 mt-3">
-                    <button onclick="deepSearch('uses')" class="bg-emerald-900/50 text-emerald-300 text-xs py-2 rounded border border-emerald-500/30">🔎 Uses & Disease</button>
+                <p id="aiDesc" class="text-gray-300 text-sm mb-3 border-b border-gray-700 pb-3"></p>
+                <p class="text-xs text-gray-500 mb-2 font-bold uppercase">Deep Search Links:</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="deepSearch('uses')" class="bg-emerald-900/50 text-emerald-300 text-xs py-2 rounded border border-emerald-500/30">🔎 Diseases & Uses</button>
                     <button onclick="deepSearch('side effects')" class="bg-red-900/50 text-red-300 text-xs py-2 rounded border border-red-500/30">⚠️ Side Effects</button>
-                    <button onclick="deepSearch('dosage')" class="bg-yellow-900/50 text-yellow-300 text-xs py-2 rounded border border-yellow-500/30">💊 Dosage Info</button>
+                    <button onclick="deepSearch('dosage')" class="bg-yellow-900/50 text-yellow-300 text-xs py-2 rounded border border-yellow-500/30">💊 Dosage</button>
                     <button onclick="deepSearch('ingredients')" class="bg-blue-900/50 text-blue-300 text-xs py-2 rounded border border-blue-500/30">🧪 Ingredients</button>
                 </div>
             </div>
-            <div id="aiLoading" class="text-center py-4 hidden"><i class="fas fa-circle-notch fa-spin text-blue-400 text-2xl"></i></div>
         </div>
     </div>
 
@@ -193,36 +187,20 @@
             <h3 class="text-lg font-bold mb-4">Add/Edit Medicine</h3>
             <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                 <input type="hidden" id="medId">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="medName" placeholder="Name" class="modern-input">
-                    <input type="text" id="medBrand" placeholder="Brand" class="modern-input">
-                </div>
+                <div class="grid grid-cols-2 gap-2"><input type="text" id="medName" placeholder="Name" class="modern-input"><input type="text" id="medBrand" placeholder="Brand" class="modern-input"></div>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="medFormula" placeholder="Formula" class="modern-input">
-                    <div class="flex gap-1">
-                        <input type="text" id="medPotency" placeholder="500" class="modern-input w-2/3">
-                        <select id="medUnit" class="modern-input w-1/3 text-xs px-1"><option>mg</option><option>ml</option><option>gm</option></select>
-                    </div>
+                    <div class="flex gap-1"><input type="text" id="medPotency" placeholder="500" class="modern-input w-2/3"><select id="medUnit" class="modern-input w-1/3 text-xs px-1"><option>mg</option><option>ml</option><option>gm</option></select></div>
                 </div>
                 <div class="bg-gray-800 p-2 rounded">
-                    <p class="text-[10px] text-gray-400 mb-1">Stock Logic</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-xs" oninput="calcUnits()">
-                        <input type="number" id="medPackSize" value="1" placeholder="Size" class="modern-input text-xs" oninput="calcUnits()">
-                        <input type="number" id="medStock" placeholder="Total" readonly class="modern-input text-xs bg-gray-700">
-                    </div>
+                    <p class="text-[10px] text-gray-400 mb-1">Stock</p>
+                    <div class="grid grid-cols-3 gap-2"><input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-xs" oninput="calcUnits()"><input type="number" id="medPackSize" value="1" placeholder="Size" class="modern-input text-xs" oninput="calcUnits()"><input type="number" id="medStock" placeholder="Total" readonly class="modern-input text-xs bg-gray-700"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="medCost" placeholder="Cost (Pk)" class="modern-input">
-                    <input type="number" id="medPrice" placeholder="Sell (Pk)" class="modern-input">
-                </div>
+                <div class="grid grid-cols-2 gap-2"><input type="number" id="medCost" placeholder="Cost (Pk)" class="modern-input"><input type="number" id="medPrice" placeholder="Sell (Pk)" class="modern-input"></div>
                 <select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
                 <input type="date" id="medExp" class="modern-input">
             </div>
-            <div class="mt-4 flex gap-2">
-                <button onclick="closeModal('medModal')" class="flex-1 bg-gray-700 py-2 rounded text-sm">Cancel</button>
-                <button onclick="saveMedicine()" class="flex-1 btn-jelly py-2 text-sm">Save</button>
-            </div>
+            <div class="mt-4 flex gap-2"><button onclick="closeModal('medModal')" class="flex-1 bg-gray-700 py-2 rounded text-sm">Cancel</button><button onclick="saveMedicine()" class="flex-1 btn-jelly py-2 text-sm">Save</button></div>
         </div>
     </div>
 
@@ -230,15 +208,8 @@
         <div class="bg-gray-900 w-full max-w-xs p-5 rounded-xl border border-gray-700 text-center" onclick="event.stopPropagation()">
             <h3 class="font-bold text-lg" id="saleName">Item</h3>
             <p class="text-emerald-400 text-sm mb-4" id="salePotency"></p>
-            <div class="flex gap-2 mb-4 bg-gray-800 p-1 rounded-lg">
-                <button id="btnUnit" onclick="setSaleType(false)" class="flex-1 py-1 rounded bg-emerald-600 text-white text-xs">Unit</button>
-                <button id="btnPack" onclick="setSaleType(true)" class="flex-1 py-1 rounded text-gray-400 bg-gray-800 text-xs">Pack</button>
-            </div>
-            <div class="flex justify-center items-center gap-4 mb-4">
-                <button onclick="adjQty(-1)" class="w-8 h-8 bg-gray-800 rounded-full">-</button>
-                <input type="number" id="saleQty" value="1" class="w-16 bg-transparent text-center text-2xl font-bold outline-none" oninput="calcTotal()">
-                <button onclick="adjQty(1)" class="w-8 h-8 bg-gray-800 rounded-full">+</button>
-            </div>
+            <div class="flex gap-2 mb-4 bg-gray-800 p-1 rounded-lg"><button id="btnUnit" onclick="setSaleType(false)" class="flex-1 py-1 rounded bg-emerald-600 text-white text-xs">Unit</button><button id="btnPack" onclick="setSaleType(true)" class="flex-1 py-1 rounded text-gray-400 bg-gray-800 text-xs">Pack</button></div>
+            <div class="flex justify-center items-center gap-4 mb-4"><button onclick="adjQty(-1)" class="w-8 h-8 bg-gray-800 rounded-full">-</button><input type="number" id="saleQty" value="1" class="w-16 bg-transparent text-center text-2xl font-bold outline-none" oninput="calcTotal()"><button onclick="adjQty(1)" class="w-8 h-8 bg-gray-800 rounded-full">+</button></div>
             <div class="mb-4"><span id="saleTotal" class="text-2xl font-bold text-white">0</span></div>
             <button onclick="addToBill()" class="btn-jelly w-full py-2">Add to Bill</button>
         </div>
@@ -246,16 +217,10 @@
 
     <div id="billModal" class="modal-overlay" onclick="closeModal('billModal')">
         <div class="bg-gray-900 w-full max-w-md h-[80vh] flex flex-col rounded-xl border border-gray-700 m-4" onclick="event.stopPropagation()">
-            <div class="p-4 border-b border-gray-800 flex justify-between">
-                <h3 class="font-bold">Bill</h3>
-                <button onclick="closeModal('billModal')"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="p-4 border-b border-gray-800 flex justify-between"><h3 class="font-bold">Bill</h3><button onclick="closeModal('billModal')"><i class="fas fa-times"></i></button></div>
             <div class="flex-1 overflow-y-auto p-4 space-y-2" id="billList"></div>
             <div class="p-4 bg-gray-800">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-sm text-gray-400">Discount</span>
-                    <input type="number" id="billDisc" value="0" class="modern-input w-20 text-right py-1" oninput="renderBill()">
-                </div>
+                <div class="flex justify-between items-center mb-3"><span class="text-sm text-gray-400">Discount</span><input type="number" id="billDisc" value="0" class="modern-input w-20 text-right py-1" oninput="renderBill()"></div>
                 <div class="flex justify-between text-xl font-bold mb-4"><span>Total</span><span id="billGrandTotal" class="text-emerald-400">0</span></div>
                 <button onclick="checkout()" class="btn-jelly w-full py-3">Checkout</button>
             </div>
@@ -264,147 +229,102 @@
 
     <div id="expModal" class="modal-overlay" onclick="closeModal('expModal')">
         <div class="bg-gray-900 w-full max-w-xs p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
-            <h3 class="font-bold mb-4">Expense</h3>
-            <input type="hidden" id="expId">
-            <div class="space-y-2">
-                <input type="date" id="expDate" class="modern-input">
-                <select id="expCat" class="modern-input" onchange="checkExpCustom(this)"><option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option></select>
-                <input type="text" id="expCustom" placeholder="Type Category..." class="modern-input hidden">
-                <input type="text" id="expNote" placeholder="Description" class="modern-input">
-                <input type="number" id="expAmt" placeholder="Amount" class="modern-input">
-                <button onclick="saveExpense()" class="btn-jelly w-full bg-orange-600 mt-2">Save</button>
-            </div>
+            <h3 class="font-bold mb-4">Expense</h3><input type="hidden" id="expId">
+            <div class="space-y-2"><input type="date" id="expDate" class="modern-input"><select id="expCat" class="modern-input" onchange="checkExpCustom(this)"><option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option></select><input type="text" id="expCustom" placeholder="Category..." class="modern-input hidden"><input type="text" id="expNote" placeholder="Description" class="modern-input"><input type="number" id="expAmt" placeholder="Amount" class="modern-input"><button onclick="saveExpense()" class="btn-jelly w-full bg-orange-600 mt-2">Save</button></div>
         </div>
     </div>
-
     <div id="purchaseModal" class="modal-overlay" onclick="closeModal('purchaseModal')">
         <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
-            <h3 class="font-bold mb-4">Purchase</h3>
-            <input type="hidden" id="pId">
-            <div class="space-y-2">
-                <input type="text" id="pDealer" placeholder="Dealer" class="modern-input">
-                <input type="text" id="pCompany" placeholder="Company" class="modern-input">
-                <textarea id="pItems" placeholder="Items" class="modern-input h-16"></textarea>
-                <input type="number" id="pAmount" placeholder="Amount" class="modern-input">
-                <input type="date" id="pDate" class="modern-input">
-                <button onclick="savePurchase()" class="btn-jelly w-full bg-purple-600 mt-2">Save</button>
-            </div>
+            <h3 class="font-bold mb-4">Purchase</h3><input type="hidden" id="pId">
+            <div class="space-y-2"><input type="text" id="pDealer" placeholder="Dealer" class="modern-input"><input type="text" id="pCompany" placeholder="Company" class="modern-input"><textarea id="pItems" placeholder="Items" class="modern-input h-16"></textarea><input type="number" id="pAmount" placeholder="Amount" class="modern-input"><input type="date" id="pDate" class="modern-input"><button onclick="savePurchase()" class="btn-jelly w-full bg-purple-600 mt-2">Save</button></div>
         </div>
     </div>
-
     <div id="attModal" class="modal-overlay" onclick="closeModal('attModal')">
         <div class="bg-gray-900 w-full max-w-xs p-5 rounded-xl border border-gray-700" onclick="event.stopPropagation()">
-            <h3 class="font-bold mb-4">Mark Attendance</h3>
-            <div class="space-y-2">
-                <input type="date" id="attDateInput" class="modern-input">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="time" id="attIn" class="modern-input">
-                    <input type="time" id="attOut" class="modern-input">
-                </div>
-                <select id="attStatus" class="modern-input"><option>Present</option><option>Absent</option></select>
-                <button onclick="saveAttendance()" class="btn-jelly w-full bg-pink-600 mt-2">Save</button>
-            </div>
+            <h3 class="font-bold mb-4">Attendance</h3>
+            <div class="space-y-2"><input type="date" id="attDateInput" class="modern-input"><div class="grid grid-cols-2 gap-2"><input type="time" id="attIn" class="modern-input"><input type="time" id="attOut" class="modern-input"></div><select id="attStatus" class="modern-input"><option>Present</option><option>Absent</option></select><button onclick="saveAttendance()" class="btn-jelly w-full bg-pink-600 mt-2">Save</button></div>
         </div>
     </div>
 
-    <script>
-        const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; 
-        const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        window.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); 
-                if(document.activeElement.id === 'search') { renderGrid(); document.activeElement.blur(); }
-                // Smart Enter for AI
-                if(document.activeElement.id === 'aiSearchInput') { searchDrug(); document.activeElement.blur(); }
-                return false;
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g",
+            authDomain: "alazamat-store.firebaseapp.com",
+            databaseURL: "https://alazamat-store-default-rtdb.firebaseio.com",
+            projectId: "alazamat-store",
+            storageBucket: "alazamat-store.firebasestorage.app",
+            messagingSenderId: "466791969920",
+            appId: "1:466791969920:web:63437a8ab4a428fa906265"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'alazamat_store_v1');
+
+        window.inv=[]; window.sales=[]; window.purch=[]; window.expenses=[]; window.attendance=[]; window.cart=[];
+        window.saleItem=null; window.isPackSale=false; window.activeFilter='all'; window.gridMode='small';
+
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                window.inv = data.inv || [];
+                window.sales = data.sales || [];
+                window.purch = data.purch || [];
+                window.expenses = data.expenses || [];
+                window.attendance = data.attendance || [];
+                renderAll();
+                document.getElementById('syncStatus').innerText = "☁️ Synced";
+                document.getElementById('syncStatus').style.color = "#10b981";
             }
         });
 
-        let inv=[], sales=[], purch=[], expenses=[], attendance=[], cart=[];
-        let saleItem=null, isPackSale=false, activeFilter='all', gridMode='small';
-
-        function init() {
-            try {
-                inv = JSON.parse(localStorage.getItem('az_inv_48')) || [];
-                sales = JSON.parse(localStorage.getItem('az_sales_48')) || [];
-                purch = JSON.parse(localStorage.getItem('az_purch_48')) || [];
-                expenses = JSON.parse(localStorage.getItem('az_exp_48')) || [];
-                attendance = JSON.parse(localStorage.getItem('az_att_48')) || [];
-                if(inv.length===0) { inv = [{ id: 1, name: 'Panadol', brand: 'GSK', formula: 'Paracetamol', potency: '500mg', packSize: 10, stock: 100, cost: 300, price: 400, cat: 'Tablet', exp: '2026-12-01', img: '' }]; saveData(); }
-            } catch(e){}
-
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('expDate').value = today;
-            document.getElementById('pDate').value = today;
-            document.getElementById('attDateInput').value = today;
-            document.getElementById('salesDateFilter').value = today;
-            document.getElementById('storeLogo').src = `${baseURL}1.jpg`;
-
-            renderAll(); checkNotifications();
+        window.saveData = function() {
+            document.getElementById('syncStatus').innerText = "⏳ Saving...";
+            document.getElementById('syncStatus').style.color = "#fbbf24";
+            set(dbRef, { inv: window.inv, sales: window.sales, purch: window.purch, expenses: window.expenses, attendance: window.attendance });
         }
 
-        function saveData() {
-            localStorage.setItem('az_inv_48', JSON.stringify(inv));
-            localStorage.setItem('az_sales_48', JSON.stringify(sales));
-            localStorage.setItem('az_purch_48', JSON.stringify(purch));
-            localStorage.setItem('az_exp_48', JSON.stringify(expenses));
-            localStorage.setItem('az_att_48', JSON.stringify(attendance));
-            updateStats();
-        }
-
+        // === UI & LOGIC ===
+        const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; 
+        const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
         const imgMap = { 'Tablet': `${baseURL}download (1).jpg`, 'Syrup': `${baseURL}download (2).jpg`, 'Injection': `${baseURL}download (3).jpg`, 'Capsule': `${baseURL}download.jpg`, 'Other': `${baseURL}download.jpg` };
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-        function closeSidebar() { document.getElementById('sidebar').classList.remove('active'); }
-        function nav(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); closeSidebar(); }
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function toggleGridSize() { gridMode = gridMode === 'small' ? 'large' : 'small'; renderGrid(); }
-        function filterGrid(cat) { activeFilter = cat; renderGrid(); }
-        function toggleNotif(e) { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
-        
-        window.onclick = function(e) { if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-3.right-4')) { document.getElementById('notifPanel').classList.add('hidden'); } };
+        // INIT
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('expDate').value = today; document.getElementById('pDate').value = today;
+        document.getElementById('attDateInput').value = today; document.getElementById('salesDateFilter').value = today;
+        document.getElementById('storeLogo').src = `${baseURL}1.jpg`;
 
-        // === SMART AI SEARCH FUNCTION ===
-        async function searchDrug() {
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('active');
+        window.closeSidebar = () => document.getElementById('sidebar').classList.remove('active');
+        window.nav = (id) => { document.getElementById(id).scrollIntoView({behavior:'smooth'}); closeSidebar(); }
+        window.openModal = (id) => document.getElementById(id).classList.add('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.toggleGridSize = () => { gridMode = gridMode === 'small' ? 'large' : 'small'; renderGrid(); }
+        window.filterGrid = (cat) => { activeFilter = cat; renderGrid(); }
+        window.toggleNotif = (e) => { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
+        window.onclick = (e) => { if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-3.right-4')) document.getElementById('notifPanel').classList.add('hidden'); };
+
+        // === AI SEARCH ===
+        window.searchDrug = async () => {
             const query = document.getElementById('aiSearchInput').value.trim();
             if(!query) return;
-            
-            document.getElementById('aiLoading').classList.remove('hidden');
-            document.getElementById('aiResult').classList.add('hidden');
-
+            document.getElementById('aiLoading').classList.remove('hidden'); document.getElementById('aiResult').classList.add('hidden');
             try {
-                // Fetch from Wikipedia API
                 const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${query}`);
                 const data = await res.json();
-
-                document.getElementById('aiLoading').classList.add('hidden');
-                document.getElementById('aiResult').classList.remove('hidden');
-
-                if (data.type === 'standard') {
-                    document.getElementById('aiTitle').innerText = data.title;
-                    document.getElementById('aiDesc').innerText = data.extract;
-                } else {
-                    document.getElementById('aiTitle').innerText = "Detailed Info Not Found";
-                    document.getElementById('aiDesc').innerText = "Use the buttons below to search specifically for this medicine on Google.";
-                }
-            } catch (err) {
-                document.getElementById('aiLoading').classList.add('hidden');
-                document.getElementById('aiResult').classList.remove('hidden');
-                document.getElementById('aiTitle').innerText = "Error";
-                document.getElementById('aiDesc').innerText = "Could not fetch auto-summary. Use the direct links below.";
-            }
+                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
+                if (data.type === 'standard') { document.getElementById('aiTitle').innerText = data.title; document.getElementById('aiDesc').innerText = data.extract; } 
+                else { document.getElementById('aiTitle').innerText = "Not Found"; document.getElementById('aiDesc').innerText = "Use the deep search buttons below."; }
+            } catch (err) { document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden'); document.getElementById('aiTitle').innerText = "Connection Error"; }
         }
+        window.deepSearch = (type) => { window.open(`https://www.google.com/search?q=${document.getElementById('aiSearchInput').value} medicine ${type}`, '_blank'); }
 
-        function deepSearch(type) {
-            const query = document.getElementById('aiSearchInput').value.trim();
-            if(!query) return alert("Enter medicine name first");
-            window.open(`https://www.google.com/search?q=${query} medicine ${type}`, '_blank');
-        }
-
-        // === NOTIFICATIONS LOGIC ===
-        function checkNotifications() {
+        // === NOTIFICATIONS ===
+        window.checkNotifications = () => {
             const list = document.getElementById('notifList');
             const badge = document.getElementById('notifBadge');
             list.innerHTML = ''; let count = 0;
@@ -414,7 +334,7 @@
             if(hour >= 17 && hour < 19) { count++; list.innerHTML += `<div class="p-2 bg-orange-900/50 rounded border border-orange-500/30 text-orange-200">🌇 Closing Time Soon</div>`; }
             if(date >= 28) { count++; list.innerHTML += `<div class="p-2 bg-red-900/50 rounded border border-red-500/30 text-red-200">💸 Rent Due Soon</div>`; }
 
-            inv.forEach(i => {
+            window.inv.forEach(i => {
                 if(i.stock === 0) { count++; list.innerHTML += `<div class="p-2 bg-red-900/30 rounded text-red-300 text-xs">❌ <b>${i.name}</b> Out of Stock</div>`; }
                 else if(i.stock < 10) { count++; list.innerHTML += `<div class="p-2 bg-yellow-900/30 rounded text-yellow-300 text-xs">⚠️ <b>${i.name}</b> Low Stock</div>`; }
                 if(i.exp) {
@@ -422,17 +342,15 @@
                     if(days < 30 && days > 0) { count++; const color = days < 7 ? 'text-red-300 bg-red-900/30' : 'text-yellow-300 bg-yellow-900/30'; list.innerHTML += `<div class="p-2 rounded text-xs ${color}">📅 <b>${i.name}</b> Expires in ${Math.ceil(days)} days</div>`; }
                 }
             });
-
-            if(count > 0) { badge.innerText = count; badge.classList.remove('hidden'); } 
-            else { badge.classList.add('hidden'); list.innerHTML = '<div class="text-center text-gray-500 text-xs">No new alerts</div>'; }
+            if(count > 0) { badge.innerText = count; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); list.innerHTML = '<div class="text-center text-gray-500 text-xs">No new alerts</div>'; }
         }
 
-        function renderGrid() {
+        window.renderGrid = () => {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
-            if(gridMode === 'small') { g.className = "grid grid-cols-2 md:grid-cols-4 gap-3"; } else { g.className = "grid grid-cols-1 gap-3"; }
+            g.className = gridMode === 'small' ? "grid grid-cols-2 md:grid-cols-4 gap-3" : "grid grid-cols-1 gap-3";
 
-            inv.filter(i => {
+            window.inv.filter(i => {
                 if(activeFilter !== 'all' && i.cat !== activeFilter) return false;
                 return i.name.toLowerCase().includes(term);
             }).forEach(i => {
@@ -440,8 +358,8 @@
                 const stockStr = (i.cat==='Syrup'||i.packSize===1) ? `${i.stock} Units` : `${w} Pk | ${l} Loose`;
                 const img = imgMap[i.cat] || imgMap['Other'];
                 const days = (new Date(i.exp) - new Date()) / (1000*60*60*24);
-                let expClass = 'text-gray-400';
-                if(days < 0) expClass = 'text-red-500 font-bold'; else if(days < 30) expClass = 'text-yellow-500 font-bold'; else expClass = 'text-emerald-400';
+                let expClass = 'text-emerald-400';
+                if(days < 0) expClass = 'text-red-500 font-bold'; else if(days < 30) expClass = 'text-yellow-500 font-bold';
 
                 g.innerHTML += `
                 <div class="glass-card p-3 rounded-xl relative group flex ${gridMode==='large' ? 'flex-row items-center gap-4' : 'flex-col'}">
@@ -465,103 +383,110 @@
             });
         }
 
-        function openAddModal() {
-            document.getElementById('medId').value=''; document.getElementById('medName').value='';
-            document.getElementById('medBrand').value=''; document.getElementById('medTotalPacks').value='';
-            document.getElementById('medStock').value=''; document.getElementById('medPrice').value='';
-            document.getElementById('medPotency').value=''; document.getElementById('medUnit').value='mg';
+        window.openAddModal = () => {
+            document.getElementById('medId').value=''; document.getElementById('medName').value=''; document.getElementById('medBrand').value=''; document.getElementById('medTotalPacks').value=''; document.getElementById('medStock').value=''; document.getElementById('medPrice').value=''; document.getElementById('medPotency').value=''; document.getElementById('medUnit').value='mg';
             openModal('medModal');
         }
-        function saveMedicine() {
+        window.saveMedicine = () => {
             const idVal = document.getElementById('medId').value;
             const fullPotency = document.getElementById('medPotency').value + document.getElementById('medUnit').value;
             const item = {
                 id: idVal ? parseInt(idVal) : Date.now(),
                 name: document.getElementById('medName').value, brand: document.getElementById('medBrand').value, formula: document.getElementById('medFormula').value, potency: fullPotency, packSize: parseInt(document.getElementById('medPackSize').value)||1, stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0, price: parseFloat(document.getElementById('medPrice').value)||0, cat: document.getElementById('medCat').value, exp: document.getElementById('medExp').value, img: '' 
             };
-            const idx = inv.findIndex(i=>i.id==item.id); if(idx>-1) inv[idx]=item; else inv.unshift(item);
+            const idx = window.inv.findIndex(i=>i.id==item.id); if(idx>-1) window.inv[idx]=item; else window.inv.unshift(item);
             saveData(); closeModal('medModal'); renderGrid(); checkNotifications();
         }
-        function editMed(id) {
-            const i = inv.find(x=>x.id==id);
-            document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name;
-            document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula;
+        window.editMed = (id) => {
+            const i = window.inv.find(x=>x.id==id);
+            document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name; document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula;
             const match = (i.potency||'').match(/(\d+)(.*)/);
             if(match) { document.getElementById('medPotency').value=match[1]; document.getElementById('medUnit').value=match[2]||'mg'; } else { document.getElementById('medPotency').value=i.potency; }
             document.getElementById('medPackSize').value=i.packSize; document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize; document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price; document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp;
             openModal('medModal');
         }
-        function delMed(id) { if(confirm("Delete?")) { inv=inv.filter(x=>x.id!=id); saveData(); renderGrid(); checkNotifications(); } }
-        function calcUnits() { document.getElementById('medStock').value = Math.ceil((parseFloat(document.getElementById('medTotalPacks').value)||0) * (parseFloat(document.getElementById('medPackSize').value)||1)); }
+        window.delMed = (id) => { if(confirm("Delete?")) { window.inv=window.inv.filter(x=>x.id!=id); saveData(); renderGrid(); checkNotifications(); } }
+        window.calcUnits = () => { document.getElementById('medStock').value = Math.ceil((parseFloat(document.getElementById('medTotalPacks').value)||0) * (parseFloat(document.getElementById('medPackSize').value)||1)); }
 
-        function openSaleModal(id) { saleItem = inv.find(i=>i.id===id); document.getElementById('saleName').innerText = saleItem.name; document.getElementById('salePotency').innerText = saleItem.potency||''; document.getElementById('saleQty').value = 1; setSaleType(false); openModal('saleModal'); }
-        function setSaleType(isPack) { isPackSale = isPack; document.getElementById('btnUnit').className = isPack ? 'flex-1 py-1 rounded text-gray-400 bg-gray-800' : 'flex-1 py-1 rounded bg-emerald-600 text-white'; document.getElementById('btnPack').className = isPack ? 'flex-1 py-1 rounded bg-emerald-600 text-white' : 'flex-1 py-1 rounded text-gray-400 bg-gray-800'; calcTotal(); }
-        function adjQty(n) { let q = parseInt(document.getElementById('saleQty').value)+n; if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal(); }
-        function calcTotal() { const q = parseInt(document.getElementById('saleQty').value); const price = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize); document.getElementById('saleTotal').innerText = Math.ceil(price*q); }
-        function addToBill() {
-            const q = parseInt(document.getElementById('saleQty').value); const deduct = isPackSale ? (q*saleItem.packSize) : q;
-            if(deduct > saleItem.stock) return alert("Not enough stock!");
-            const unitPrice = isPackSale ? saleItem.price : (saleItem.price/saleItem.packSize); const total = Math.ceil(unitPrice*q); const profit = total - ((saleItem.cost/saleItem.packSize)*deduct); const name = `${saleItem.name} ${saleItem.potency||''}`;
-            cart.push({ id:Date.now(), medId:saleItem.id, name:name, type:isPackSale?'Pk':'Un', qty:q, deduct:deduct, price:total, profit:profit }); closeModal('saleModal'); updateCartUI();
+        window.openSaleModal = (id) => { window.saleItem = window.inv.find(i=>i.id===id); document.getElementById('saleName').innerText = window.saleItem.name; document.getElementById('salePotency').innerText = window.saleItem.potency||''; document.getElementById('saleQty').value = 1; setSaleType(false); openModal('saleModal'); }
+        window.setSaleType = (isPack) => { window.isPackSale = isPack; document.getElementById('btnUnit').className = isPack ? 'flex-1 py-1 rounded text-gray-400 bg-gray-800' : 'flex-1 py-1 rounded bg-emerald-600 text-white'; document.getElementById('btnPack').className = isPack ? 'flex-1 py-1 rounded bg-emerald-600 text-white' : 'flex-1 py-1 rounded text-gray-400 bg-gray-800'; calcTotal(); }
+        window.adjQty = (n) => { let q = parseInt(document.getElementById('saleQty').value)+n; if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal(); }
+        window.calcTotal = () => { const q = parseInt(document.getElementById('saleQty').value); const price = window.isPackSale ? window.saleItem.price : (window.saleItem.price/window.saleItem.packSize); document.getElementById('saleTotal').innerText = Math.ceil(price*q); }
+        window.addToBill = () => {
+            const q = parseInt(document.getElementById('saleQty').value); const deduct = window.isPackSale ? (q*window.saleItem.packSize) : q;
+            if(deduct > window.saleItem.stock) return alert("Not enough stock!");
+            const unitPrice = window.isPackSale ? window.saleItem.price : (window.saleItem.price/window.saleItem.packSize); const total = Math.ceil(unitPrice*q); const profit = total - ((window.saleItem.cost/window.saleItem.packSize)*deduct); const name = `${window.saleItem.name} ${window.saleItem.potency||''}`;
+            window.cart.push({ id:Date.now(), medId:window.saleItem.id, name:name, type:window.isPackSale?'Pk':'Un', qty:q, deduct:deduct, price:total, profit:profit }); closeModal('saleModal'); updateCartUI();
         }
-        function renderBill() { const list = document.getElementById('billList'); list.innerHTML = ''; let sub = 0; cart.forEach((c,i) => { sub+=c.price; list.innerHTML += `<div class="flex justify-between items-center bg-gray-800 p-2 rounded"><div><p class="font-bold text-sm">${c.name}</p><p class="text-xs text-gray-400">${c.qty} ${c.type}</p></div><div class="flex items-center gap-3"><span class="font-bold">${c.price}</span><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`; }); const disc = parseFloat(document.getElementById('billDisc').value)||0; document.getElementById('billGrandTotal').innerText = Math.ceil(sub-disc); }
-        function checkout() {
-            if(cart.length===0) return; let sub=0, prof=0; cart.forEach(c=>{sub+=c.price; prof+=c.profit}); const disc = parseFloat(document.getElementById('billDisc').value)||0;
-            cart.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock-=c.deduct; });
-            const s = { id: Date.now().toString().slice(-6), date: new Date().toLocaleDateString(), dateISO: new Date().toISOString(), total: sub-disc, profit: prof-disc, items: cart };
-            sales.unshift(s); cart=[]; saveData(); updateCartUI(); closeModal('billModal'); renderAll(); checkNotifications(); if(confirm("Done! Print?")) printBill(s);
+        window.renderBill = () => { const list = document.getElementById('billList'); list.innerHTML = ''; let sub = 0; window.cart.forEach((c,i) => { sub+=c.price; list.innerHTML += `<div class="flex justify-between items-center bg-gray-800 p-2 rounded"><div><p class="font-bold text-sm">${c.name}</p><p class="text-xs text-gray-400">${c.qty} ${c.type}</p></div><div class="flex items-center gap-3"><span class="font-bold">${c.price}</span><button onclick="cart.splice(${i},1);renderBill();updateCartUI()" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`; }); const disc = parseFloat(document.getElementById('billDisc').value)||0; document.getElementById('billGrandTotal').innerText = Math.ceil(sub-disc); }
+        window.checkout = () => {
+            if(window.cart.length===0) return; let sub=0, prof=0; window.cart.forEach(c=>{sub+=c.price; prof+=c.profit}); const disc = parseFloat(document.getElementById('billDisc').value)||0;
+            window.cart.forEach(c => { const i = window.inv.find(x=>x.id==c.medId); if(i) i.stock-=c.deduct; });
+            const s = { id: Date.now().toString().slice(-6), date: new Date().toLocaleDateString(), dateISO: new Date().toISOString(), total: sub-disc, profit: prof-disc, items: window.cart };
+            window.sales.unshift(s); window.cart=[]; saveData(); updateCartUI(); closeModal('billModal'); renderAll(); checkNotifications(); if(confirm("Done! Print?")) printBill(s);
         }
 
-        function renderHistory() {
-            const d = document.getElementById('salesDateFilter').value; const h = sales.filter(s => new Date(s.dateISO).toISOString().split('T')[0] === d);
+        window.renderHistory = () => {
+            const d = document.getElementById('salesDateFilter').value; const h = window.sales.filter(s => new Date(s.dateISO).toISOString().split('T')[0] === d);
             document.getElementById('historyList').innerHTML = h.map(s => `<div class="p-3 flex justify-between items-center"><div><div class="text-gray-400 text-xs">${s.date}</div><div class="font-bold text-white">#${s.id}</div></div><div class="text-emerald-400 font-bold">${s.total}</div><div class="flex gap-2"><button onclick="editSale('${s.id}')" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="printBill(${JSON.stringify(s).replace(/"/g, '&quot;')})" class="text-gray-400"><i class="fas fa-print"></i></button><button onclick="delSale('${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
         }
-        function editSale(id) { const s = sales.find(x=>x.id==id); if(confirm("Edit Bill? (Items return to cart)")) { s.items.forEach(c => { const i = inv.find(x=>x.id==c.medId); if(i) i.stock+=c.deduct; }); cart = [...s.items]; sales = sales.filter(x=>x.id!=id); saveData(); renderAll(); updateCartUI(); openModal('billModal'); renderBill(); } }
-        function delSale(id) { if(confirm("Delete Record?")) { sales = sales.filter(x=>x.id!=id); saveData(); renderAll(); } }
+        window.editSale = (id) => { const s = window.sales.find(x=>x.id==id); if(confirm("Edit Bill?")) { s.items.forEach(c => { const i = window.inv.find(x=>x.id==c.medId); if(i) i.stock+=c.deduct; }); window.cart = [...s.items]; window.sales = window.sales.filter(x=>x.id!=id); saveData(); updateCartUI(); openModal('billModal'); renderBill(); } }
+        window.delSale = (id) => { if(confirm("Delete?")) { window.sales = window.sales.filter(x=>x.id!=id); saveData(); } }
 
-        function resetExpForm() { document.getElementById('expId').value=''; document.getElementById('expAmt').value=''; document.getElementById('expNote').value=''; }
-        function saveExpense() { const id = document.getElementById('expId').value || Date.now(); const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value }; const idx = expenses.findIndex(x=>x.id==id); if(idx>-1) expenses[idx]=e; else expenses.unshift(e); saveData(); closeModal('expModal'); renderAll(); }
-        function delExp(id) { if(confirm("Delete?")) { expenses=expenses.filter(x=>x.id!=id); saveData(); renderAll(); } }
-        function editExp(id) { const e = expenses.find(x=>x.id==id); document.getElementById('expId').value=e.id; document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note; openModal('expModal'); }
-        function checkExpCustom(el) { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
+        window.resetExpForm = () => { document.getElementById('expId').value=''; document.getElementById('expAmt').value=''; document.getElementById('expNote').value=''; }
+        window.saveExpense = () => { const id = document.getElementById('expId').value || Date.now(); const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value }; const idx = window.expenses.findIndex(x=>x.id==id); if(idx>-1) window.expenses[idx]=e; else window.expenses.unshift(e); saveData(); closeModal('expModal'); renderAll(); }
+        window.delExp = (id) => { if(confirm("Delete?")) { window.expenses=window.expenses.filter(x=>x.id!=id); saveData(); } }
+        window.editExp = (id) => { const e = window.expenses.find(x=>x.id==id); document.getElementById('expId').value=e.id; document.getElementById('expAmt').value=e.amt; document.getElementById('expNote').value=e.note; openModal('expModal'); }
+        window.checkExpCustom = (el) => { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
 
-        function resetPurchForm() { document.getElementById('pId').value=''; document.getElementById('pDealer').value=''; document.getElementById('pAmount').value=''; }
-        function savePurchase() { const id = document.getElementById('pId').value || Date.now(); const p = { id, dealer:document.getElementById('pDealer').value, comp:document.getElementById('pCompany').value, items:document.getElementById('pItems').value, amt:document.getElementById('pAmount').value, date:document.getElementById('pDate').value }; const idx = purch.findIndex(x=>x.id==id); if(idx>-1) purch[idx]=p; else purch.unshift(p); saveData(); closeModal('purchaseModal'); renderAll(); }
-        function editPurch(id) { const p = purch.find(x=>x.id==id); document.getElementById('pId').value=p.id; document.getElementById('pDealer').value=p.dealer; document.getElementById('pAmount').value=p.amt; openModal('purchaseModal'); }
-        function delPurch(id) { if(confirm("Delete?")) { purch=purch.filter(x=>x.id!=id); saveData(); renderAll(); } }
+        window.resetPurchForm = () => { document.getElementById('pId').value=''; document.getElementById('pDealer').value=''; document.getElementById('pAmount').value=''; }
+        window.savePurchase = () => { const id = document.getElementById('pId').value || Date.now(); const p = { id, dealer:document.getElementById('pDealer').value, comp:document.getElementById('pCompany').value, items:document.getElementById('pItems').value, amt:document.getElementById('pAmount').value, date:document.getElementById('pDate').value }; const idx = window.purch.findIndex(x=>x.id==id); if(idx>-1) window.purch[idx]=p; else window.purch.unshift(p); saveData(); closeModal('purchaseModal'); renderAll(); }
+        window.editPurch = (id) => { const p = window.purch.find(x=>x.id==id); document.getElementById('pId').value=p.id; document.getElementById('pDealer').value=p.dealer; document.getElementById('pAmount').value=p.amt; openModal('purchaseModal'); }
+        window.delPurch = (id) => { if(confirm("Delete?")) { window.purch=window.purch.filter(x=>x.id!=id); saveData(); } }
 
-        function renderAll() {
-            renderGrid(); renderHistory();
-            document.getElementById('expList').innerHTML = expenses.map(e => `<div class="p-3 flex justify-between"><div><div class="text-xs text-gray-400">${e.date}</div><div>${e.cat}</div></div><div class="flex gap-3 items-center"><span class="font-bold">${e.amt}</span><button onclick="editExp(${e.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delExp(${e.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
-            document.getElementById('purchaseList').innerHTML = purch.map(p => `<div class="bg-gray-900 p-3 rounded-lg border border-gray-800 flex justify-between"><div><div class="font-bold text-white">${p.dealer}</div><div class="text-xs text-gray-400">${p.comp}</div></div><div class="flex gap-2 items-center"><span class="text-purple-400 font-bold">${p.amt}</span><button onclick="editPurch(${p.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delPurch(${p.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
-            document.getElementById('attList').innerHTML = attendance.map(a => `<tr><td class="p-3">${a.date}</td><td class="p-3 text-emerald-400">${a.status}</td><td class="p-3">${a.in||'-'}</td><td class="p-3"><button onclick="delAtt(${a.id})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+        window.renderAll = () => {
+            renderGrid(); renderHistory(); checkNotifications();
+            document.getElementById('expList').innerHTML = window.expenses.map(e => `<div class="p-3 flex justify-between"><div><div class="text-xs text-gray-400">${e.date}</div><div>${e.cat}</div></div><div class="flex gap-3 items-center"><span class="font-bold">${e.amt}</span><button onclick="editExp(${e.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delExp(${e.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
+            document.getElementById('purchaseList').innerHTML = window.purch.map(p => `<div class="bg-gray-900 p-3 rounded-lg border border-gray-800 flex justify-between"><div><div class="font-bold text-white">${p.dealer}</div><div class="text-xs text-gray-400">${p.comp}</div></div><div class="flex gap-2 items-center"><span class="text-purple-400 font-bold">${p.amt}</span><button onclick="editPurch(${p.id})" class="text-blue-400"><i class="fas fa-pen"></i></button><button onclick="delPurch(${p.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join('');
+            document.getElementById('attList').innerHTML = window.attendance.map(a => `<tr><td class="p-3">${a.date}</td><td class="p-3 text-emerald-400">${a.status}</td><td class="p-3">${a.in||'-'}</td><td class="p-3"><button onclick="delAtt(${a.id})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
             updateStats();
         }
 
-        function updateStats() {
-            document.getElementById('cartCount').innerText = cart.length;
-            const rev = sales.reduce((a,b)=>a+b.total,0); const exp = expenses.reduce((a,b)=>a+parseFloat(b.amt||0),0); const pur = purch.reduce((a,b)=>a+parseFloat(b.amt||0),0); const net = sales.reduce((a,b)=>a+b.profit,0) - exp;
+        window.updateStats = () => {
+            document.getElementById('cartCount').innerText = window.cart.length;
+            const rev = window.sales.reduce((a,b)=>a+b.total,0); const exp = window.expenses.reduce((a,b)=>a+parseFloat(b.amt||0),0); const pur = window.purch.reduce((a,b)=>a+parseFloat(b.amt||0),0); const net = window.sales.reduce((a,b)=>a+b.profit,0) - exp;
             document.getElementById('repRev').innerText = rev; document.getElementById('repExp').innerText = exp; document.getElementById('repPurch').innerText = pur; document.getElementById('repNet').innerText = net.toFixed(0);
-            const today = new Date().toLocaleDateString(); document.getElementById('topTodaySale').innerText = sales.filter(s=>new Date(s.dateISO).toLocaleDateString()===today).reduce((a,b)=>a+b.total,0);
+            const today = new Date().toLocaleDateString(); document.getElementById('topTodaySale').innerText = window.sales.filter(s=>new Date(s.dateISO).toLocaleDateString()===today).reduce((a,b)=>a+b.total,0);
         }
 
-        function saveAttendance() { const a = { id:Date.now(), date:document.getElementById('attDateInput').value, in:document.getElementById('attIn').value, out:document.getElementById('attOut').value, status:document.getElementById('attStatus').value }; attendance.unshift(a); saveData(); closeModal('attModal'); renderAll(); }
-        function delAtt(id) { attendance=attendance.filter(x=>x.id!=id); saveData(); renderAll(); }
-
-        function downloadBackup() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({inv,sales,purch,expenses,attendance})], {type:'application/json'})); a.download = `Alazamat_Backup_${new Date().toISOString().split('T')[0]}.json`; a.click(); }
-        function restoreBackup(input) { const r = new FileReader(); r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) localStorage.setItem('az_inv_48', JSON.stringify(d.inv)); location.reload(); }; r.readAsText(input.files[0]); }
-        function updateCartUI() { document.getElementById('cartCount').innerText = cart.length; }
+        window.saveAttendance = () => { const a = { id:Date.now(), date:document.getElementById('attDateInput').value, in:document.getElementById('attIn').value, out:document.getElementById('attOut').value, status:document.getElementById('attStatus').value }; window.attendance.unshift(a); saveData(); closeModal('attModal'); renderAll(); }
+        window.delAtt = (id) => { window.attendance=window.attendance.filter(x=>x.id!=id); saveData(); renderAll(); }
+        window.updateCartUI = () => { document.getElementById('cartCount').innerText = window.cart.length; }
         
-        function printBill(s) {
+        window.printBill = (s) => {
             let h = ''; s.items.forEach(i => h += `<tr><td align="left">${i.name}</td><td align="center">${i.qty}</td><td align="right">${i.price}</td></tr>`);
             const w = window.open('','','width=300,height=600');
             w.document.write(`<html><head><style>body{font-family:monospace;text-align:center;padding:10px}hr{border:0;border-top:1px dashed #000}table{width:100%;font-size:10px}</style></head><body><img src="${baseURL+'1.jpg'}" width="50" style="border-radius:50%"><br><b>ALAZAMAT MEDICAL</b><br>+923107377846<hr>Date: ${s.date}<br>Inv: ${s.id}<hr><table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>${h}</table><hr><div style="text-align:right"><b>NET: ${s.total}</b></div><hr>Thank You!</body></html>`);
             w.document.close(); setTimeout(()=> { w.print(); w.close(); }, 500);
         }
 
-        setInterval(() => { const now = new Date(); if(now.getHours() === 22 && now.getMinutes() === 0 && now.getSeconds() < 5) alert("⏰ 10 PM Backup Reminder!"); }, 10000);
+        window.searchDrug = async () => {
+            const query = document.getElementById('aiSearchInput').value.trim();
+            if(!query) return;
+            document.getElementById('aiLoading').classList.remove('hidden'); document.getElementById('aiResult').classList.add('hidden');
+            try {
+                const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${query}`);
+                const data = await res.json();
+                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
+                if (data.type === 'standard') { document.getElementById('aiTitle').innerText = data.title; document.getElementById('aiDesc').innerText = data.extract; } 
+                else { document.getElementById('aiTitle').innerText = "Info Not Found"; document.getElementById('aiDesc').innerText = "Try specific search below."; }
+            } catch (err) {
+                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
+                document.getElementById('aiTitle').innerText = "Error"; document.getElementById('aiDesc').innerText = "Check connection.";
+            }
+        }
+        window.deepSearch = (type) => { window.open(`https://www.google.com/search?q=${document.getElementById('aiSearchInput').value} medicine ${type}`, '_blank'); }
 
-        init();
     </script>
     <script> if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); } </script>
 </body>
