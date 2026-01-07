@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alazamat Medical Store - v51.0 (AI & Cloud)</title>
+    <title>Alazamat Medical Store - v52.0 (New Categories)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -24,10 +24,8 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 90; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
         .fab-cart { position: fixed; bottom: 20px; right: 20px; z-index: 80; background: #eab308; color: black; padding: 12px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 10px 15px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        /* AI BUTTON */
         .fab-ai { position: fixed; bottom: 20px; left: 20px; z-index: 80; background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 15px rgba(0,0,0,0.5); cursor: pointer; font-size: 24px; border: 2px solid #60a5fa; transition: transform 0.2s; }
         .fab-ai:hover { transform: scale(1.1); }
-        /* SYNC STATUS */
         #syncStatus { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6b7280; z-index: 50; pointer-events: none; }
     </style>
 </head>
@@ -76,11 +74,9 @@
 
     <div class="fab-ai" onclick="openModal('aiModal')"><i class="fas fa-robot"></i></div>
     <div class="fab-cart" onclick="openModal('billModal'); renderBill()"><i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span></div>
-    
     <div id="syncStatus">☁️ Connecting...</div>
 
     <main class="relative w-full min-h-screen pb-24 pt-16 px-4">
-        
         <section id="hero" class="text-center mb-10 pt-4">
             <img id="storeLogo" src="" class="w-20 h-20 rounded-full border-2 border-emerald-500 mx-auto mb-3 bg-gray-800">
             <h1 class="text-3xl font-bold text-white">ALAZAMAT</h1>
@@ -103,6 +99,8 @@
                     <button onclick="filterGrid('Tablet')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Tablets</button>
                     <button onclick="filterGrid('Syrup')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Syrups</button>
                     <button onclick="filterGrid('Injection')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Injections</button>
+                    <button onclick="filterGrid('Drops')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Drops</button>
+                    <button onclick="filterGrid('Surgicals')" class="bg-gray-800 px-3 py-1 rounded text-xs whitespace-nowrap">Surgicals</button>
                 </div>
             </div>
             <div id="grid" class="grid grid-cols-1 gap-3 transition-all"></div>
@@ -158,22 +156,14 @@
 
     <div id="aiModal" class="modal-overlay" onclick="closeModal('aiModal')">
         <div class="bg-gray-900 w-full max-w-sm p-5 rounded-xl border border-blue-500 m-4 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-robot text-blue-400"></i> Smart AI Doctor</h3>
-                <button onclick="closeModal('aiModal')" class="text-gray-400"><i class="fas fa-times"></i></button>
-            </div>
-            <p class="text-xs text-gray-400 mb-3">Search any medicine to see uses, side effects & details.</p>
-            <div class="flex gap-2 mb-3">
-                <input type="text" id="aiSearchInput" placeholder="e.g. Panadol..." class="modern-input flex-1">
-                <button onclick="searchDrug()" class="btn-jelly bg-blue-600"><i class="fas fa-search"></i></button>
-            </div>
+            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-robot text-blue-400"></i> Smart AI Doctor</h3><button onclick="closeModal('aiModal')" class="text-gray-400"><i class="fas fa-times"></i></button></div>
+            <p class="text-xs text-gray-400 mb-3">Search medicine details...</p>
+            <div class="flex gap-2 mb-3"><input type="text" id="aiSearchInput" placeholder="e.g. Panadol..." class="modern-input flex-1"><button onclick="searchDrug()" class="btn-jelly bg-blue-600"><i class="fas fa-search"></i></button></div>
             <div id="aiLoading" class="text-center py-4 hidden"><i class="fas fa-circle-notch fa-spin text-blue-400 text-2xl"></i></div>
             <div id="aiResult" class="hidden">
-                <h4 id="aiTitle" class="font-bold text-white text-lg mb-1"></h4>
-                <p id="aiDesc" class="text-gray-300 text-sm mb-3 border-b border-gray-700 pb-3"></p>
-                <p class="text-xs text-gray-500 mb-2 font-bold uppercase">Deep Search Links:</p>
+                <h4 id="aiTitle" class="font-bold text-white text-lg mb-1"></h4><p id="aiDesc" class="text-gray-300 text-sm mb-3 border-b border-gray-700 pb-3"></p>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="deepSearch('uses')" class="bg-emerald-900/50 text-emerald-300 text-xs py-2 rounded border border-emerald-500/30">🔎 Diseases & Uses</button>
+                    <button onclick="deepSearch('uses')" class="bg-emerald-900/50 text-emerald-300 text-xs py-2 rounded border border-emerald-500/30">🔎 Uses</button>
                     <button onclick="deepSearch('side effects')" class="bg-red-900/50 text-red-300 text-xs py-2 rounded border border-red-500/30">⚠️ Side Effects</button>
                     <button onclick="deepSearch('dosage')" class="bg-yellow-900/50 text-yellow-300 text-xs py-2 rounded border border-yellow-500/30">💊 Dosage</button>
                     <button onclick="deepSearch('ingredients')" class="bg-blue-900/50 text-blue-300 text-xs py-2 rounded border border-blue-500/30">🧪 Ingredients</button>
@@ -197,7 +187,15 @@
                     <div class="grid grid-cols-3 gap-2"><input type="number" id="medTotalPacks" placeholder="Packs" class="modern-input text-xs" oninput="calcUnits()"><input type="number" id="medPackSize" value="1" placeholder="Size" class="modern-input text-xs" oninput="calcUnits()"><input type="number" id="medStock" placeholder="Total" readonly class="modern-input text-xs bg-gray-700"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-2"><input type="number" id="medCost" placeholder="Cost (Pk)" class="modern-input"><input type="number" id="medPrice" placeholder="Sell (Pk)" class="modern-input"></div>
-                <select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Other</option></select>
+                <select id="medCat" class="modern-input">
+                    <option>Tablet</option>
+                    <option>Syrup</option>
+                    <option>Injection</option>
+                    <option>Capsule</option>
+                    <option>Drops</option>
+                    <option>Surgicals</option>
+                    <option>Other</option>
+                </select>
                 <input type="date" id="medExp" class="modern-input">
             </div>
             <div class="mt-4 flex gap-2"><button onclick="closeModal('medModal')" class="flex-1 bg-gray-700 py-2 rounded text-sm">Cancel</button><button onclick="saveMedicine()" class="flex-1 btn-jelly py-2 text-sm">Save</button></div>
@@ -250,6 +248,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // 🔥 YOUR REAL FIREBASE CONFIG 🔥
         const firebaseConfig = {
             apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g",
             authDomain: "alazamat-store.firebaseapp.com",
@@ -290,7 +289,17 @@
         // === UI & LOGIC ===
         const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; 
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
-        const imgMap = { 'Tablet': `${baseURL}download (1).jpg`, 'Syrup': `${baseURL}download (2).jpg`, 'Injection': `${baseURL}download (3).jpg`, 'Capsule': `${baseURL}download.jpg`, 'Other': `${baseURL}download.jpg` };
+        
+        // UPDATED IMAGE MAP WITH DROPS AND SURGICALS
+        const imgMap = { 
+            'Tablet': `${baseURL}download (1).jpg`, 
+            'Syrup': `${baseURL}download (2).jpg`, 
+            'Injection': `${baseURL}download (3).jpg`, 
+            'Capsule': `${baseURL}download.jpg`,
+            'Drops': `${baseURL}drops.jpg`,
+            'Surgicals': `${baseURL}surgicals.jpg`,
+            'Other': `${baseURL}others.jpg`
+        };
 
         // INIT
         const today = new Date().toISOString().split('T')[0];
@@ -469,23 +478,6 @@
             w.document.write(`<html><head><style>body{font-family:monospace;text-align:center;padding:10px}hr{border:0;border-top:1px dashed #000}table{width:100%;font-size:10px}</style></head><body><img src="${baseURL+'1.jpg'}" width="50" style="border-radius:50%"><br><b>ALAZAMAT MEDICAL</b><br>+923107377846<hr>Date: ${s.date}<br>Inv: ${s.id}<hr><table><tr><th align="left">Item</th><th>Qty</th><th align="right">Amt</th></tr>${h}</table><hr><div style="text-align:right"><b>NET: ${s.total}</b></div><hr>Thank You!</body></html>`);
             w.document.close(); setTimeout(()=> { w.print(); w.close(); }, 500);
         }
-
-        window.searchDrug = async () => {
-            const query = document.getElementById('aiSearchInput').value.trim();
-            if(!query) return;
-            document.getElementById('aiLoading').classList.remove('hidden'); document.getElementById('aiResult').classList.add('hidden');
-            try {
-                const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${query}`);
-                const data = await res.json();
-                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
-                if (data.type === 'standard') { document.getElementById('aiTitle').innerText = data.title; document.getElementById('aiDesc').innerText = data.extract; } 
-                else { document.getElementById('aiTitle').innerText = "Info Not Found"; document.getElementById('aiDesc').innerText = "Try specific search below."; }
-            } catch (err) {
-                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
-                document.getElementById('aiTitle').innerText = "Error"; document.getElementById('aiDesc').innerText = "Check connection.";
-            }
-        }
-        window.deepSearch = (type) => { window.open(`https://www.google.com/search?q=${document.getElementById('aiSearchInput').value} medicine ${type}`, '_blank'); }
 
     </script>
     <script> if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); } </script>
