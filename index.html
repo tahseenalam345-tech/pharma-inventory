@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v66.0 (Server API Mode)</title>
+    <title>Al-Azamat Medical Store - v69.0 (Ultimate Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -14,33 +14,53 @@
         /* CORE STYLES */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.08) 0px, transparent 50%); background-attachment: fixed; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0f172a; } ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+        
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         .modern-input { width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 14px; border-radius: 10px; outline: none; transition: 0.2s; color-scheme: dark; font-size: 13px; }
         .modern-input:focus { border-color: #10b981; background: #0f172a; }
+        
         .btn-jelly { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 8px 16px; font-weight: 700; border-radius: 10px; transition: all 0.2s; cursor: pointer; user-select: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-size: 12px; }
         .btn-jelly:active { transform: scale(0.95); }
+        
         .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 280px; background: #020617; border-right: 1px solid #1e293b; z-index: 100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar.active { transform: translateX(0); }
+        
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 90; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        
         .fab-cart { position: fixed; bottom: 20px; right: 20px; z-index: 80; background: #eab308; color: black; padding: 12px 20px; border-radius: 50px; font-weight: 800; box-shadow: 0 10px 25px rgba(234, 179, 8, 0.4); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
         .fab-ai { position: fixed; bottom: 20px; left: 20px; z-index: 80; background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); cursor: pointer; font-size: 24px; border: 2px solid #60a5fa; transition: transform 0.2s; }
         .fab-cart:active, .fab-ai:active { transform: scale(0.9); }
+
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         #syncStatus { position: fixed; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6b7280; z-index: 50; pointer-events: none; }
+        
         .item-img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px 8px 0 0; background: #ffffff; }
+        
+        /* CHAT BUBBLES */
         .chat-bubble-user { background: #3b82f6; color: white; padding: 8px 12px; border-radius: 12px 12px 0 12px; margin-left: auto; max-width: 80%; font-size: 13px; margin-bottom: 8px; }
         .chat-bubble-ai { background: #1e293b; color: #e2e8f0; padding: 10px; border-radius: 12px 12px 12px 0; margin-right: auto; max-width: 90%; font-size: 13px; border: 1px solid #334155; margin-bottom: 8px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-    <button onclick="toggleNotif(event)" class="fixed top-4 right-4 z-50 bg-slate-800/80 backdrop-blur text-white p-2 w-10 h-10 rounded-full border border-slate-600 shadow-lg flex items-center justify-center hover:bg-slate-700 transition"><i class="fas fa-bell"></i><div id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center hidden border-2 border-slate-900">0</div></button>
-    <div id="notifPanel" class="fixed top-16 right-4 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 p-4 hidden transform origin-top-right transition"><h4 class="font-bold border-b border-slate-700 pb-2 mb-2 text-white flex items-center gap-2"><i class="fas fa-exclamation-circle text-yellow-500"></i> Alerts</h4><div id="notifList" class="max-h-60 overflow-y-auto space-y-2 text-sm text-slate-300"></div></div>
-    
+    <button onclick="toggleNotif(event)" class="fixed top-4 right-4 z-50 bg-slate-800/80 backdrop-blur text-white p-2 w-10 h-10 rounded-full border border-slate-600 shadow-lg flex items-center justify-center hover:bg-slate-700 transition">
+        <i class="fas fa-bell"></i>
+        <div id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center hidden border-2 border-slate-900">0</div>
+    </button>
+
+    <div id="notifPanel" class="fixed top-16 right-4 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 p-4 hidden transform origin-top-right transition">
+        <h4 class="font-bold border-b border-slate-700 pb-2 mb-2 text-white flex items-center gap-2"><i class="fas fa-exclamation-circle text-yellow-500"></i> Alerts</h4>
+        <div id="notifList" class="max-h-60 overflow-y-auto space-y-2 text-sm text-slate-300"></div>
+    </div>
+
     <button onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-slate-800/80 backdrop-blur text-white p-2 w-10 h-10 rounded-full border border-slate-600 shadow-lg hover:bg-slate-700 transition"><i class="fas fa-bars"></i></button>
+
     <aside id="sidebar" class="sidebar flex flex-col shadow-2xl shadow-black">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950"><div><h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">Al-Azamat</h2><p class="text-[10px] text-slate-500 uppercase tracking-widest">Medical Store</p></div><button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button></div>
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950">
+            <div><h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">Al-Azamat</h2><p class="text-[10px] text-slate-500 uppercase tracking-widest">Medical Store</p></div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
             <button onclick="nav('hero')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-home w-6 text-emerald-400"></i> Home</button>
             <button onclick="nav('inventory')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-pills w-6 text-blue-400"></i> Inventory</button>
@@ -49,7 +69,12 @@
             <button onclick="nav('purchases')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-truck w-6 text-purple-400"></i> Purchases</button>
             <button onclick="nav('reports')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-chart-pie w-6 text-pink-400"></i> Reports</button>
             <button onclick="nav('attendance')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition border-t border-slate-800 mt-2 pt-4"><i class="fas fa-calendar-check w-6 text-teal-400"></i> Attendance</button>
-            <div class="mt-4 p-4 bg-slate-900 rounded-xl border border-slate-800"><p class="text-xs font-bold text-slate-500 uppercase mb-2">Data Management</p><button onclick="downloadBackup()" class="w-full text-left p-2 text-xs text-slate-300 hover:text-white flex items-center gap-2"><i class="fas fa-download"></i> Backup Data</button><label class="w-full text-left p-2 text-xs text-slate-300 hover:text-white cursor-pointer block flex items-center gap-2"><i class="fas fa-upload"></i> Restore Data<input type="file" class="hidden" onchange="restoreBackup(this)"></label></div>
+            
+            <div class="mt-4 p-4 bg-slate-900 rounded-xl border border-slate-800">
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">Data Management</p>
+                <button onclick="downloadBackup()" class="w-full text-left p-2 text-xs text-slate-300 hover:text-white flex items-center gap-2"><i class="fas fa-download"></i> Backup Data</button>
+                <label class="w-full text-left p-2 text-xs text-slate-300 hover:text-white cursor-pointer block flex items-center gap-2"><i class="fas fa-upload"></i> Restore Data<input type="file" class="hidden" onchange="restoreBackup(this)"></label>
+            </div>
         </nav>
     </aside>
 
@@ -130,7 +155,17 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g", authDomain: "alazamat-store.firebaseapp.com", databaseURL: "https://alazamat-store-default-rtdb.firebaseio.com", projectId: "alazamat-store", storageBucket: "alazamat-store.firebasestorage.app", messagingSenderId: "466791969920", appId: "1:466791969920:web:63437a8ab4a428fa906265" };
+        // 🔥 FIREBASE CONFIG 🔥
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g",
+            authDomain: "alazamat-store.firebaseapp.com",
+            databaseURL: "https://alazamat-store-default-rtdb.firebaseio.com",
+            projectId: "alazamat-store",
+            storageBucket: "alazamat-store.firebasestorage.app",
+            messagingSenderId: "466791969920",
+            appId: "1:466791969920:web:63437a8ab4a428fa906265"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const dbRef = ref(db, 'alazamat_store_v1');
@@ -156,7 +191,7 @@
         window.toggleNotif = (e) => { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
         window.onclick = (e) => { if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-4.right-4')) document.getElementById('notifPanel').classList.add('hidden'); if (!e.target.closest('#filterDropdown') && !e.target.closest('.relative')) document.getElementById('filterDropdown').classList.add('hidden'); };
 
-        // === 🚀 SERVER API CONNECTION ===
+        // === 🚀 SERVER API CONNECTION (STEP 1 METHOD) ===
         window.sendToAI = async () => {
             const input = document.getElementById('aiInput');
             const query = input.value.trim();
@@ -174,7 +209,7 @@
                 history.innerHTML += `<div class="chat-bubble-ai" id="loadingBubble">Thinking... <i class="fas fa-circle-notch fa-spin"></i></div>`;
                 history.scrollTop = history.scrollHeight;
 
-                // CALLING THE SERVER API (Step 1 Method)
+                // CALLING YOUR SERVER API (Using relative path)
                 const response = await fetch('/api/gemini', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -195,7 +230,7 @@
             } catch (error) {
                 const bubble = document.getElementById('loadingBubble');
                 if(bubble) bubble.remove();
-                history.innerHTML += `<div class="chat-bubble-ai text-red-400"><b>Error:</b> ${error.message} (Is Vercel configured?)</div>`;
+                history.innerHTML += `<div class="chat-bubble-ai text-red-400"><b>Error:</b> ${error.message} (Check Vercel Env Vars)</div>`;
             }
         }
 
