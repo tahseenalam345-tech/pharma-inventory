@@ -40,6 +40,18 @@
         /* CHAT BUBBLES */
         .chat-bubble-user { background: #3b82f6; color: white; padding: 8px 12px; border-radius: 12px 12px 0 12px; margin-left: auto; max-width: 80%; font-size: 13px; margin-bottom: 8px; }
         .chat-bubble-ai { background: #1e293b; color: #e2e8f0; padding: 10px; border-radius: 12px 12px 12px 0; margin-right: auto; max-width: 90%; font-size: 13px; border: 1px solid #334155; margin-bottom: 8px; line-height: 1.5; }
+        <input
+  type="text"
+  id="prompt"
+  placeholder="Ask something..."
+/>
+
+<button onclick="sendToAI()">
+  Ask AI
+</button>
+
+<div id="output"></div>
+
     </style>
 </head>
 <body>
