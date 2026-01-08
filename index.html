@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v55.0 (Connection Fixed)</title>
+    <title>Al-Azamat Medical Store - v55.0 (Fixed & Live)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.08) 0px, transparent 50%); background-attachment: fixed; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0f172a; } ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
         
-        .glass-card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         .modern-input { width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 14px; border-radius: 10px; outline: none; transition: 0.2s; color-scheme: dark; font-size: 13px; }
         .modern-input:focus { border-color: #10b981; background: #0f172a; }
         
@@ -36,7 +36,7 @@
         #syncStatus { position: fixed; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6b7280; z-index: 50; pointer-events: none; }
         
         /* IMAGE FIT */
-        .item-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; background: #1e293b; }
+        .item-img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px 8px 0 0; background: #ffffff; }
     </style>
 </head>
 <body>
@@ -116,23 +116,22 @@
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fas fa-box-open text-emerald-400"></i> Inventory</h2>
                     
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 relative">
                         <button onclick="toggleLayout()" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition flex items-center justify-center"><i class="fas fa-th-large" id="layoutIcon"></i></button>
                         
-                        <div class="relative">
-                            <button onclick="document.getElementById('filterDropdown').classList.toggle('hidden')" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition flex items-center justify-center"><i class="fas fa-filter"></i></button>
-                            <div id="filterDropdown" class="hidden absolute right-0 top-10 w-40 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
-                                <button onclick="filterGrid('all')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs border-b border-slate-800">All Items</button>
-                                <button onclick="filterGrid('Tablet')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Tablets</button>
-                                <button onclick="filterGrid('Syrup')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Syrups</button>
-                                <button onclick="filterGrid('Injection')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Injections</button>
-                                <button onclick="filterGrid('Drops')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Drops</button>
-                                <button onclick="filterGrid('Sachet')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Sachets</button>
-                                <button onclick="filterGrid('Surgicals')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Surgicals</button>
-                                <button onclick="filterGrid('Cream')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Creams</button>
-                                <button onclick="filterGrid('Cosmetics')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Cosmetics</button>
-                                <button onclick="filterGrid('Other')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs">Others</button>
-                            </div>
+                        <button onclick="document.getElementById('filterDropdown').classList.toggle('hidden')" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition flex items-center justify-center"><i class="fas fa-filter"></i></button>
+                        
+                        <div id="filterDropdown" class="hidden absolute right-0 top-10 w-40 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-[60] overflow-hidden">
+                            <button onclick="filterGrid('all')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs border-b border-slate-800 text-white">All Items</button>
+                            <button onclick="filterGrid('Tablet')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Tablets</button>
+                            <button onclick="filterGrid('Syrup')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Syrups</button>
+                            <button onclick="filterGrid('Injection')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Injections</button>
+                            <button onclick="filterGrid('Drops')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Drops</button>
+                            <button onclick="filterGrid('Sachet')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Sachets</button>
+                            <button onclick="filterGrid('Surgicals')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Surgicals</button>
+                            <button onclick="filterGrid('Cream')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Creams</button>
+                            <button onclick="filterGrid('Cosmetics')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Cosmetics</button>
+                            <button onclick="filterGrid('Other')" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-xs text-slate-300">Others</button>
                         </div>
                     </div>
                 </div>
@@ -272,11 +271,15 @@
         </div>
     </div>
 
+    <div id="expModal" class="modal-overlay" onclick="closeModal('expModal')"><div class="bg-slate-900 w-full max-w-xs p-5 rounded-2xl border border-slate-700" onclick="event.stopPropagation()"><h3 class="font-bold mb-4">Add Expense</h3><input type="hidden" id="expId"><div class="space-y-3"><input type="date" id="expDate" class="modern-input"><select id="expCat" class="modern-input" onchange="checkExpCustom(this)"><option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option></select><input type="text" id="expCustom" placeholder="Category..." class="modern-input hidden"><input type="text" id="expNote" placeholder="Description" class="modern-input"><input type="number" id="expAmt" placeholder="Amount" class="modern-input"><button onclick="saveExpense()" class="btn-jelly w-full bg-orange-500">Save</button></div></div></div>
+    <div id="purchaseModal" class="modal-overlay" onclick="closeModal('purchaseModal')"><div class="bg-slate-900 w-full max-w-sm p-5 rounded-2xl border border-slate-700" onclick="event.stopPropagation()"><h3 class="font-bold mb-4">Add Purchase</h3><input type="hidden" id="pId"><div class="space-y-3"><input type="text" id="pDealer" placeholder="Dealer Name" class="modern-input"><input type="text" id="pCompany" placeholder="Company" class="modern-input"><textarea id="pItems" placeholder="Items List" class="modern-input h-20"></textarea><input type="number" id="pAmount" placeholder="Total Amount" class="modern-input"><input type="date" id="pDate" class="modern-input"><button onclick="savePurchase()" class="btn-jelly w-full bg-purple-600">Save Record</button></div></div></div>
+    <div id="attModal" class="modal-overlay" onclick="closeModal('attModal')"><div class="bg-slate-900 w-full max-w-xs p-5 rounded-2xl border border-slate-700" onclick="event.stopPropagation()"><h3 class="font-bold mb-4">Mark Attendance</h3><div class="space-y-3"><input type="date" id="attDateInput" class="modern-input"><div class="grid grid-cols-2 gap-2"><input type="time" id="attIn" class="modern-input"><input type="time" id="attOut" class="modern-input"></div><select id="attStatus" class="modern-input"><option>Present</option><option>Absent</option></select><button onclick="saveAttendance()" class="btn-jelly w-full bg-pink-600">Save</button></div></div></div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // 🔥 FIREBASE CONFIG 🔥
+        // 🔥 YOUR REAL CONFIG (FIXED) 🔥
         const firebaseConfig = {
             apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g",
             authDomain: "alazamat-store.firebaseapp.com",
@@ -294,31 +297,59 @@
         window.inv=[]; window.sales=[]; window.purch=[]; window.expenses=[]; window.attendance=[]; window.cart=[];
         window.saleItem=null; window.isPackSale=false; window.activeFilter='all'; window.gridMode='grid';
 
-        // SYNC WITH TIMEOUT FIX
-        const syncTimeout = setTimeout(() => { document.getElementById('syncStatus').innerText = "⚠️ Offline Mode"; }, 3000);
+        // SYNC WITH SAFETY TIMEOUT (FIXES STUCK SCREEN)
+        const syncTimeout = setTimeout(() => { 
+            const status = document.getElementById('syncStatus');
+            if(status) {
+                status.innerText = "⚠️ Offline Mode"; 
+                status.style.color = "#ef4444";
+                // If stuck, load basic defaults so UI works
+                if(window.inv.length === 0) renderGrid();
+            }
+        }, 4000);
+
         onValue(dbRef, (snapshot) => {
             clearTimeout(syncTimeout);
             const data = snapshot.val();
             if (data) {
                 window.inv = data.inv || []; window.sales = data.sales || []; window.purch = data.purch || []; window.expenses = data.expenses || []; window.attendance = data.attendance || [];
                 renderGrid(); renderHistory(); checkNotifications(); updateStats();
-                document.getElementById('syncStatus').innerText = "☁️ Synced"; document.getElementById('syncStatus').style.color = "#10b981";
+                const status = document.getElementById('syncStatus');
+                if(status) { status.innerText = "☁️ Synced"; status.style.color = "#10b981"; }
+            } else {
+                // Database empty or new
+                const status = document.getElementById('syncStatus');
+                if(status) { status.innerText = "☁️ Connected (Empty)"; status.style.color = "#10b981"; }
+                renderGrid(); 
             }
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            clearTimeout(syncTimeout);
+            const status = document.getElementById('syncStatus');
+            if(status) { status.innerText = "❌ Error"; status.style.color = "red"; }
         });
 
         window.saveData = function() {
-            document.getElementById('syncStatus').innerText = "⏳ Saving..."; document.getElementById('syncStatus').style.color = "#fbbf24";
+            const status = document.getElementById('syncStatus');
+            if(status) { status.innerText = "⏳ Saving..."; status.style.color = "#fbbf24"; }
             set(dbRef, { inv: window.inv, sales: window.sales, purch: window.purch, expenses: window.expenses, attendance: window.attendance });
         }
 
-        // CONFIG & IMAGES
+        // CONFIG & IMAGES (MATCHING YOUR SCREENSHOTS EXACTLY)
         const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; 
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
         
         const imgMap = { 
-            'Tablet': `${baseURL}pills.jpg`, 'Syrup': `${baseURL}syrup.png`, 'Injection': `${baseURL}injections.jpeg`, 
-            'Capsule': `${baseURL}capsules.jpg`, 'Drops': `${baseURL}drops.jpg`, 'Sachet': `${baseURL}sachets.jpeg`, 
-            'Surgicals': `${baseURL}surgical.jpeg`, 'Cream': `${baseURL}creams.jpeg`, 'Cosmetics': `${baseURL}cosmetics.png`, 'Other': `${baseURL}other.jpeg`
+            'Tablet': `${baseURL}pills.jpg`, 
+            'Syrup': `${baseURL}syrup.png`, 
+            'Injection': `${baseURL}injections.jpeg`, 
+            'Capsule': `${baseURL}capsules.jpg`, 
+            'Drops': `${baseURL}drop.png`, /* Changed from drops.jpg based on file list */
+            'Sachet': `${baseURL}sachets.jpeg`, 
+            'Surgicals': `${baseURL}surgical.jpeg`, 
+            'Cream': `${baseURL}creams.jpeg`, 
+            'Cosmetics': `${baseURL}cosmetics.png`, 
+            'Other': `${baseURL}other.jpeg`
         };
 
         // INIT
@@ -338,7 +369,7 @@
         window.toggleNotif = (e) => { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
         window.onclick = (e) => { 
             if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-4.right-4')) document.getElementById('notifPanel').classList.add('hidden'); 
-            if (!e.target.closest('#filterDropdown') && !e.target.closest('.fa-filter')) document.getElementById('filterDropdown').classList.add('hidden');
+            if (!e.target.closest('#filterDropdown') && !e.target.closest('.relative')) document.getElementById('filterDropdown').classList.add('hidden');
         };
 
         // === SMART AI ===
