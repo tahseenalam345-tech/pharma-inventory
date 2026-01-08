@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v63.0 (Potency Fixed)</title>
+    <title>Al-Azamat Medical Store - v64.0 (AI & Potency Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -214,7 +214,7 @@
             appId: "1:466791969920:web:63437a8ab4a428fa906265"
         };
 
-        // 🤖 GEMINI API KEY (YOUR REAL KEY)
+        // 🤖 GEMINI API KEY (YOUR NEW KEY)
         const GEMINI_API_KEY = "AIzaSyD9b8ikeTvFDsF7aOtoAn3ZZLX-6FVTFZ8"; 
 
         const app = initializeApp(firebaseConfig);
@@ -398,7 +398,7 @@
         }
 
         // === CRUD & LOGIC (UPDATED SAVE POTENCY) ===
-        window.openAddModal = () => { document.getElementById('search').value=''; document.getElementById('medId').value=''; document.getElementById('medName').value=''; document.getElementById('medBrand').value=''; document.getElementById('medFormula').value=''; document.getElementById('medTotalPacks').value=''; document.getElementById('medStock').value=''; document.getElementById('medPrice').value=''; document.getElementById('medCost').value=''; document.getElementById('medPotency').value=''; document.getElementById('medUnit').value='mg'; openModal('medModal'); }
+        window.openAddModal = () => { document.getElementById('search').value=''; document.getElementById('medId').value=''; document.getElementById('medName').value=''; document.getElementById('medBrand').value=''; document.getElementById('medFormula').value=''; document.getElementById('medTotalPacks').value=''; document.getElementById('medStock').value=''; document.getElementById('medPrice').value=''; document.getElementById('medCost').value=''; document.getElementById('medPotency').value=''; openModal('medModal'); }
         window.saveMedicine = () => {
             const idVal = document.getElementById('medId').value; 
             const potVal = document.getElementById('medPotency').value.trim();
