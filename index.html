@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v65.0 (AI Fixed & Ready)</title>
+    <title>Al-Azamat Medical Store - v66.0 (Server API Mode)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -14,53 +14,33 @@
         /* CORE STYLES */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.08) 0px, transparent 50%); background-attachment: fixed; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0f172a; } ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
-        
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         .modern-input { width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 14px; border-radius: 10px; outline: none; transition: 0.2s; color-scheme: dark; font-size: 13px; }
         .modern-input:focus { border-color: #10b981; background: #0f172a; }
-        
         .btn-jelly { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 8px 16px; font-weight: 700; border-radius: 10px; transition: all 0.2s; cursor: pointer; user-select: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-size: 12px; }
         .btn-jelly:active { transform: scale(0.95); }
-        
         .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 280px; background: #020617; border-right: 1px solid #1e293b; z-index: 100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar.active { transform: translateX(0); }
-        
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 90; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
-        
         .fab-cart { position: fixed; bottom: 20px; right: 20px; z-index: 80; background: #eab308; color: black; padding: 12px 20px; border-radius: 50px; font-weight: 800; box-shadow: 0 10px 25px rgba(234, 179, 8, 0.4); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
         .fab-ai { position: fixed; bottom: 20px; left: 20px; z-index: 80; background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); cursor: pointer; font-size: 24px; border: 2px solid #60a5fa; transition: transform 0.2s; }
         .fab-cart:active, .fab-ai:active { transform: scale(0.9); }
-
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         #syncStatus { position: fixed; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6b7280; z-index: 50; pointer-events: none; }
-        
         .item-img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px 8px 0 0; background: #ffffff; }
-        
-        /* CHAT BUBBLES */
         .chat-bubble-user { background: #3b82f6; color: white; padding: 8px 12px; border-radius: 12px 12px 0 12px; margin-left: auto; max-width: 80%; font-size: 13px; margin-bottom: 8px; }
         .chat-bubble-ai { background: #1e293b; color: #e2e8f0; padding: 10px; border-radius: 12px 12px 12px 0; margin-right: auto; max-width: 90%; font-size: 13px; border: 1px solid #334155; margin-bottom: 8px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-    <button onclick="toggleNotif(event)" class="fixed top-4 right-4 z-50 bg-slate-800/80 backdrop-blur text-white p-2 w-10 h-10 rounded-full border border-slate-600 shadow-lg flex items-center justify-center hover:bg-slate-700 transition">
-        <i class="fas fa-bell"></i>
-        <div id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center hidden border-2 border-slate-900">0</div>
-    </button>
-
-    <div id="notifPanel" class="fixed top-16 right-4 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 p-4 hidden transform origin-top-right transition">
-        <h4 class="font-bold border-b border-slate-700 pb-2 mb-2 text-white flex items-center gap-2"><i class="fas fa-exclamation-circle text-yellow-500"></i> Alerts</h4>
-        <div id="notifList" class="max-h-60 overflow-y-auto space-y-2 text-sm text-slate-300"></div>
-    </div>
-
+    <button onclick="toggleNotif(event)" class="fixed top-4 right-4 z-50 bg-slate-800/80 backdrop-blur text-white p-2 w-10 h-10 rounded-full border border-slate-600 shadow-lg flex items-center justify-center hover:bg-slate-700 transition"><i class="fas fa-bell"></i><div id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center hidden border-2 border-slate-900">0</div></button>
+    <div id="notifPanel" class="fixed top-16 right-4 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 p-4 hidden transform origin-top-right transition"><h4 class="font-bold border-b border-slate-700 pb-2 mb-2 text-white flex items-center gap-2"><i class="fas fa-exclamation-circle text-yellow-500"></i> Alerts</h4><div id="notifList" class="max-h-60 overflow-y-auto space-y-2 text-sm text-slate-300"></div></div>
+    
     <button onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-slate-800/80 backdrop-blur text-white p-2 w-10 h-10 rounded-full border border-slate-600 shadow-lg hover:bg-slate-700 transition"><i class="fas fa-bars"></i></button>
-
     <aside id="sidebar" class="sidebar flex flex-col shadow-2xl shadow-black">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-            <div><h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">Al-Azamat</h2><p class="text-[10px] text-slate-500 uppercase tracking-widest">Medical Store</p></div>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
-        </div>
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950"><div><h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">Al-Azamat</h2><p class="text-[10px] text-slate-500 uppercase tracking-widest">Medical Store</p></div><button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button></div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
             <button onclick="nav('hero')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-home w-6 text-emerald-400"></i> Home</button>
             <button onclick="nav('inventory')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-pills w-6 text-blue-400"></i> Inventory</button>
@@ -69,12 +49,7 @@
             <button onclick="nav('purchases')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-truck w-6 text-purple-400"></i> Purchases</button>
             <button onclick="nav('reports')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition"><i class="fas fa-chart-pie w-6 text-pink-400"></i> Reports</button>
             <button onclick="nav('attendance')" class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 transition border-t border-slate-800 mt-2 pt-4"><i class="fas fa-calendar-check w-6 text-teal-400"></i> Attendance</button>
-            
-            <div class="mt-4 p-4 bg-slate-900 rounded-xl border border-slate-800">
-                <p class="text-xs font-bold text-slate-500 uppercase mb-2">Data Management</p>
-                <button onclick="downloadBackup()" class="w-full text-left p-2 text-xs text-slate-300 hover:text-white flex items-center gap-2"><i class="fas fa-download"></i> Backup Data</button>
-                <label class="w-full text-left p-2 text-xs text-slate-300 hover:text-white cursor-pointer block flex items-center gap-2"><i class="fas fa-upload"></i> Restore Data<input type="file" class="hidden" onchange="restoreBackup(this)"></label>
-            </div>
+            <div class="mt-4 p-4 bg-slate-900 rounded-xl border border-slate-800"><p class="text-xs font-bold text-slate-500 uppercase mb-2">Data Management</p><button onclick="downloadBackup()" class="w-full text-left p-2 text-xs text-slate-300 hover:text-white flex items-center gap-2"><i class="fas fa-download"></i> Backup Data</button><label class="w-full text-left p-2 text-xs text-slate-300 hover:text-white cursor-pointer block flex items-center gap-2"><i class="fas fa-upload"></i> Restore Data<input type="file" class="hidden" onchange="restoreBackup(this)"></label></div>
         </nav>
     </aside>
 
@@ -126,35 +101,11 @@
             <div id="grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 transition-all pb-10"></div>
         </section>
 
-        <section id="history" class="mb-10 glass-card p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Sales History</h2><input type="date" id="salesDateFilter" class="modern-input w-36" onchange="renderHistory()"></div>
-            <div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-300"><thead class="bg-slate-800 text-slate-400 uppercase font-bold"><tr><th class="p-3 rounded-l-lg">Time</th><th class="p-3">Items Sold</th><th class="p-3 text-right">Total</th><th class="p-3 rounded-r-lg text-center">Action</th></tr></thead><tbody id="historyList" class="divide-y divide-slate-800"></tbody></table></div>
-        </section>
-
-        <section id="expenses" class="mb-10 glass-card p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Expenses</h2><button onclick="openModal('expModal'); resetExpForm()" class="btn-jelly text-xs">Add New</button></div>
-            <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Date</th><th class="p-3">Category/Note</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="expList" class="divide-y divide-slate-800"></tbody></table></div>
-        </section>
-
-        <section id="purchases" class="mb-10 glass-card p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Purchases</h2><button onclick="openModal('purchaseModal'); resetPurchForm()" class="btn-jelly text-xs">Add New</button></div>
-            <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Dealer</th><th class="p-3">Items</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="purchaseList" class="divide-y divide-slate-800"></tbody></table></div>
-        </section>
-
-        <section id="reports" class="mb-10 glass-card p-5 rounded-2xl">
-            <h2 class="text-xl font-bold mb-4 text-center">Financial Report</h2>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-900/50 p-3 rounded-xl border border-blue-500/20 text-center"><span class="text-[10px] text-blue-400 block uppercase">Sales</span><span class="text-xl font-bold" id="repRev">0</span></div>
-                <div class="bg-slate-900/50 p-3 rounded-xl border border-purple-500/20 text-center"><span class="text-[10px] text-purple-400 block uppercase">Purchases</span><span class="text-xl font-bold" id="repPurch">0</span></div>
-                <div class="bg-slate-900/50 p-3 rounded-xl border border-orange-500/20 text-center"><span class="text-[10px] text-orange-400 block uppercase">Expenses</span><span class="text-xl font-bold" id="repExp">0</span></div>
-                <div class="bg-slate-900/50 p-3 rounded-xl border border-emerald-500/50 text-center relative overflow-hidden"><div class="absolute inset-0 bg-emerald-500/10"></div><span class="text-[10px] text-emerald-400 block uppercase font-bold relative z-10">Net Profit</span><span class="text-2xl font-bold text-emerald-400 relative z-10" id="repNet">0</span></div>
-            </div>
-        </section>
-
-        <section id="attendance" class="mb-10 glass-card p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Attendance</h2><button onclick="openModal('attModal')" class="btn-jelly text-xs">Mark</button></div>
-            <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Date</th><th class="p-3">Status</th><th class="p-3">In</th><th class="p-3">Out</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="attList" class="divide-y divide-slate-800"></tbody></table></div>
-        </section>
+        <section id="history" class="mb-10 glass-card p-4 rounded-2xl"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Sales History</h2><input type="date" id="salesDateFilter" class="modern-input w-36" onchange="renderHistory()"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-300"><thead class="bg-slate-800 text-slate-400 uppercase font-bold"><tr><th class="p-3 rounded-l-lg">Time</th><th class="p-3">Items Sold</th><th class="p-3 text-right">Total</th><th class="p-3 rounded-r-lg text-center">Action</th></tr></thead><tbody id="historyList" class="divide-y divide-slate-800"></tbody></table></div></section>
+        <section id="expenses" class="mb-10 glass-card p-4 rounded-2xl"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Expenses</h2><button onclick="openModal('expModal'); resetExpForm()" class="btn-jelly text-xs">Add New</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Date</th><th class="p-3">Category/Note</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="expList" class="divide-y divide-slate-800"></tbody></table></div></section>
+        <section id="purchases" class="mb-10 glass-card p-4 rounded-2xl"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Purchases</h2><button onclick="openModal('purchaseModal'); resetPurchForm()" class="btn-jelly text-xs">Add New</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Dealer</th><th class="p-3">Items</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="purchaseList" class="divide-y divide-slate-800"></tbody></table></div></section>
+        <section id="reports" class="mb-10 glass-card p-5 rounded-2xl"><h2 class="text-xl font-bold mb-4 text-center">Financial Report</h2><div class="grid grid-cols-2 gap-3"><div class="bg-slate-900/50 p-3 rounded-xl border border-blue-500/20 text-center"><span class="text-[10px] text-blue-400 block uppercase">Sales</span><span class="text-xl font-bold" id="repRev">0</span></div><div class="bg-slate-900/50 p-3 rounded-xl border border-purple-500/20 text-center"><span class="text-[10px] text-purple-400 block uppercase">Purchases</span><span class="text-xl font-bold" id="repPurch">0</span></div><div class="bg-slate-900/50 p-3 rounded-xl border border-orange-500/20 text-center"><span class="text-[10px] text-orange-400 block uppercase">Expenses</span><span class="text-xl font-bold" id="repExp">0</span></div><div class="bg-slate-900/50 p-3 rounded-xl border border-emerald-500/50 text-center relative overflow-hidden"><div class="absolute inset-0 bg-emerald-500/10"></div><span class="text-[10px] text-emerald-400 block uppercase font-bold relative z-10">Net Profit</span><span class="text-2xl font-bold text-emerald-400 relative z-10" id="repNet">0</span></div></div></section>
+        <section id="attendance" class="mb-10 glass-card p-4 rounded-2xl"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Attendance</h2><button onclick="openModal('attModal')" class="btn-jelly text-xs">Mark</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Date</th><th class="p-3">Status</th><th class="p-3">In</th><th class="p-3">Out</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="attList" class="divide-y divide-slate-800"></tbody></table></div></section>
     </main>
 
     <div id="aiModal" class="modal-overlay" onclick="closeModal('aiModal')">
@@ -163,36 +114,12 @@
                 <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fas fa-robot text-white"></i> AI Pharmacist</h3>
                 <button onclick="closeModal('aiModal')" class="text-white hover:text-red-200"><i class="fas fa-times"></i></button>
             </div>
-            
-            <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900 custom-scroll">
-                <div class="chat-bubble-ai">👋 Hello! I am your AI Pharmacist. Ask me about symptoms, medicine uses, or checking your stock.</div>
-            </div>
-
-            <div class="p-3 bg-slate-800 rounded-b-2xl border-t border-slate-700">
-                <div class="flex gap-2">
-                    <input type="text" id="aiInput" placeholder="e.g., Medicine for stomach pain..." class="modern-input flex-1" onkeypress="if(event.key==='Enter') sendToAI()">
-                    <button onclick="sendToAI()" class="bg-blue-600 text-white rounded-xl px-4 hover:bg-blue-500 transition flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </div>
+            <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900 custom-scroll"><div class="chat-bubble-ai">👋 Hello! I am your AI Pharmacist. Ask me about symptoms, medicine uses, or checking your stock.</div></div>
+            <div class="p-3 bg-slate-800 rounded-b-2xl border-t border-slate-700"><div class="flex gap-2"><input type="text" id="aiInput" placeholder="e.g., Medicine for stomach pain..." class="modern-input flex-1" onkeypress="if(event.key==='Enter') sendToAI()"><button onclick="sendToAI()" class="bg-blue-600 text-white rounded-xl px-4 hover:bg-blue-500 transition flex items-center justify-center"><i class="fas fa-paper-plane"></i></button></div></div>
         </div>
     </div>
 
-    <div id="medModal" class="modal-overlay" onclick="closeModal('medModal')">
-        <div class="bg-slate-900 w-full max-w-lg p-6 rounded-2xl border border-slate-700 m-4 shadow-2xl" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-bold mb-6 text-emerald-400">Medicine Details</h3>
-            <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scroll">
-                <input type="hidden" id="medId">
-                <div class="grid grid-cols-2 gap-3"><input type="text" id="medName" placeholder="Medicine Name" class="modern-input"><input type="text" id="medBrand" placeholder="Brand / Company" class="modern-input"></div>
-                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700">
-                    <label class="text-xs text-slate-500 uppercase font-bold mb-1 block">Formula & Potency</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="medFormula" placeholder="Formula" class="modern-input flex-[2]">
-                        <div class="flex-1">
-                            <input type="text" id="medPotency" placeholder="e.g., 5mg+1000mg" class="modern-input w-full">
-                        </div>
-                    </div>
-                </div>
-                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700"><label class="text-xs text-slate-500 uppercase font-bold mb-1 block">Stock & Pricing</label><div class="grid grid-cols-3 gap-2 mb-2"><div><span class="text-[10px] text-slate-400">Total Packs</span><input type="number" id="medTotalPacks" class="modern-input" oninput="calcUnits()"></div><div><span class="text-[10px] text-slate-400">Items/Pack</span><input type="number" id="medPackSize" value="1" class="modern-input" oninput="calcUnits()"></div><div><span class="text-[10px] text-slate-400">Total Units</span><input type="number" id="medStock" readonly class="modern-input bg-slate-950 text-slate-500"></div></div><div class="grid grid-cols-2 gap-2"><div><span class="text-[10px] text-slate-400">Cost Price (Pack)</span><input type="number" id="medCost" class="modern-input"></div><div><span class="text-[10px] text-slate-400">Sale Price (Pack)</span><input type="number" id="medPrice" class="modern-input"></div></div></div><div class="grid grid-cols-2 gap-3"><select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Drops</option><option>Sachet</option><option>Surgicals</option><option>Cream</option><option>Cosmetics</option><option>Other</option></select><input type="date" id="medExp" class="modern-input"></div></div><div class="mt-6 flex gap-3"><button onclick="closeModal('medModal')" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button><button onclick="saveMedicine()" class="flex-1 btn-jelly">Save Item</button></div></div></div>
+    <div id="medModal" class="modal-overlay" onclick="closeModal('medModal')"><div class="bg-slate-900 w-full max-w-lg p-6 rounded-2xl border border-slate-700 m-4 shadow-2xl" onclick="event.stopPropagation()"><h3 class="text-xl font-bold mb-6 text-emerald-400">Medicine Details</h3><div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scroll"><input type="hidden" id="medId"><div class="grid grid-cols-2 gap-3"><input type="text" id="medName" placeholder="Medicine Name" class="modern-input"><input type="text" id="medBrand" placeholder="Brand / Company" class="modern-input"></div><div class="p-3 bg-slate-800 rounded-xl border border-slate-700"><label class="text-xs text-slate-500 uppercase font-bold mb-1 block">Formula & Potency</label><div class="flex gap-2"><input type="text" id="medFormula" placeholder="Formula" class="modern-input flex-[2]"><div class="flex-1"><input type="text" id="medPotency" placeholder="e.g., 5mg+1000mg" class="modern-input w-full"></div></div></div><div class="p-3 bg-slate-800 rounded-xl border border-slate-700"><label class="text-xs text-slate-500 uppercase font-bold mb-1 block">Stock & Pricing</label><div class="grid grid-cols-3 gap-2 mb-2"><div><span class="text-[10px] text-slate-400">Total Packs</span><input type="number" id="medTotalPacks" class="modern-input" oninput="calcUnits()"></div><div><span class="text-[10px] text-slate-400">Items/Pack</span><input type="number" id="medPackSize" value="1" class="modern-input" oninput="calcUnits()"></div><div><span class="text-[10px] text-slate-400">Total Units</span><input type="number" id="medStock" readonly class="modern-input bg-slate-950 text-slate-500"></div></div><div class="grid grid-cols-2 gap-2"><div><span class="text-[10px] text-slate-400">Cost Price (Pack)</span><input type="number" id="medCost" class="modern-input"></div><div><span class="text-[10px] text-slate-400">Sale Price (Pack)</span><input type="number" id="medPrice" class="modern-input"></div></div></div><div class="grid grid-cols-2 gap-3"><select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Drops</option><option>Sachet</option><option>Surgicals</option><option>Cream</option><option>Cosmetics</option><option>Other</option></select><input type="date" id="medExp" class="modern-input"></div></div><div class="mt-6 flex gap-3"><button onclick="closeModal('medModal')" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button><button onclick="saveMedicine()" class="flex-1 btn-jelly">Save Item</button></div></div></div>
     <div id="saleModal" class="modal-overlay" onclick="closeModal('saleModal')"><div class="glass-card w-full max-w-sm p-6 rounded-2xl text-center" onclick="event.stopPropagation()"><h3 class="text-xl font-bold text-white mb-1" id="saleName">Item</h3><p class="text-emerald-400 font-bold mb-4 text-sm" id="salePotency"></p><div class="bg-slate-900 p-1 rounded-xl flex mb-6 relative"><div id="saleToggleBg" class="absolute top-1 bottom-1 w-[48%] bg-emerald-500 rounded-lg transition-all duration-300 left-1"></div><button onclick="setSaleType(false)" class="flex-1 py-2 relative z-10 text-xs font-bold transition-colors" id="btnUnit">Unit</button><button onclick="setSaleType(true)" class="flex-1 py-2 relative z-10 text-xs font-bold transition-colors" id="btnPack">Pack</button></div><div class="flex justify-center items-center gap-4 mb-6"><button onclick="adjQty(-1)" class="w-10 h-10 bg-slate-800 rounded-full text-lg hover:bg-slate-700 transition">-</button><input type="number" id="saleQty" value="1" class="w-16 bg-transparent text-center text-3xl font-bold outline-none" oninput="calcTotal()"><button onclick="adjQty(1)" class="w-10 h-10 bg-slate-800 rounded-full text-lg hover:bg-slate-700 transition">+</button></div><div class="mb-6 p-3 bg-slate-800/50 rounded-xl"><span class="text-slate-400 text-[10px] uppercase tracking-widest">Total Price</span><div class="text-2xl font-bold text-white mt-1" id="saleTotal">0</div></div><button onclick="addToBill()" class="btn-jelly w-full py-3 text-md">Add to Cart</button></div></div>
     <div id="billModal" class="modal-overlay" onclick="closeModal('billModal')"><div class="bg-slate-900 w-full max-w-md h-[85vh] flex flex-col rounded-2xl border border-slate-700 m-4" onclick="event.stopPropagation()"><div class="p-5 border-b border-slate-800 flex justify-between items-center"><h3 class="font-bold text-xl">Current Bill</h3><button onclick="closeModal('billModal')" class="text-slate-400"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto p-4 space-y-3" id="billList"></div><div class="p-5 bg-slate-800 rounded-b-2xl"><div class="flex justify-between items-center mb-4"><span class="text-slate-400">Discount (Rs)</span><input type="number" id="billDisc" value="0" class="modern-input w-24 text-right" oninput="renderBill()"></div><div class="flex justify-between text-2xl font-bold mb-6"><span>Net Total</span><span id="billGrandTotal" class="text-emerald-400">0</span></div><button onclick="checkout()" class="btn-jelly w-full py-4 text-lg shadow-lg shadow-emerald-500/20">Confirm Checkout</button></div></div></div>
     <div id="expModal" class="modal-overlay" onclick="closeModal('expModal')"><div class="bg-slate-900 w-full max-w-xs p-5 rounded-2xl border border-slate-700" onclick="event.stopPropagation()"><h3 class="font-bold mb-4">Add Expense</h3><input type="hidden" id="expId"><div class="space-y-3"><input type="date" id="expDate" class="modern-input"><select id="expCat" class="modern-input" onchange="checkExpCustom(this)"><option>Utility Bill</option><option>Rent</option><option>Tea/Food</option><option value="Other">Other</option></select><input type="text" id="expCustom" placeholder="Category..." class="modern-input hidden"><input type="text" id="expNote" placeholder="Description" class="modern-input"><input type="number" id="expAmt" placeholder="Amount" class="modern-input"><button onclick="saveExpense()" class="btn-jelly w-full bg-orange-500">Save</button></div></div></div>
@@ -203,20 +130,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // 🔥 FIREBASE CONFIG 🔥
-        const firebaseConfig = {
-            apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g",
-            authDomain: "alazamat-store.firebaseapp.com",
-            databaseURL: "https://alazamat-store-default-rtdb.firebaseio.com",
-            projectId: "alazamat-store",
-            storageBucket: "alazamat-store.firebasestorage.app",
-            messagingSenderId: "466791969920",
-            appId: "1:466791969920:web:63437a8ab4a428fa906265"
-        };
-
-        // 🤖 GEMINI API KEY (YOUR NEW KEY)
-        const GEMINI_API_KEY = "AIzaSyD9b8ikeTvFDsF7aOtoAn3ZZLX-6FVTFZ8"; 
-
+        const firebaseConfig = { apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g", authDomain: "alazamat-store.firebaseapp.com", databaseURL: "https://alazamat-store-default-rtdb.firebaseio.com", projectId: "alazamat-store", storageBucket: "alazamat-store.firebasestorage.app", messagingSenderId: "466791969920", appId: "1:466791969920:web:63437a8ab4a428fa906265" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const dbRef = ref(db, 'alazamat_store_v1');
@@ -224,17 +138,14 @@
         window.inv=[]; window.sales=[]; window.purch=[]; window.expenses=[]; window.attendance=[]; window.cart=[];
         window.saleItem=null; window.isPackSale=false; window.activeFilter='all'; window.gridMode='grid';
 
-        // SYNC
         const syncTimeout = setTimeout(() => { const s = document.getElementById('syncStatus'); if(s) { s.innerText = "⚠️ Offline Mode"; s.style.color = "#ef4444"; if(window.inv.length === 0) renderGrid(); } }, 4000);
         onValue(dbRef, (snapshot) => { clearTimeout(syncTimeout); const data = snapshot.val(); if (data) { window.inv = data.inv || []; window.sales = data.sales || []; window.purch = data.purch || []; window.expenses = data.expenses || []; window.attendance = data.attendance || []; renderGrid(); renderHistory(); checkNotifications(); updateStats(); const s = document.getElementById('syncStatus'); if(s) { s.innerText = "☁️ Synced"; s.style.color = "#10b981"; } } else { renderGrid(); } });
         window.saveData = function() { const s = document.getElementById('syncStatus'); if(s) { s.innerText = "⏳ Saving..."; s.style.color = "#fbbf24"; } set(dbRef, { inv: window.inv, sales: window.sales, purch: window.purch, expenses: window.expenses, attendance: window.attendance }); }
 
-        // IMAGES & INIT
         const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
         const imgMap = { 'Tablet': `${baseURL}pills.jpg`, 'Syrup': `${baseURL}syrup.png`, 'Injection': `${baseURL}injections.jpeg`, 'Capsule': `${baseURL}capsules.jpg`, 'Drops': `${baseURL}drop.png`, 'Sachet': `${baseURL}sachets.jpeg`, 'Surgicals': `${baseURL}surgical.jpeg`, 'Cream': `${baseURL}creams.jpeg`, 'Cosmetics': `${baseURL}cosmetics.png`, 'Other': `${baseURL}other.jpeg` };
         const today = new Date().toISOString().split('T')[0]; document.getElementById('expDate').value = today; document.getElementById('pDate').value = today; document.getElementById('attDateInput').value = today; document.getElementById('salesDateFilter').value = today; document.getElementById('storeLogo').src = `${baseURL}logo.png`; 
 
-        // UI HELPERS
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('active');
         window.closeSidebar = () => document.getElementById('sidebar').classList.remove('active');
         window.nav = (id) => { document.getElementById(id).scrollIntoView({behavior:'smooth'}); closeSidebar(); }
@@ -245,63 +156,37 @@
         window.toggleNotif = (e) => { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
         window.onclick = (e) => { if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-4.right-4')) document.getElementById('notifPanel').classList.add('hidden'); if (!e.target.closest('#filterDropdown') && !e.target.closest('.relative')) document.getElementById('filterDropdown').classList.add('hidden'); };
 
-        // === 🚀 REAL AI CHATBOT IMPLEMENTATION (FIXED: Uses gemini-1.5-flash) ===
+        // === 🚀 SERVER API CONNECTION ===
         window.sendToAI = async () => {
             const input = document.getElementById('aiInput');
             const query = input.value.trim();
             if(!query) return;
 
-            // 1. Show User Message
             const history = document.getElementById('chatHistory');
             history.innerHTML += `<div class="chat-bubble-user">${query}</div>`;
             input.value = '';
             history.scrollTop = history.scrollHeight;
 
-            // 2. Prepare Context (Stock)
-            // We create a simplified list of stock to send to AI so it knows what you have
             const stockContext = window.inv.map(i => `${i.name} (${i.formula}) - ${i.stock} in stock`).join(', ');
-            
-            // 3. Construct the Prompt
-            const prompt = `
-                You are an expert Pharmacist Assistant at Al-Azamat Medical Store. 
-                Current Stock: [${stockContext}]
-                
-                User Question: "${query}"
-                
-                Instructions:
-                1. If user describes symptoms (e.g., "pain"), ask clarifying questions (Where? How long?) OR suggest medicines FROM THE STOCK LIST above if applicable.
-                2. If user asks about a specific drug, explain its uses, side effects, and check if we have it in stock.
-                3. Be professional, concise, and helpful. 
-                4. Keep the answer short (under 50 words) unless detailed info is requested.
-            `;
+            const prompt = `You are an expert Pharmacist Assistant at Al-Azamat Medical Store. Current Stock: [${stockContext}]. User Question: "${query}". Instructions: 1. If user describes symptoms (e.g., "pain"), ask clarifying questions or suggest medicines FROM THE STOCK LIST above if applicable. 2. If user asks about a specific drug, explain its uses, side effects, and check if we have it in stock. 3. Be professional, concise, and helpful. 4. Keep the answer short (under 50 words) unless detailed info is requested.`;
 
-            // 4. Call Gemini API (UPDATED URL to gemini-1.5-flash with v1beta)
             try {
                 history.innerHTML += `<div class="chat-bubble-ai" id="loadingBubble">Thinking... <i class="fas fa-circle-notch fa-spin"></i></div>`;
                 history.scrollTop = history.scrollHeight;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                // CALLING THE SERVER API (Step 1 Method)
+                const response = await fetch('/api/gemini', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    body: JSON.stringify({ prompt: prompt })
                 });
 
                 const data = await response.json();
-                
-                // --- DEBUG MODE: Show Real Error ---
-                if (data.error) {
-                    throw new Error(data.error.message); 
-                }
-                
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!aiText) {
-                    throw new Error("No response content from AI. (Check usage limits)");
-                }
-
-                // Remove loading bubble and add real response
                 document.getElementById('loadingBubble').remove();
+
+                if (data.error) throw new Error(data.error);
                 
-                // Format the AI response (basic markdown to html)
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
                 const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
                 
                 history.innerHTML += `<div class="chat-bubble-ai">${formattedText}</div>`;
@@ -310,116 +195,35 @@
             } catch (error) {
                 const bubble = document.getElementById('loadingBubble');
                 if(bubble) bubble.remove();
-                history.innerHTML += `<div class="chat-bubble-ai text-red-400"><b>Error:</b> ${error.message}</div>`;
-                console.error("Gemini Error:", error);
+                history.innerHTML += `<div class="chat-bubble-ai text-red-400"><b>Error:</b> ${error.message} (Is Vercel configured?)</div>`;
             }
         }
 
-        // === GRID RENDERER (v59 UPDATED - OPTIONAL POTENCY) ===
         window.renderGrid = () => {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
             const mode = document.getElementById('searchMode').value;
             if(gridMode === 'grid') { g.className = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"; } else { g.className = "flex flex-col gap-2"; }
-
-            window.inv.filter(i => {
-                const matchTerm = mode === 'name' ? i.name : (i.formula || '');
-                return matchTerm.toLowerCase().includes(term) && (activeFilter === 'all' || i.cat === activeFilter);
-            }).forEach(i => {
+            window.inv.filter(i => { const matchTerm = mode === 'name' ? i.name : (i.formula || ''); return matchTerm.toLowerCase().includes(term) && (activeFilter === 'all' || i.cat === activeFilter); }).forEach(i => {
                 const w = Math.floor(i.stock/i.packSize), l = i.stock%i.packSize;
                 const stockStr = (['Syrup','Drops','Cosmetics','Cream'].includes(i.cat)||i.packSize===1) ? `${i.stock}` : `${w}/${l}`;
                 const img = imgMap[i.cat] || imgMap['Other'];
                 const days = (new Date(i.exp) - new Date()) / (1000*60*60*24);
                 let expColor = days < 0 ? 'text-red-500' : (days < 30 ? 'text-yellow-500' : 'text-emerald-500');
                 const unitPrice = (i.price/i.packSize).toFixed(1);
-
                 if(gridMode === 'grid') {
-                    g.innerHTML += `
-                    <div class="glass-card rounded-xl overflow-hidden relative group">
-                        <div class="absolute top-1 right-1 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition">
-                            <button onclick="editMed(${i.id})" class="bg-black/50 text-blue-400 p-1.5 rounded"><i class="fas fa-pen text-xs"></i></button>
-                            <button onclick="delMed(${i.id})" class="bg-black/50 text-red-400 p-1.5 rounded"><i class="fas fa-trash text-xs"></i></button>
-                        </div>
-                        <img src="${img}" class="item-img" onerror="this.src='${imgMap['Other']}'" loading="lazy">
-                        <div class="p-2">
-                            <div class="flex justify-between items-start mb-1">
-                                <div class="overflow-hidden">
-                                    <span class="text-[9px] font-bold text-blue-400 uppercase block mb-0.5">${i.cat}</span>
-                                    <h4 class="font-bold text-white text-xs truncate leading-tight">${i.name}</h4>
-                                </div>
-                                <span class="text-[9px] text-slate-400 uppercase tracking-wide text-right pl-1">${i.brand||'GEN'}</span>
-                            </div>
-                            <p class="text-[10px] text-emerald-400 truncate mb-1">${i.formula || '-'}</p>
-                            <div class="flex justify-between items-center text-[10px] mb-2">
-                                ${i.potency ? `<span class="font-extrabold text-white text-xs">${i.potency}</span>` : '<span class="text-slate-600 text-[10px]">-</span>'}
-                                <span class="text-slate-400">Stk: <b>${stockStr}</b></span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-1 text-[9px] bg-slate-900/50 p-1 rounded mb-2">
-                                <div class="text-center"><span class="block text-slate-500">Pk</span><span class="font-bold text-white">${i.price}</span></div>
-                                <div class="text-center"><span class="block text-slate-500">Un</span><span class="font-bold text-white">${unitPrice}</span></div>
-                            </div>
-                            <div class="flex justify-between items-center text-[9px] mb-2">
-                                <span class="${expColor}">${i.exp}</span>
-                            </div>
-                            <button onclick="openSaleModal(${i.id})" class="btn-jelly w-full py-1.5 text-[10px]">Add</button>
-                        </div>
-                    </div>`;
+                    g.innerHTML += `<div class="glass-card rounded-xl overflow-hidden relative group"><div class="absolute top-1 right-1 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition"><button onclick="editMed(${i.id})" class="bg-black/50 text-blue-400 p-1.5 rounded"><i class="fas fa-pen text-xs"></i></button><button onclick="delMed(${i.id})" class="bg-black/50 text-red-400 p-1.5 rounded"><i class="fas fa-trash text-xs"></i></button></div><img src="${img}" class="item-img" onerror="this.src='${imgMap['Other']}'" loading="lazy"><div class="p-2"><div class="flex justify-between items-start mb-1"><div class="overflow-hidden"><span class="text-[9px] font-bold text-blue-400 uppercase block mb-0.5">${i.cat}</span><h4 class="font-bold text-white text-xs truncate leading-tight">${i.name}</h4></div><span class="text-[9px] text-slate-400 uppercase tracking-wide text-right pl-1">${i.brand||'GEN'}</span></div><p class="text-[10px] text-emerald-400 truncate mb-1">${i.formula || '-'}</p><div class="flex justify-between items-center text-[10px] mb-2">${i.potency ? `<span class="font-extrabold text-white text-xs">${i.potency}</span>` : '<span class="text-slate-600 text-[10px]">-</span>'}<span class="text-slate-400">Stk: <b>${stockStr}</b></span></div><div class="grid grid-cols-2 gap-1 text-[9px] bg-slate-900/50 p-1 rounded mb-2"><div class="text-center"><span class="block text-slate-500">Pk</span><span class="font-bold text-white">${i.price}</span></div><div class="text-center"><span class="block text-slate-500">Un</span><span class="font-bold text-white">${unitPrice}</span></div></div><div class="flex justify-between items-center text-[9px] mb-2"><span class="${expColor}">${i.exp}</span></div><button onclick="openSaleModal(${i.id})" class="btn-jelly w-full py-1.5 text-[10px]">Add</button></div></div>`;
                 } else {
-                    g.innerHTML += `
-                    <div class="glass-card p-2 rounded-xl flex items-center gap-3 relative group">
-                        <div class="w-16 h-16 bg-white rounded-lg flex-none p-1"><img src="${img}" class="w-full h-full object-contain" loading="lazy"></div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between">
-                                <h4 class="font-bold text-white text-xs truncate">
-                                    ${i.name}
-                                    <span class="text-[10px] text-slate-400 font-normal">(${i.brand})</span>
-                                </h4>
-                                <div class="text-right">
-                                    <span class="block text-[9px] text-emerald-400 font-bold uppercase">${i.cat}</span>
-                                    <span class="text-emerald-400 font-bold text-[10px]">${i.potency || ''}</span>
-                                </div>
-                            </div>
-                            <p class="text-[10px] text-slate-400 truncate">${i.formula}</p>
-                            <div class="flex justify-between mt-1 text-[10px]">
-                                <span class="text-slate-300">Stk: <b>${stockStr}</b></span>
-                                <div><span class="text-slate-400">Pk:</span> <b>${i.price}</b> <span class="text-slate-400 ml-1">Un:</span> <b>${unitPrice}</b></div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <button onclick="openSaleModal(${i.id})" class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-xs"><i class="fas fa-plus"></i></button>
-                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition absolute right-10 top-2">
-                                <button onclick="editMed(${i.id})" class="text-blue-400 bg-slate-900 p-1 rounded"><i class="fas fa-pen text-[10px]"></i></button>
-                                <button onclick="delMed(${i.id})" class="text-red-400 bg-slate-900 p-1 rounded"><i class="fas fa-trash text-[10px]"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
+                    g.innerHTML += `<div class="glass-card p-2 rounded-xl flex items-center gap-3 relative group"><div class="w-16 h-16 bg-white rounded-lg flex-none p-1"><img src="${img}" class="w-full h-full object-contain" loading="lazy"></div><div class="flex-1 min-w-0"><div class="flex justify-between"><h4 class="font-bold text-white text-xs truncate">${i.name}<span class="text-[10px] text-slate-400 font-normal">(${i.brand})</span></h4><div class="text-right"><span class="block text-[9px] text-emerald-400 font-bold uppercase">${i.cat}</span><span class="text-emerald-400 font-bold text-[10px]">${i.potency || ''}</span></div></div><p class="text-[10px] text-slate-400 truncate">${i.formula}</p><div class="flex justify-between mt-1 text-[10px]"><span class="text-slate-300">Stk: <b>${stockStr}</b></span><div><span class="text-slate-400">Pk:</span> <b>${i.price}</b> <span class="text-slate-400 ml-1">Un:</span> <b>${unitPrice}</b></div></div></div><div class="flex flex-col gap-1"><button onclick="openSaleModal(${i.id})" class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-xs"><i class="fas fa-plus"></i></button><div class="flex gap-1 opacity-0 group-hover:opacity-100 transition absolute right-10 top-2"><button onclick="editMed(${i.id})" class="text-blue-400 bg-slate-900 p-1 rounded"><i class="fas fa-pen text-[10px]"></i></button><button onclick="delMed(${i.id})" class="text-red-400 bg-slate-900 p-1 rounded"><i class="fas fa-trash text-[10px]"></i></button></div></div></div>`;
                 }
             });
         }
 
-        // === CRUD & LOGIC (UPDATED SAVE POTENCY) ===
         window.openAddModal = () => { document.getElementById('search').value=''; document.getElementById('medId').value=''; document.getElementById('medName').value=''; document.getElementById('medBrand').value=''; document.getElementById('medFormula').value=''; document.getElementById('medTotalPacks').value=''; document.getElementById('medStock').value=''; document.getElementById('medPrice').value=''; document.getElementById('medCost').value=''; document.getElementById('medPotency').value=''; openModal('medModal'); }
-        window.saveMedicine = () => {
-            const idVal = document.getElementById('medId').value; 
-            const potVal = document.getElementById('medPotency').value.trim();
-            // REMOVED: const unitVal = document.getElementById('medUnit').value;
-            // FIXED: Directly use text input for potency
-            const fullPotency = potVal; 
-
-            const item = { id: idVal ? parseInt(idVal) : Date.now(), name: document.getElementById('medName').value, brand: document.getElementById('medBrand').value, formula: document.getElementById('medFormula').value, potency: fullPotency, packSize: parseInt(document.getElementById('medPackSize').value)||1, stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0, price: parseFloat(document.getElementById('medPrice').value)||0, cat: document.getElementById('medCat').value, exp: document.getElementById('medExp').value, img: '' };
-            const idx = window.inv.findIndex(i=>i.id==item.id); if(idx>-1) window.inv[idx]=item; else window.inv.unshift(item); saveData(); closeModal('medModal');
-        }
-        window.editMed = (id) => { 
-            const i = window.inv.find(x=>x.id==id); 
-            document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name; document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula; 
-            // FIXED: Just load the full potency string
-            document.getElementById('medPotency').value = i.potency || ""; 
-            
-            document.getElementById('medPackSize').value=i.packSize; document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize; document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price; document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp; openModal('medModal'); 
-        }
+        window.saveMedicine = () => { const idVal = document.getElementById('medId').value; const potVal = document.getElementById('medPotency').value.trim(); const item = { id: idVal ? parseInt(idVal) : Date.now(), name: document.getElementById('medName').value, brand: document.getElementById('medBrand').value, formula: document.getElementById('medFormula').value, potency: potVal, packSize: parseInt(document.getElementById('medPackSize').value)||1, stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0, price: parseFloat(document.getElementById('medPrice').value)||0, cat: document.getElementById('medCat').value, exp: document.getElementById('medExp').value, img: '' }; const idx = window.inv.findIndex(i=>i.id==item.id); if(idx>-1) window.inv[idx]=item; else window.inv.unshift(item); saveData(); closeModal('medModal'); }
+        window.editMed = (id) => { const i = window.inv.find(x=>x.id==id); document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name; document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula; document.getElementById('medPotency').value = i.potency || ""; document.getElementById('medPackSize').value=i.packSize; document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize; document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price; document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp; openModal('medModal'); }
         window.delMed = (id) => { if(confirm("Delete?")) { window.inv=window.inv.filter(x=>x.id!=id); saveData(); } }
         window.calcUnits = () => { document.getElementById('medStock').value = Math.ceil((parseFloat(document.getElementById('medTotalPacks').value)||0) * (parseFloat(document.getElementById('medPackSize').value)||1)); }
-
         window.openSaleModal = (id) => { window.saleItem = window.inv.find(i=>i.id===id); document.getElementById('saleName').innerText = window.saleItem.name; document.getElementById('salePotency').innerText = window.saleItem.potency||''; document.getElementById('saleQty').value = 1; setSaleType(false); openModal('saleModal'); document.getElementById('search').value=''; }
         window.setSaleType = (isPack) => { window.isPackSale = isPack; const bg = document.getElementById('saleToggleBg'); const btnUnit = document.getElementById('btnUnit'); const btnPack = document.getElementById('btnPack'); bg.style.left = isPack ? '51%' : '1%'; btnUnit.className = !isPack ? "flex-1 py-2 relative z-10 text-xs font-bold text-white" : "flex-1 py-2 relative z-10 text-xs font-bold text-slate-400"; btnPack.className = isPack ? "flex-1 py-2 relative z-10 text-xs font-bold text-white" : "flex-1 py-2 relative z-10 text-xs font-bold text-slate-400"; calcTotal(); }
         window.adjQty = (n) => { let q = parseInt(document.getElementById('saleQty').value)+n; if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal(); }
