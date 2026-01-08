@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v60.0 (AI Live)</title>
+    <title>Al-Azamat Medical Store - v61.0 (AI Debug Mode)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -272,7 +272,16 @@
                 });
 
                 const data = await response.json();
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't understand that. Please try again.";
+                
+                // --- DEBUG MODE: Show Real Error ---
+                if (data.error) {
+                    throw new Error(data.error.message); 
+                }
+                
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!aiText) {
+                    throw new Error("No response content from AI. (Check usage limits)");
+                }
 
                 // Remove loading bubble and add real response
                 document.getElementById('loadingBubble').remove();
@@ -284,8 +293,10 @@
                 history.scrollTop = history.scrollHeight;
 
             } catch (error) {
-                document.getElementById('loadingBubble').remove();
-                history.innerHTML += `<div class="chat-bubble-ai text-red-400">Error: ${error.message}</div>`;
+                const bubble = document.getElementById('loadingBubble');
+                if(bubble) bubble.remove();
+                history.innerHTML += `<div class="chat-bubble-ai text-red-400"><b>Error:</b> ${error.message}</div>`;
+                console.error("Gemini Error:", error);
             }
         }
 
