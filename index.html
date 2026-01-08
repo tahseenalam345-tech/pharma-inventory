@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v54.0 (Perfect UI)</title>
+    <title>Al-Azamat Medical Store - v55.0 (Connection Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -273,8 +273,8 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // 🔥 FIREBASE CONFIG 🔥
         const firebaseConfig = {
@@ -294,7 +294,10 @@
         window.inv=[]; window.sales=[]; window.purch=[]; window.expenses=[]; window.attendance=[]; window.cart=[];
         window.saleItem=null; window.isPackSale=false; window.activeFilter='all'; window.gridMode='grid';
 
+        // SYNC WITH TIMEOUT FIX
+        const syncTimeout = setTimeout(() => { document.getElementById('syncStatus').innerText = "⚠️ Offline Mode"; }, 3000);
         onValue(dbRef, (snapshot) => {
+            clearTimeout(syncTimeout);
             const data = snapshot.val();
             if (data) {
                 window.inv = data.inv || []; window.sales = data.sales || []; window.purch = data.purch || []; window.expenses = data.expenses || []; window.attendance = data.attendance || [];
