@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v56.0 (Full Details)</title>
+    <title>Al-Azamat Medical Store - v57.0 (Category Added)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -37,7 +37,6 @@
         
         /* IMAGE FIT */
         .item-img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px 8px 0 0; background: #ffffff; }
-        .list-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; background: #ffffff; }
     </style>
 </head>
 <body>
@@ -95,7 +94,7 @@
         
         <section id="hero" class="text-center mb-8">
             <div class="relative w-32 h-32 mx-auto mb-4">
-                <img id="storeLogo" src="" class="w-full h-full object-contain filter drop-shadow-xl">
+                <img id="storeLogo" src="" class="w-full h-full object-contain filter drop-shadow-xl" loading="lazy">
             </div>
             <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500 mb-1">Al-Azamat</h1>
             <p class="text-slate-400 tracking-[0.3em] uppercase text-xs font-bold">Medical Store</p>
@@ -377,11 +376,14 @@
                             <button onclick="editMed(${i.id})" class="bg-black/50 text-blue-400 p-1.5 rounded"><i class="fas fa-pen text-xs"></i></button>
                             <button onclick="delMed(${i.id})" class="bg-black/50 text-red-400 p-1.5 rounded"><i class="fas fa-trash text-xs"></i></button>
                         </div>
-                        <img src="${img}" class="item-img" onerror="this.src='${imgMap['Other']}'">
+                        <img src="${img}" class="item-img" onerror="this.src='${imgMap['Other']}'" loading="lazy">
                         <div class="p-2">
                             <div class="flex justify-between items-start mb-1">
-                                <h4 class="font-bold text-white text-xs truncate leading-tight">${i.name}</h4>
-                                <span class="text-[9px] text-slate-400 uppercase tracking-wide">${i.brand||'GEN'}</span>
+                                <div class="overflow-hidden">
+                                    <span class="text-[9px] font-bold text-blue-400 uppercase block mb-0.5">${i.cat}</span>
+                                    <h4 class="font-bold text-white text-xs truncate leading-tight">${i.name}</h4>
+                                </div>
+                                <span class="text-[9px] text-slate-400 uppercase tracking-wide text-right pl-1">${i.brand||'GEN'}</span>
                             </div>
                             <p class="text-[10px] text-emerald-400 truncate mb-1">${i.formula || '-'}</p>
                             <div class="flex justify-between items-center text-[10px] mb-2">
@@ -401,9 +403,18 @@
                 } else {
                     g.innerHTML += `
                     <div class="glass-card p-2 rounded-xl flex items-center gap-3 relative group">
-                        <div class="w-16 h-16 bg-white rounded-lg flex-none p-1"><img src="${img}" class="w-full h-full object-contain"></div>
+                        <div class="w-16 h-16 bg-white rounded-lg flex-none p-1"><img src="${img}" class="w-full h-full object-contain" loading="lazy"></div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex justify-between"><h4 class="font-bold text-white text-xs truncate">${i.name} <span class="text-[10px] text-slate-400 font-normal">(${i.brand})</span></h4><span class="text-emerald-400 font-bold text-[10px]">${i.potency}</span></div>
+                            <div class="flex justify-between">
+                                <h4 class="font-bold text-white text-xs truncate">
+                                    ${i.name}
+                                    <span class="text-[10px] text-slate-400 font-normal">(${i.brand})</span>
+                                </h4>
+                                <div class="text-right">
+                                    <span class="block text-[9px] text-emerald-400 font-bold uppercase">${i.cat}</span>
+                                    <span class="text-emerald-400 font-bold text-[10px]">${i.potency}</span>
+                                </div>
+                            </div>
                             <p class="text-[10px] text-slate-400 truncate">${i.formula}</p>
                             <div class="flex justify-between mt-1 text-[10px]">
                                 <span class="text-slate-300">Stk: <b>${stockStr}</b></span>
@@ -466,11 +477,15 @@
         }
 
         window.renderAll = () => { 
+            // Expenses
             document.getElementById('expList').innerHTML = window.expenses.map(e => `<tr><td class="p-3 text-slate-400">${e.date}</td><td class="p-3 text-white">${e.cat}<br><span class="text-[10px] text-slate-500">${e.note}</span></td><td class="p-3 text-right text-orange-400">${e.amt}</td><td class="p-3 text-center"><button onclick="if(confirm('Delete?')){window.expenses=window.expenses.filter(x=>x.id!=${e.id});saveData();}" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            // Purchases
             document.getElementById('purchaseList').innerHTML = window.purch.map(p => `<tr><td class="p-3 text-white">${p.dealer}</td><td class="p-3 text-slate-400 text-[10px]">${p.items}</td><td class="p-3 text-right text-purple-400">${p.amt}</td><td class="p-3 text-center"><button onclick="if(confirm('Delete?')){window.purch=window.purch.filter(x=>x.id!=${p.id});saveData();}" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            // Attendance
             document.getElementById('attList').innerHTML = window.attendance.map(a => `<tr><td class="p-3 text-slate-400">${a.date}</td><td class="p-3 text-emerald-400">${a.status}</td><td class="p-3 text-slate-400">${a.in||'-'}</td><td class="p-3 text-slate-400">${a.out||'-'}</td><td class="p-3 text-center"><button onclick="window.attendance=window.attendance.filter(x=>x.id!=${a.id}); saveData();" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
 
+        // Standard Functions
         window.checkNotifications = () => { const list = document.getElementById('notifList'); const badge = document.getElementById('notifBadge'); list.innerHTML = ''; let count = 0; const now = new Date(); window.inv.forEach(i => { if(i.stock === 0) { count++; list.innerHTML += `<div class="p-2 bg-red-900/20 text-red-300 text-xs border-l-2 border-red-500">❌ <b>${i.name}</b> Out of Stock</div>`; } }); if(count > 0) { badge.innerText = count; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
         window.saveExpense = () => { const id = document.getElementById('expId').value || Date.now(); const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value }; const idx = window.expenses.findIndex(x=>x.id==id); if(idx>-1) window.expenses[idx]=e; else window.expenses.unshift(e); saveData(); closeModal('expModal'); }
         window.checkExpCustom = (el) => { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
