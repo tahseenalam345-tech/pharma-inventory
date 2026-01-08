@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v55.0 (Fixed & Live)</title>
+    <title>Al-Azamat Medical Store - v56.0 (Full Details)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -37,6 +37,7 @@
         
         /* IMAGE FIT */
         .item-img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px 8px 0 0; background: #ffffff; }
+        .list-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; background: #ffffff; }
     </style>
 </head>
 <body>
@@ -279,7 +280,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // 🔥 YOUR REAL CONFIG (FIXED) 🔥
+        // 🔥 FIREBASE CONFIG 🔥
         const firebaseConfig = {
             apiKey: "AIzaSyA9p6sIJORmKpp6wkahPO90ZL9h68mz95g",
             authDomain: "alazamat-store.firebaseapp.com",
@@ -297,15 +298,10 @@
         window.inv=[]; window.sales=[]; window.purch=[]; window.expenses=[]; window.attendance=[]; window.cart=[];
         window.saleItem=null; window.isPackSale=false; window.activeFilter='all'; window.gridMode='grid';
 
-        // SYNC WITH SAFETY TIMEOUT (FIXES STUCK SCREEN)
+        // SYNC WITH SAFETY TIMEOUT
         const syncTimeout = setTimeout(() => { 
             const status = document.getElementById('syncStatus');
-            if(status) {
-                status.innerText = "⚠️ Offline Mode"; 
-                status.style.color = "#ef4444";
-                // If stuck, load basic defaults so UI works
-                if(window.inv.length === 0) renderGrid();
-            }
+            if(status) { status.innerText = "⚠️ Offline Mode"; status.style.color = "#ef4444"; if(window.inv.length === 0) renderGrid(); }
         }, 4000);
 
         onValue(dbRef, (snapshot) => {
@@ -314,42 +310,26 @@
             if (data) {
                 window.inv = data.inv || []; window.sales = data.sales || []; window.purch = data.purch || []; window.expenses = data.expenses || []; window.attendance = data.attendance || [];
                 renderGrid(); renderHistory(); checkNotifications(); updateStats();
-                const status = document.getElementById('syncStatus');
-                if(status) { status.innerText = "☁️ Synced"; status.style.color = "#10b981"; }
+                const status = document.getElementById('syncStatus'); if(status) { status.innerText = "☁️ Synced"; status.style.color = "#10b981"; }
             } else {
-                // Database empty or new
-                const status = document.getElementById('syncStatus');
-                if(status) { status.innerText = "☁️ Connected (Empty)"; status.style.color = "#10b981"; }
+                const status = document.getElementById('syncStatus'); if(status) { status.innerText = "☁️ Connected (Empty)"; status.style.color = "#10b981"; }
                 renderGrid(); 
             }
-        }, (error) => {
-            console.error("Firebase Error:", error);
-            clearTimeout(syncTimeout);
-            const status = document.getElementById('syncStatus');
-            if(status) { status.innerText = "❌ Error"; status.style.color = "red"; }
         });
 
         window.saveData = function() {
-            const status = document.getElementById('syncStatus');
-            if(status) { status.innerText = "⏳ Saving..."; status.style.color = "#fbbf24"; }
+            const status = document.getElementById('syncStatus'); if(status) { status.innerText = "⏳ Saving..."; status.style.color = "#fbbf24"; }
             set(dbRef, { inv: window.inv, sales: window.sales, purch: window.purch, expenses: window.expenses, attendance: window.attendance });
         }
 
-        // CONFIG & IMAGES (MATCHING YOUR SCREENSHOTS EXACTLY)
+        // CONFIG & IMAGES
         const ghUser = "tahseenalam345-tech"; const ghRepo = "pharma-inventory"; const branch = "main"; 
         const baseURL = `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/${branch}/images/`;
         
         const imgMap = { 
-            'Tablet': `${baseURL}pills.jpg`, 
-            'Syrup': `${baseURL}syrup.png`, 
-            'Injection': `${baseURL}injections.jpeg`, 
-            'Capsule': `${baseURL}capsules.jpg`, 
-            'Drops': `${baseURL}drop.png`, /* Changed from drops.jpg based on file list */
-            'Sachet': `${baseURL}sachets.jpeg`, 
-            'Surgicals': `${baseURL}surgical.jpeg`, 
-            'Cream': `${baseURL}creams.jpeg`, 
-            'Cosmetics': `${baseURL}cosmetics.png`, 
-            'Other': `${baseURL}other.jpeg`
+            'Tablet': `${baseURL}pills.jpg`, 'Syrup': `${baseURL}syrup.png`, 'Injection': `${baseURL}injections.jpeg`, 
+            'Capsule': `${baseURL}capsules.jpg`, 'Drops': `${baseURL}drop.png`, 'Sachet': `${baseURL}sachets.jpeg`, 
+            'Surgicals': `${baseURL}surgical.jpeg`, 'Cream': `${baseURL}creams.jpeg`, 'Cosmetics': `${baseURL}cosmetics.png`, 'Other': `${baseURL}other.jpeg`
         };
 
         // INIT
@@ -371,21 +351,6 @@
             if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-4.right-4')) document.getElementById('notifPanel').classList.add('hidden'); 
             if (!e.target.closest('#filterDropdown') && !e.target.closest('.relative')) document.getElementById('filterDropdown').classList.add('hidden');
         };
-
-        // === SMART AI ===
-        window.askAI = async () => {
-            const query = document.getElementById('aiSearchInput').value.trim().toLowerCase();
-            if(!query) return;
-            document.getElementById('aiLoading').classList.remove('hidden'); document.getElementById('aiResult').classList.add('hidden');
-            const matches = window.inv.filter(i => i.name.toLowerCase().includes(query) || (i.formula && i.formula.toLowerCase().includes(query)));
-            if (matches.length > 0) { document.getElementById('aiLocalList').innerHTML = matches.map(m => `<li><b>${m.name}</b> (${m.formula}) - Rs ${m.price}</li>`).join(''); document.getElementById('aiLocalMatches').classList.remove('hidden'); }
-            try {
-                const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${query}`); const data = await res.json();
-                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
-                if (data.type === 'standard') { document.getElementById('aiTitle').innerText = data.title; document.getElementById('aiDesc').innerText = data.extract; } else { document.getElementById('aiTitle').innerText = matches.length > 0 ? "Medicine Found" : "Not Found"; document.getElementById('aiDesc').innerText = "Try deep search."; }
-            } catch (err) { document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden'); document.getElementById('aiTitle').innerText = "Offline"; }
-        }
-        window.deepSearch = (type) => { window.open(`https://www.google.com/search?q=${document.getElementById('aiSearchInput').value} medicine ${type}`, '_blank'); }
 
         // === GRID RENDERER ===
         window.renderGrid = () => {
@@ -414,33 +379,63 @@
                         </div>
                         <img src="${img}" class="item-img" onerror="this.src='${imgMap['Other']}'">
                         <div class="p-2">
-                            <h4 class="font-bold text-white text-xs truncate leading-tight">${i.name}</h4>
-                            <p class="text-[10px] text-emerald-400 truncate mb-1">${i.formula || '-'}</p>
-                            <div class="flex justify-between items-end text-[10px] text-slate-400 mb-2">
-                                <span><b>${i.potency}</b></span>
-                                <span class="${expColor}">${i.exp}</span>
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-bold text-white text-xs truncate leading-tight">${i.name}</h4>
+                                <span class="text-[9px] text-slate-400 uppercase tracking-wide">${i.brand||'GEN'}</span>
                             </div>
-                            <div class="grid grid-cols-2 gap-1 text-[10px] bg-slate-900/50 p-1 rounded mb-2">
+                            <p class="text-[10px] text-emerald-400 truncate mb-1">${i.formula || '-'}</p>
+                            <div class="flex justify-between items-center text-[10px] mb-2">
+                                <span class="font-extrabold text-white text-xs">${i.potency}</span>
+                                <span class="text-slate-400">Stk: <b>${stockStr}</b></span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1 text-[9px] bg-slate-900/50 p-1 rounded mb-2">
                                 <div class="text-center"><span class="block text-slate-500">Pk</span><span class="font-bold text-white">${i.price}</span></div>
                                 <div class="text-center"><span class="block text-slate-500">Un</span><span class="font-bold text-white">${unitPrice}</span></div>
+                            </div>
+                            <div class="flex justify-between items-center text-[9px] mb-2">
+                                <span class="${expColor}">${i.exp}</span>
                             </div>
                             <button onclick="openSaleModal(${i.id})" class="btn-jelly w-full py-1.5 text-[10px]">Add</button>
                         </div>
                     </div>`;
                 } else {
                     g.innerHTML += `
-                    <div class="glass-card p-2 rounded-xl flex items-center gap-3">
-                        <img src="${img}" class="w-12 h-12 rounded object-cover">
+                    <div class="glass-card p-2 rounded-xl flex items-center gap-3 relative group">
+                        <div class="w-16 h-16 bg-white rounded-lg flex-none p-1"><img src="${img}" class="w-full h-full object-contain"></div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex justify-between"><h4 class="font-bold text-white text-xs truncate">${i.name}</h4><span class="text-slate-400 text-[10px]">Stk: ${stockStr}</span></div>
-                            <p class="text-[10px] text-emerald-400 truncate">${i.formula}</p>
-                            <div class="flex gap-2 mt-1 text-[10px]"><span class="text-slate-300">Pk: ${i.price}</span><span class="${expColor}">${i.exp}</span></div>
+                            <div class="flex justify-between"><h4 class="font-bold text-white text-xs truncate">${i.name} <span class="text-[10px] text-slate-400 font-normal">(${i.brand})</span></h4><span class="text-emerald-400 font-bold text-[10px]">${i.potency}</span></div>
+                            <p class="text-[10px] text-slate-400 truncate">${i.formula}</p>
+                            <div class="flex justify-between mt-1 text-[10px]">
+                                <span class="text-slate-300">Stk: <b>${stockStr}</b></span>
+                                <div><span class="text-slate-400">Pk:</span> <b>${i.price}</b> <span class="text-slate-400 ml-1">Un:</span> <b>${unitPrice}</b></div>
+                            </div>
                         </div>
-                        <button onclick="openSaleModal(${i.id})" class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex-none text-xs"><i class="fas fa-plus"></i></button>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="openSaleModal(${i.id})" class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-xs"><i class="fas fa-plus"></i></button>
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition absolute right-10 top-2">
+                                <button onclick="editMed(${i.id})" class="text-blue-400 bg-slate-900 p-1 rounded"><i class="fas fa-pen text-[10px]"></i></button>
+                                <button onclick="delMed(${i.id})" class="text-red-400 bg-slate-900 p-1 rounded"><i class="fas fa-trash text-[10px]"></i></button>
+                            </div>
+                        </div>
                     </div>`;
                 }
             });
         }
+
+        // === SMART AI ===
+        window.askAI = async () => {
+            const query = document.getElementById('aiSearchInput').value.trim().toLowerCase();
+            if(!query) return;
+            document.getElementById('aiLoading').classList.remove('hidden'); document.getElementById('aiResult').classList.add('hidden');
+            const matches = window.inv.filter(i => i.name.toLowerCase().includes(query) || (i.formula && i.formula.toLowerCase().includes(query)));
+            if (matches.length > 0) { document.getElementById('aiLocalList').innerHTML = matches.map(m => `<li><b>${m.name}</b> (${m.formula}) - Rs ${m.price}</li>`).join(''); document.getElementById('aiLocalMatches').classList.remove('hidden'); }
+            try {
+                const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${query}`); const data = await res.json();
+                document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden');
+                if (data.type === 'standard') { document.getElementById('aiTitle').innerText = data.title; document.getElementById('aiDesc').innerText = data.extract; } else { document.getElementById('aiTitle').innerText = matches.length > 0 ? "Medicine Found" : "Not Found"; document.getElementById('aiDesc').innerText = "Try deep search."; }
+            } catch (err) { document.getElementById('aiLoading').classList.add('hidden'); document.getElementById('aiResult').classList.remove('hidden'); document.getElementById('aiTitle').innerText = "Offline"; }
+        }
+        window.deepSearch = (type) => { window.open(`https://www.google.com/search?q=${document.getElementById('aiSearchInput').value} medicine ${type}`, '_blank'); }
 
         // === CRUD & LOGIC ===
         window.openAddModal = () => { document.getElementById('search').value=''; document.getElementById('medId').value=''; document.getElementById('medName').value=''; document.getElementById('medBrand').value=''; document.getElementById('medFormula').value=''; document.getElementById('medTotalPacks').value=''; document.getElementById('medStock').value=''; document.getElementById('medPrice').value=''; document.getElementById('medCost').value=''; document.getElementById('medPotency').value=''; document.getElementById('medUnit').value='mg'; openModal('medModal'); }
@@ -471,15 +466,11 @@
         }
 
         window.renderAll = () => { 
-            // Expenses
             document.getElementById('expList').innerHTML = window.expenses.map(e => `<tr><td class="p-3 text-slate-400">${e.date}</td><td class="p-3 text-white">${e.cat}<br><span class="text-[10px] text-slate-500">${e.note}</span></td><td class="p-3 text-right text-orange-400">${e.amt}</td><td class="p-3 text-center"><button onclick="if(confirm('Delete?')){window.expenses=window.expenses.filter(x=>x.id!=${e.id});saveData();}" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
-            // Purchases
             document.getElementById('purchaseList').innerHTML = window.purch.map(p => `<tr><td class="p-3 text-white">${p.dealer}</td><td class="p-3 text-slate-400 text-[10px]">${p.items}</td><td class="p-3 text-right text-purple-400">${p.amt}</td><td class="p-3 text-center"><button onclick="if(confirm('Delete?')){window.purch=window.purch.filter(x=>x.id!=${p.id});saveData();}" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
-            // Attendance
             document.getElementById('attList').innerHTML = window.attendance.map(a => `<tr><td class="p-3 text-slate-400">${a.date}</td><td class="p-3 text-emerald-400">${a.status}</td><td class="p-3 text-slate-400">${a.in||'-'}</td><td class="p-3 text-slate-400">${a.out||'-'}</td><td class="p-3 text-center"><button onclick="window.attendance=window.attendance.filter(x=>x.id!=${a.id}); saveData();" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
 
-        // Standard Functions
         window.checkNotifications = () => { const list = document.getElementById('notifList'); const badge = document.getElementById('notifBadge'); list.innerHTML = ''; let count = 0; const now = new Date(); window.inv.forEach(i => { if(i.stock === 0) { count++; list.innerHTML += `<div class="p-2 bg-red-900/20 text-red-300 text-xs border-l-2 border-red-500">❌ <b>${i.name}</b> Out of Stock</div>`; } }); if(count > 0) { badge.innerText = count; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
         window.saveExpense = () => { const id = document.getElementById('expId').value || Date.now(); const e = { id, date:document.getElementById('expDate').value, cat:document.getElementById('expCat').value, note:document.getElementById('expNote').value, amt:document.getElementById('expAmt').value }; const idx = window.expenses.findIndex(x=>x.id==id); if(idx>-1) window.expenses[idx]=e; else window.expenses.unshift(e); saveData(); closeModal('expModal'); }
         window.checkExpCustom = (el) => { document.getElementById('expCustom').classList.toggle('hidden', el.value!=='Other'); }
