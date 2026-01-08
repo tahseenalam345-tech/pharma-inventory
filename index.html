@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v58.0 (Real AI Pharmacist)</title>
+    <title>Al-Azamat Medical Store - v60.0 (AI Live)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -199,7 +199,7 @@
             appId: "1:466791969920:web:63437a8ab4a428fa906265"
         };
 
-        // 🤖 GEMINI API KEY (PASTE YOUR KEY HERE)
+        // 🤖 GEMINI API KEY (YOUR REAL KEY)
         const GEMINI_API_KEY = "AIzaSyCnpswftqf0loQHtdRqyjCOlorqC879Gvg"; 
 
         const app = initializeApp(firebaseConfig);
@@ -262,10 +262,6 @@
 
             // 4. Call Gemini API
             try {
-                if(GEMINI_API_KEY === "PASTE_YOUR_GEMINI_KEY_HERE") {
-                    throw new Error("Please add your Gemini API Key in the code!");
-                }
-
                 history.innerHTML += `<div class="chat-bubble-ai" id="loadingBubble">Thinking... <i class="fas fa-circle-notch fa-spin"></i></div>`;
                 history.scrollTop = history.scrollHeight;
 
@@ -293,7 +289,7 @@
             }
         }
 
-        // === GRID RENDERER (v57 UPDATED) ===
+        // === GRID RENDERER (v59 UPDATED - OPTIONAL POTENCY) ===
         window.renderGrid = () => {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
@@ -329,7 +325,7 @@
                             </div>
                             <p class="text-[10px] text-emerald-400 truncate mb-1">${i.formula || '-'}</p>
                             <div class="flex justify-between items-center text-[10px] mb-2">
-                                <span class="font-extrabold text-white text-xs">${i.potency}</span>
+                                ${i.potency ? `<span class="font-extrabold text-white text-xs">${i.potency}</span>` : '<span class="text-slate-600 text-[10px]">-</span>'}
                                 <span class="text-slate-400">Stk: <b>${stockStr}</b></span>
                             </div>
                             <div class="grid grid-cols-2 gap-1 text-[9px] bg-slate-900/50 p-1 rounded mb-2">
@@ -354,7 +350,7 @@
                                 </h4>
                                 <div class="text-right">
                                     <span class="block text-[9px] text-emerald-400 font-bold uppercase">${i.cat}</span>
-                                    <span class="text-emerald-400 font-bold text-[10px]">${i.potency}</span>
+                                    <span class="text-emerald-400 font-bold text-[10px]">${i.potency || ''}</span>
                                 </div>
                             </div>
                             <p class="text-[10px] text-slate-400 truncate">${i.formula}</p>
@@ -375,12 +371,27 @@
             });
         }
 
-        // === CRUD Logic Same as v57 (Collapsed) ===
+        // === CRUD & LOGIC (UPDATED SAVE POTENCY) ===
         window.openAddModal = () => { document.getElementById('search').value=''; document.getElementById('medId').value=''; document.getElementById('medName').value=''; document.getElementById('medBrand').value=''; document.getElementById('medFormula').value=''; document.getElementById('medTotalPacks').value=''; document.getElementById('medStock').value=''; document.getElementById('medPrice').value=''; document.getElementById('medCost').value=''; document.getElementById('medPotency').value=''; document.getElementById('medUnit').value='mg'; openModal('medModal'); }
-        window.saveMedicine = () => { const idVal = document.getElementById('medId').value; const fullPotency = document.getElementById('medPotency').value + document.getElementById('medUnit').value; const item = { id: idVal ? parseInt(idVal) : Date.now(), name: document.getElementById('medName').value, brand: document.getElementById('medBrand').value, formula: document.getElementById('medFormula').value, potency: fullPotency, packSize: parseInt(document.getElementById('medPackSize').value)||1, stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0, price: parseFloat(document.getElementById('medPrice').value)||0, cat: document.getElementById('medCat').value, exp: document.getElementById('medExp').value, img: '' }; const idx = window.inv.findIndex(i=>i.id==item.id); if(idx>-1) window.inv[idx]=item; else window.inv.unshift(item); saveData(); closeModal('medModal'); }
-        window.editMed = (id) => { const i = window.inv.find(x=>x.id==id); document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name; document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula; const match = (i.potency||'').match(/(\d+)(.*)/); if(match) { document.getElementById('medPotency').value=match[1]; document.getElementById('medUnit').value=match[2]||'mg'; } else { document.getElementById('medPotency').value=i.potency; } document.getElementById('medPackSize').value=i.packSize; document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize; document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price; document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp; openModal('medModal'); }
+        window.saveMedicine = () => {
+            const idVal = document.getElementById('medId').value; 
+            const potVal = document.getElementById('medPotency').value.trim();
+            const unitVal = document.getElementById('medUnit').value;
+            const fullPotency = potVal ? (potVal + unitVal) : ""; // Only add unit if value exists
+
+            const item = { id: idVal ? parseInt(idVal) : Date.now(), name: document.getElementById('medName').value, brand: document.getElementById('medBrand').value, formula: document.getElementById('medFormula').value, potency: fullPotency, packSize: parseInt(document.getElementById('medPackSize').value)||1, stock: parseInt(document.getElementById('medStock').value)||0, cost: parseFloat(document.getElementById('medCost').value)||0, price: parseFloat(document.getElementById('medPrice').value)||0, cat: document.getElementById('medCat').value, exp: document.getElementById('medExp').value, img: '' };
+            const idx = window.inv.findIndex(i=>i.id==item.id); if(idx>-1) window.inv[idx]=item; else window.inv.unshift(item); saveData(); closeModal('medModal');
+        }
+        window.editMed = (id) => { 
+            const i = window.inv.find(x=>x.id==id); 
+            document.getElementById('medId').value=i.id; document.getElementById('medName').value=i.name; document.getElementById('medBrand').value=i.brand; document.getElementById('medFormula').value=i.formula; 
+            const match = (i.potency||'').match(/^(\d+(?:\.\d+)?)(.*)$/);
+            if(match) { document.getElementById('medPotency').value=match[1]; document.getElementById('medUnit').value=match[2]||'mg'; } else { document.getElementById('medPotency').value=""; } 
+            document.getElementById('medPackSize').value=i.packSize; document.getElementById('medStock').value=i.stock; document.getElementById('medTotalPacks').value=i.stock/i.packSize; document.getElementById('medCost').value=i.cost; document.getElementById('medPrice').value=i.price; document.getElementById('medCat').value=i.cat; document.getElementById('medExp').value=i.exp; openModal('medModal'); 
+        }
         window.delMed = (id) => { if(confirm("Delete?")) { window.inv=window.inv.filter(x=>x.id!=id); saveData(); } }
         window.calcUnits = () => { document.getElementById('medStock').value = Math.ceil((parseFloat(document.getElementById('medTotalPacks').value)||0) * (parseFloat(document.getElementById('medPackSize').value)||1)); }
+
         window.openSaleModal = (id) => { window.saleItem = window.inv.find(i=>i.id===id); document.getElementById('saleName').innerText = window.saleItem.name; document.getElementById('salePotency').innerText = window.saleItem.potency||''; document.getElementById('saleQty').value = 1; setSaleType(false); openModal('saleModal'); document.getElementById('search').value=''; }
         window.setSaleType = (isPack) => { window.isPackSale = isPack; const bg = document.getElementById('saleToggleBg'); const btnUnit = document.getElementById('btnUnit'); const btnPack = document.getElementById('btnPack'); bg.style.left = isPack ? '51%' : '1%'; btnUnit.className = !isPack ? "flex-1 py-2 relative z-10 text-xs font-bold text-white" : "flex-1 py-2 relative z-10 text-xs font-bold text-slate-400"; btnPack.className = isPack ? "flex-1 py-2 relative z-10 text-xs font-bold text-white" : "flex-1 py-2 relative z-10 text-xs font-bold text-slate-400"; calcTotal(); }
         window.adjQty = (n) => { let q = parseInt(document.getElementById('saleQty').value)+n; if(q<1) q=1; document.getElementById('saleQty').value=q; calcTotal(); }
