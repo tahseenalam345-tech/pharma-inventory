@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al-Azamat Medical Store - v71.0 (Auto-Switch AI)</title>
+    <title>Al-Azamat Medical Store - v72.0 (Simple AI)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -24,13 +24,10 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 90; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
         .fab-cart { position: fixed; bottom: 20px; right: 20px; z-index: 80; background: #eab308; color: black; padding: 12px 20px; border-radius: 50px; font-weight: 800; box-shadow: 0 10px 25px rgba(234, 179, 8, 0.4); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-        .fab-ai { position: fixed; bottom: 20px; left: 20px; z-index: 80; background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); cursor: pointer; font-size: 24px; border: 2px solid #60a5fa; transition: transform 0.2s; }
-        .fab-cart:active, .fab-ai:active { transform: scale(0.9); }
+        .fab-cart:active { transform: scale(0.9); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         #syncStatus { position: fixed; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6b7280; z-index: 50; pointer-events: none; }
         .item-img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px 8px 0 0; background: #ffffff; }
-        .chat-bubble-user { background: #3b82f6; color: white; padding: 8px 12px; border-radius: 12px 12px 0 12px; margin-left: auto; max-width: 80%; font-size: 13px; margin-bottom: 8px; }
-        .chat-bubble-ai { background: #1e293b; color: #e2e8f0; padding: 10px; border-radius: 12px 12px 12px 0; margin-right: auto; max-width: 90%; font-size: 13px; border: 1px solid #334155; margin-bottom: 8px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -53,7 +50,6 @@
         </nav>
     </aside>
 
-    <div class="fab-ai" onclick="openModal('aiModal')"><i class="fas fa-robot"></i></div>
     <div class="fab-cart" onclick="openModal('billModal'); renderBill()"><i class="fas fa-shopping-cart"></i> <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center border-2 border-black">0</span></div>
     <div id="syncStatus">☁️ Connecting...</div>
 
@@ -62,6 +58,13 @@
             <div class="relative w-32 h-32 mx-auto mb-4"><img id="storeLogo" src="" class="w-full h-full object-contain filter drop-shadow-xl" loading="lazy"></div>
             <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500 mb-1">Al-Azamat</h1>
             <p class="text-slate-400 tracking-[0.3em] uppercase text-xs font-bold">Medical Store</p>
+            
+            <div class="glass-card p-4 rounded-xl mt-6 max-w-md mx-auto">
+                <input id="prompt" placeholder="Ask something..." class="modern-input mb-2" />
+                <button onclick="sendToAI()" class="btn-jelly w-full">Ask AI</button>
+                <div id="output" class="mt-3 text-sm text-gray-300 p-2 bg-slate-900 rounded border border-slate-700 min-h-[40px]"></div>
+            </div>
+
             <div class="flex justify-center gap-3 mt-6">
                 <div class="glass-card px-3 py-2 rounded-lg text-right min-w-[80px]"><span class="text-slate-500 block text-[10px] uppercase">Today</span><span class="font-bold text-emerald-400 text-sm" id="topTodaySale">0</span></div>
                 <div class="glass-card px-3 py-2 rounded-lg text-right min-w-[80px]"><span class="text-slate-500 block text-[10px] uppercase">Month</span><span class="font-bold text-blue-400 text-sm" id="topMonthSale">0</span></div>
@@ -107,17 +110,6 @@
         <section id="reports" class="mb-10 glass-card p-5 rounded-2xl"><h2 class="text-xl font-bold mb-4 text-center">Financial Report</h2><div class="grid grid-cols-2 gap-3"><div class="bg-slate-900/50 p-3 rounded-xl border border-blue-500/20 text-center"><span class="text-[10px] text-blue-400 block uppercase">Sales</span><span class="text-xl font-bold" id="repRev">0</span></div><div class="bg-slate-900/50 p-3 rounded-xl border border-purple-500/20 text-center"><span class="text-[10px] text-purple-400 block uppercase">Purchases</span><span class="text-xl font-bold" id="repPurch">0</span></div><div class="bg-slate-900/50 p-3 rounded-xl border border-orange-500/20 text-center"><span class="text-[10px] text-orange-400 block uppercase">Expenses</span><span class="text-xl font-bold" id="repExp">0</span></div><div class="bg-slate-900/50 p-3 rounded-xl border border-emerald-500/50 text-center relative overflow-hidden"><div class="absolute inset-0 bg-emerald-500/10"></div><span class="text-[10px] text-emerald-400 block uppercase font-bold relative z-10">Net Profit</span><span class="text-2xl font-bold text-emerald-400 relative z-10" id="repNet">0</span></div></div></section>
         <section id="attendance" class="mb-10 glass-card p-4 rounded-2xl"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold">Attendance</h2><button onclick="openModal('attModal')" class="btn-jelly text-xs">Mark</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-800 text-slate-400"><tr><th class="p-3">Date</th><th class="p-3">Status</th><th class="p-3">In</th><th class="p-3">Out</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="attList" class="divide-y divide-slate-800"></tbody></table></div></section>
     </main>
-
-    <div id="aiModal" class="modal-overlay" onclick="closeModal('aiModal')">
-        <div class="bg-slate-900 w-full max-w-md h-[80vh] flex flex-col rounded-2xl border border-blue-500/50 m-4 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="p-4 bg-blue-600 rounded-t-2xl flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fas fa-robot text-white"></i> AI Pharmacist</h3>
-                <button onclick="closeModal('aiModal')" class="text-white hover:text-red-200"><i class="fas fa-times"></i></button>
-            </div>
-            <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900 custom-scroll"><div class="chat-bubble-ai">👋 Hello! I am your AI Pharmacist. Ask me about symptoms, medicine uses, or checking your stock.</div></div>
-            <div class="p-3 bg-slate-800 rounded-b-2xl border-t border-slate-700"><div class="flex gap-2"><input type="text" id="aiInput" placeholder="e.g., Medicine for stomach pain..." class="modern-input flex-1" onkeypress="if(event.key==='Enter') sendToAI()"><button onclick="sendToAI()" class="bg-blue-600 text-white rounded-xl px-4 hover:bg-blue-500 transition flex items-center justify-center"><i class="fas fa-paper-plane"></i></button></div></div>
-        </div>
-    </div>
 
     <div id="medModal" class="modal-overlay" onclick="closeModal('medModal')"><div class="bg-slate-900 w-full max-w-lg p-6 rounded-2xl border border-slate-700 m-4 shadow-2xl" onclick="event.stopPropagation()"><h3 class="text-xl font-bold mb-6 text-emerald-400">Medicine Details</h3><div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scroll"><input type="hidden" id="medId"><div class="grid grid-cols-2 gap-3"><input type="text" id="medName" placeholder="Medicine Name" class="modern-input"><input type="text" id="medBrand" placeholder="Brand / Company" class="modern-input"></div><div class="p-3 bg-slate-800 rounded-xl border border-slate-700"><label class="text-xs text-slate-500 uppercase font-bold mb-1 block">Formula & Potency</label><div class="flex gap-2"><input type="text" id="medFormula" placeholder="Formula" class="modern-input flex-[2]"><div class="flex-1"><input type="text" id="medPotency" placeholder="e.g., 5mg+1000mg" class="modern-input w-full"></div></div></div><div class="p-3 bg-slate-800 rounded-xl border border-slate-700"><label class="text-xs text-slate-500 uppercase font-bold mb-1 block">Stock & Pricing</label><div class="grid grid-cols-3 gap-2 mb-2"><div><span class="text-[10px] text-slate-400">Total Packs</span><input type="number" id="medTotalPacks" class="modern-input" oninput="calcUnits()"></div><div><span class="text-[10px] text-slate-400">Items/Pack</span><input type="number" id="medPackSize" value="1" class="modern-input" oninput="calcUnits()"></div><div><span class="text-[10px] text-slate-400">Total Units</span><input type="number" id="medStock" readonly class="modern-input bg-slate-950 text-slate-500"></div></div><div class="grid grid-cols-2 gap-2"><div><span class="text-[10px] text-slate-400">Cost Price (Pack)</span><input type="number" id="medCost" class="modern-input"></div><div><span class="text-[10px] text-slate-400">Sale Price (Pack)</span><input type="number" id="medPrice" class="modern-input"></div></div></div><div class="grid grid-cols-2 gap-3"><select id="medCat" class="modern-input"><option>Tablet</option><option>Syrup</option><option>Injection</option><option>Capsule</option><option>Drops</option><option>Sachet</option><option>Surgicals</option><option>Cream</option><option>Cosmetics</option><option>Other</option></select><input type="date" id="medExp" class="modern-input"></div></div><div class="mt-6 flex gap-3"><button onclick="closeModal('medModal')" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button><button onclick="saveMedicine()" class="flex-1 btn-jelly">Save Item</button></div></div></div>
     <div id="saleModal" class="modal-overlay" onclick="closeModal('saleModal')"><div class="glass-card w-full max-w-sm p-6 rounded-2xl text-center" onclick="event.stopPropagation()"><h3 class="text-xl font-bold text-white mb-1" id="saleName">Item</h3><p class="text-emerald-400 font-bold mb-4 text-sm" id="salePotency"></p><div class="bg-slate-900 p-1 rounded-xl flex mb-6 relative"><div id="saleToggleBg" class="absolute top-1 bottom-1 w-[48%] bg-emerald-500 rounded-lg transition-all duration-300 left-1"></div><button onclick="setSaleType(false)" class="flex-1 py-2 relative z-10 text-xs font-bold transition-colors" id="btnUnit">Unit</button><button onclick="setSaleType(true)" class="flex-1 py-2 relative z-10 text-xs font-bold transition-colors" id="btnPack">Pack</button></div><div class="flex justify-center items-center gap-4 mb-6"><button onclick="adjQty(-1)" class="w-10 h-10 bg-slate-800 rounded-full text-lg hover:bg-slate-700 transition">-</button><input type="number" id="saleQty" value="1" class="w-16 bg-transparent text-center text-3xl font-bold outline-none" oninput="calcTotal()"><button onclick="adjQty(1)" class="w-10 h-10 bg-slate-800 rounded-full text-lg hover:bg-slate-700 transition">+</button></div><div class="mb-6 p-3 bg-slate-800/50 rounded-xl"><span class="text-slate-400 text-[10px] uppercase tracking-widest">Total Price</span><div class="text-2xl font-bold text-white mt-1" id="saleTotal">0</div></div><button onclick="addToBill()" class="btn-jelly w-full py-3 text-md">Add to Cart</button></div></div>
@@ -166,49 +158,6 @@
         window.toggleNotif = (e) => { if(e) e.stopPropagation(); document.getElementById('notifPanel').classList.toggle('hidden'); }
         window.onclick = (e) => { if (!e.target.closest('#notifPanel') && !e.target.closest('.fixed.top-4.right-4')) document.getElementById('notifPanel').classList.add('hidden'); if (!e.target.closest('#filterDropdown') && !e.target.closest('.relative')) document.getElementById('filterDropdown').classList.add('hidden'); };
 
-        // === 🚀 SERVER API CONNECTION (STEP 1 METHOD) ===
-        window.sendToAI = async () => {
-            const input = document.getElementById('aiInput');
-            const query = input.value.trim();
-            if(!query) return;
-
-            const history = document.getElementById('chatHistory');
-            history.innerHTML += `<div class="chat-bubble-user">${query}</div>`;
-            input.value = '';
-            history.scrollTop = history.scrollHeight;
-
-            const stockContext = window.inv.map(i => `${i.name} (${i.formula}) - ${i.stock} in stock`).join(', ');
-            const prompt = `You are an expert Pharmacist Assistant at Al-Azamat Medical Store. Current Stock: [${stockContext}]. User Question: "${query}". Instructions: 1. If user describes symptoms (e.g., "pain"), ask clarifying questions or suggest medicines FROM THE STOCK LIST above if applicable. 2. If user asks about a specific drug, explain its uses, side effects, and check if we have it in stock. 3. Be professional, concise, and helpful. 4. Keep the answer short (under 50 words) unless detailed info is requested.`;
-
-            try {
-                history.innerHTML += `<div class="chat-bubble-ai" id="loadingBubble">Thinking... <i class="fas fa-circle-notch fa-spin"></i></div>`;
-                history.scrollTop = history.scrollHeight;
-
-                // CALLING YOUR SERVER API (Using relative path)
-                const response = await fetch('/api/gemini', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: prompt })
-                });
-
-                const data = await response.json();
-                document.getElementById('loadingBubble').remove();
-
-                if (data.error) throw new Error(data.error);
-                
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
-                const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-                
-                history.innerHTML += `<div class="chat-bubble-ai">${formattedText}</div>`;
-                history.scrollTop = history.scrollHeight;
-
-            } catch (error) {
-                const bubble = document.getElementById('loadingBubble');
-                if(bubble) bubble.remove();
-                history.innerHTML += `<div class="chat-bubble-ai text-red-400"><b>Error:</b> ${error.message} (Check Vercel Env Vars)</div>`;
-            }
-        }
-
         window.renderGrid = () => {
             const g = document.getElementById('grid'); g.innerHTML = '';
             const term = document.getElementById('search').value.toLowerCase();
@@ -255,5 +204,6 @@
         window.restoreBackup = (input) => { const r = new FileReader(); r.onload=e=>{ const d=JSON.parse(e.target.result); if(d.inv) { window.inv=d.inv; window.sales=d.sales||[]; window.purch=d.purch||[]; window.expenses=d.expenses||[]; window.attendance=d.attendance||[]; saveData(); } }; r.readAsText(input.files[0]); }
         window.updateCartUI = () => { document.getElementById('cartCount').innerText = window.cart.length; }
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
